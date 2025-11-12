@@ -26,7 +26,7 @@
     "concurrently": "^8.2.2",
     "electron": "^28.0.0",
     "electron-builder": "^24.6.4",
-    "electron-rebuild": "^3.2.13",
+    "electron-rebuild": "^3.2.9",
     "typescript": "^5.3.3"
   },
   "dependencies": {
@@ -42,15 +42,20 @@
       "main/**/*",
       "preload/**/*",
       "../dist/**/*",
-      "node_modules/**/*",
-      "!node_modules/@serialport/bindings-cpp/**/*"
+      "node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../dist",
+        "to": "dist"
+      }
     ],
     "npmRebuild": true,
     "win": {
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64", "arm64"]
+          "arch": ["x64"]
         }
       ]
     },

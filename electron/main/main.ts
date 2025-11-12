@@ -45,7 +45,7 @@ function createWindow(): void {
     mainWindow.loadURL('https://vendinghanger.eeelab.xyz');
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
+    mainWindow.loadFile(path.join(__dirname, '../resources/dist/index.html'));
     mainWindow.webContents.openDevTools(); // Open DevTools for debugging
   }
 
