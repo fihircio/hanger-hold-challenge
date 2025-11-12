@@ -14,7 +14,7 @@
     "build:preload": "tsc preload/preload.ts --target es2020 --outDir preload --module commonjs",
     "build:win": "electron-builder --win",
     "dist": "npm run build && electron-builder",
-    "postinstall": "electron-rebuild",
+    "postinstall": "electron-builder install-app-deps",
     "rebuild-native": "electron-rebuild -f -w win32 -a x64",
     "rebuild-native-arm": "electron-rebuild -f -w win32 -a arm64"
   },
@@ -46,7 +46,6 @@
       "!node_modules/@serialport/bindings-cpp/**/*"
     ],
     "npmRebuild": true,
-    "beforeBuild": "npm run rebuild-native",
     "win": {
       "target": [
         {
