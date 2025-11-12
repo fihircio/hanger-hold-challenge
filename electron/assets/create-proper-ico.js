@@ -1,0 +1,30 @@
+const fs = require('fs');
+const path = require('path');
+
+// Create a proper multi-resolution ICO file
+// We'll create a simple 256x256 PNG first, then convert to ICO
+
+// Create a simple 256x256 PNG (base64 encoded minimal PNG with blue background)
+const pngData = Buffer.from([
+  0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, // PNG signature
+  0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, // IHDR chunk start
+  0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, // 256x256 dimensions
+  0x08, 0x02, 0x00, 0x00, 0x00, 0x4C, 0x87, 0x9C, // Bit depth, color type, compression
+  0x33, 0x00, 0x00, 0x00, 0x0C, 0x49, 0x44, 0x41, // IDAT chunk start
+  0x54, 0x08, 0x99, 0x01, 0x01, 0x01, 0x00, 0x00, // Image data (simple blue square)
+  0xFE, 0xFF, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, // More image data
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // More image data
+  0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82 // IEND chunk
+]);
+
+// Write the PNG file
+fs.writeFileSync(path.join(__dirname, 'icon-256.png'), pngData);
+
+console.log('Created icon-256.png');
+
+// For now, let's create a simpler approach - just copy the PNG as ICO
+// This is a workaround for the ICO format issues
+fs.copyFileSync(path.join(__dirname, 'icon-256.png'), path.join(__dirname, 'icon.ico'));
+
+console.log('Created icon.ico (PNG format as workaround)');
+console.log('Note: For production, you should use a proper ICO converter tool');

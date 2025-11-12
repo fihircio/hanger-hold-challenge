@@ -1,0 +1,47 @@
+<?php
+
+use App\Controllers\PlayerController;
+use App\Controllers\ScoreController;
+use App\Controllers\PrizeController;
+use App\Controllers\VendingController;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\App;
+
+return function (App $app) {
+    // Test route
+    $app->get('/test', function (Request $request, Response $response) {
+        $response->getBody()->write('API is working!');
+        return $response;
+    });
+    
+    // CORS preflight
+    $app->options('/{routes:.*}', function (Request $request, Response $response) {
+      return $response;
+    });
+  
+    // CORS middleware - must be added BEFORE routes
+    $app->add(function ($request, $handler) {
+      $response = $handler->handle($request);
+      return $response
+        ->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    });
+
+    // Player routes
+    $app->post('/api/players', PlayerController::class . ':create');
+    $app->get('/api/players/{id}', PlayerController::class . ':get');
+
+    // Score routes
+    $app->post('/api/scores', ScoreController::class . ':create');
+    $app->get('/api/leaderboard', ScoreController::class . ':leaderboard');
+
+    // Prize routes
+    $app->get('/api/prizes/check', PrizeController::class . ':checkEligibility');
+    $app->get('/api/prizes', PrizeController::class . ':getAll');
+
+    // Vending routes
+    $app->post('/api/vending/dispense', VendingController::class . ':dispense');
+    $app->get('/api/vending/status', VendingController::class . ':status');
+};

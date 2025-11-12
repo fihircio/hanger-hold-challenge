@@ -1,0 +1,140 @@
+{
+    "players": [
+        {
+            "id": 1,
+            "name": "Test Player",
+            "email": "test@example.com",
+            "phone": "+1234567890"
+        },
+        {
+            "id": 2,
+            "name": "trrrr",
+            "email": "rrr@9.c",
+            "phone": ""
+        },
+        {
+            "id": 3,
+            "name": "rrreeewww",
+            "email": "qqqqq@8.f",
+            "phone": ""
+        },
+        {
+            "id": 4,
+            "name": "tesrrrr",
+            "email": "123@99.c",
+            "phone": ""
+        },
+        {
+            "id": 5,
+            "name": "yyyyy",
+            "email": "yyyy@99.12",
+            "phone": ""
+        },
+        {
+            "id": 6,
+            "name": "qwe",
+            "email": "qwe@99.33",
+            "phone": ""
+        },
+        {
+            "id": 7,
+            "name": "pppppp",
+            "email": "oooooo",
+            "phone": ""
+        },
+        {
+            "id": 8,
+            "name": "test",
+            "email": "test@88.c",
+            "phone": ""
+        },
+        {
+            "id": 9,
+            "name": "aduino",
+            "email": "qqqq@88.33",
+            "phone": ""
+        },
+        {
+            "id": 10,
+            "name": "testaruibo",
+            "email": "ttt@88.33",
+            "phone": ""
+        },
+        {
+            "id": 11,
+            "name": "arduino",
+            "email": "aaa@@9.44",
+            "phone": ""
+        }
+    ],
+    "scores": [
+        {
+            "id": 1,
+            "player_id": 1,
+            "time": 10585,
+            "created_at": "2025-11-11 10:07:02"
+        },
+        {
+            "id": 2,
+            "player_id": 2,
+            "time": 896,
+            "created_at": "2025-11-11 10:14:18"
+        },
+        {
+            "id": 3,
+            "player_id": 3,
+            "time": 21042,
+            "created_at": "2025-11-11 10:14:54"
+        },
+        {
+            "id": 4,
+            "player_id": 4,
+            "time": 7593,
+            "created_at": "2025-11-11 10:21:41"
+        },
+        {
+            "id": 5,
+            "player_id": 5,
+            "time": 6249,
+            "created_at": "2025-11-11 10:22:25"
+        },
+        {
+            "id": 6,
+            "player_id": 6,
+            "time": 1513,
+            "created_at": "2025-11-11 10:22:49"
+        },
+        {
+            "id": 7,
+            "player_id": 7,
+            "time": 78,
+            "created_at": "2025-11-11 10:23:05"
+        },
+        {
+            "id": 8,
+            "player_id": 8,
+            "time": 19973,
+            "created_at": "2025-11-11 10:30:35"
+        },
+        {
+            "id": 9,
+            "player_id": 9,
+            "time": 1205,
+            "created_at": "2025-11-11 10:31:43"
+        },
+        {
+            "id": 10,
+            "player_id": 10,
+            "time": 24120,
+            "created_at": "2025-11-11 10:38:45"
+        },
+        {
+            "id": 11,
+            "player_id": 11,
+            "time": 19905,
+            "created_at": "2025-11-11 10:39:30"
+        }
+    ],
+    "playerIdCounter": 12,
+    "scoreIdCounter": 12
+}
