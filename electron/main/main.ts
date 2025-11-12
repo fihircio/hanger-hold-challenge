@@ -6,6 +6,8 @@ let mainWindow: BrowserWindow | null = null;
 let serialPort: any = null;
 let serialPortError = false;
 let SerialPortModule: any = null;
+let SerialPort: any = null;
+let SerialPortParser: any = null;
 
 // Try to load SerialPort with error handling
 try {
@@ -82,7 +84,7 @@ async function initializeSerialPort(): Promise<void> {
 
   try {
     // Try to detect available serial ports
-    const ports = await SerialPortModule.list();
+    const ports = await SerialPortModule.SerialPort.list();
     console.log('Available serial ports:', ports);
 
     // Platform-specific default port
@@ -147,7 +149,7 @@ async function initializeSerialPort(): Promise<void> {
       }
     }
     
-    serialPort = new SerialPortModule({
+    serialPort = new SerialPort({
       path: portPath,
       baudRate: 9600,
       dataBits: 8,
@@ -233,7 +235,7 @@ ipcMain.handle('get-serial-ports', async () => {
   }
   
   try {
-    const ports = await SerialPortModule.list();
+    const ports = await SerialPortModule.SerialPort.list();
     return ports.map((port: any) => ({
       path: port.path,
       manufacturer: port.manufacturer,
@@ -258,7 +260,7 @@ ipcMain.handle('connect-serial-port', async (event, portPath: string) => {
       await serialPort.close();
     }
 
-    serialPort = new SerialPortModule({
+    serialPort = new SerialPort({
       path: portPath,
       baudRate: 9600,
       dataBits: 8,

@@ -2,10 +2,26 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const path = require("path");
-const serialport_1 = require("serialport");
-// Keep a global reference of the window object
+// Global variables
 let mainWindow = null;
 let serialPort = null;
+let serialPortError = false;
+let SerialPortModule = null;
+let SerialPort = null;
+let SerialPortParser = null;
+// Try to load SerialPort with error handling
+try {
+    SerialPortModule = require('serialport');
+    SerialPort = SerialPortModule.SerialPort;
+    SerialPortParser = SerialPortModule.ReadlineParser;
+    console.log('SerialPort module loaded successfully');
+}
+catch (error) {
+    console.error('Failed to load SerialPort module:', error);
+    serialPortError = true;
+    // Show error dialog to user
+    electron_1.dialog.showErrorBox('Serial Port Module Error', `Failed to load Serial Port module.\n\nError: ${error}\n\nThe application will run without serial port functionality.\n\nPlease contact support for assistance.`);
+}
 const isDev = process.env.NODE_ENV === 'development';
 function createWindow() {
     // Create the browser window
@@ -17,7 +33,6 @@ function createWindow() {
             contextIsolation: true,
             preload: path.join(__dirname, '../preload/preload.js'),
         },
-        icon: path.join(__dirname, '../../assets/icon.png'),
     });
     // Load the app
     if (isDev) {
@@ -52,32 +67,67 @@ electron_1.app.on('window-all-closed', () => {
 });
 // Serial port initialization
 async function initializeSerialPort() {
+    // Skip serial port initialization if module failed to load
+    if (serialPortError) {
+        console.log('Skipping serial port initialization due to module loading error');
+        return;
+    }
     try {
         // Try to detect available serial ports
-        const ports = await serialport_1.SerialPort.list();
+        const ports = await SerialPortModule.SerialPort.list();
         console.log('Available serial ports:', ports);
-        // Prioritize Arduino ports over Bluetooth
-        let portPath = '/dev/ttyUSB0'; // default fallback
+        // Platform-specific default port
+        const isWindows = process.platform === 'win32';
+        let portPath = isWindows ? 'COM1' : '/dev/ttyUSB0'; // default fallback
         // First try to find Arduino by manufacturer
-        const arduinoPort = ports.find(port => port.manufacturer && port.manufacturer.toLowerCase().includes('arduino'));
+        const arduinoPort = ports.find((port) => port.manufacturer && (port.manufacturer.toLowerCase().includes('arduino') ||
+            port.manufacturer.toLowerCase().includes('ftdi') ||
+            port.manufacturer.toLowerCase().includes('ch340')));
         if (arduinoPort) {
             portPath = arduinoPort.path;
             console.log(`Found Arduino by manufacturer: ${portPath}`);
         }
         else {
-            // If no manufacturer match, try to find USB modem ports (common for Arduino)
-            const usbModemPort = ports.find(port => port.path.includes('usbmodem') || port.path.includes('tty.usbmodem'));
-            if (usbModemPort) {
-                portPath = usbModemPort.path;
-                console.log(`Found USB modem port (likely Arduino): ${portPath}`);
+            // Platform-specific port detection
+            if (isWindows) {
+                // On Windows, look for COM ports
+                const comPort = ports.find((port) => port.path.startsWith('COM') &&
+                    !port.path.includes('Bluetooth'));
+                if (comPort) {
+                    portPath = comPort.path;
+                    console.log(`Found COM port: ${portPath}`);
+                }
+                else if (ports.length > 0) {
+                    portPath = ports[0].path;
+                    console.log(`Using first available port: ${portPath}`);
+                }
             }
-            else if (ports.length > 0) {
-                // Fallback to first available port
-                portPath = ports[0].path;
-                console.log(`Using first available port: ${portPath}`);
+            else {
+                // On macOS/Linux, look for USB modem ports (common for Arduino)
+                const usbModemPort = ports.find((port) => port.path.includes('usbmodem') ||
+                    port.path.includes('tty.usbmodem') ||
+                    port.path.includes('ttyACM') ||
+                    port.path.includes('ttyUSB'));
+                if (usbModemPort) {
+                    portPath = usbModemPort.path;
+                    console.log(`Found USB modem port (likely Arduino): ${portPath}`);
+                }
+                else if (ports.length > 0) {
+                    // Avoid Bluetooth ports on macOS/Linux
+                    const nonBluetoothPort = ports.find((port) => !port.path.includes('Bluetooth') &&
+                        !port.path.includes('Baud'));
+                    if (nonBluetoothPort) {
+                        portPath = nonBluetoothPort.path;
+                        console.log(`Using first non-Bluetooth port: ${portPath}`);
+                    }
+                    else {
+                        portPath = ports[0].path;
+                        console.log(`Using first available port: ${portPath}`);
+                    }
+                }
             }
         }
-        serialPort = new serialport_1.SerialPort({
+        serialPort = new SerialPort({
             path: portPath,
             baudRate: 9600,
             dataBits: 8,
@@ -123,6 +173,9 @@ electron_1.ipcMain.handle('is-fullscreen', async () => {
 });
 // IPC handlers for serial communication
 electron_1.ipcMain.handle('send-serial-command', async (event, command) => {
+    if (serialPortError) {
+        throw new Error('Serial Port module is not available. Please reinstall the application.');
+    }
     if (!serialPort || !serialPort.isOpen) {
         throw new Error('Serial port is not open');
     }
@@ -141,9 +194,13 @@ electron_1.ipcMain.handle('send-serial-command', async (event, command) => {
     }
 });
 electron_1.ipcMain.handle('get-serial-ports', async () => {
+    if (serialPortError) {
+        console.log('Serial port module not available, returning empty port list');
+        return [];
+    }
     try {
-        const ports = await serialport_1.SerialPort.list();
-        return ports.map(port => ({
+        const ports = await SerialPortModule.SerialPort.list();
+        return ports.map((port) => ({
             path: port.path,
             manufacturer: port.manufacturer,
             serialNumber: port.serialNumber,
@@ -158,11 +215,14 @@ electron_1.ipcMain.handle('get-serial-ports', async () => {
     }
 });
 electron_1.ipcMain.handle('connect-serial-port', async (event, portPath) => {
+    if (serialPortError) {
+        throw new Error('Serial Port module is not available. Please reinstall the application.');
+    }
     try {
         if (serialPort && serialPort.isOpen) {
             await serialPort.close();
         }
-        serialPort = new serialport_1.SerialPort({
+        serialPort = new SerialPort({
             path: portPath,
             baudRate: 9600,
             dataBits: 8,
@@ -177,6 +237,9 @@ electron_1.ipcMain.handle('connect-serial-port', async (event, portPath) => {
     }
 });
 electron_1.ipcMain.handle('disconnect-serial-port', async () => {
+    if (serialPortError) {
+        throw new Error('Serial Port module is not available. Please reinstall the application.');
+    }
     try {
         if (serialPort && serialPort.isOpen) {
             await serialPort.close();
