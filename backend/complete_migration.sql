@@ -2,6 +2,7 @@
 -- This file contains all migrations in the correct order
 -- Upload this file to your MySQL server and execute it
 -- Created: 2025-11-11
+-- Updated: 2025-11-14 (Added Spring SDK integration)
 
 -- =============================================
 -- 1. Create Players Table
@@ -61,6 +62,13 @@ CREATE TABLE IF NOT EXISTS `vending_logs` (
   `response` text DEFAULT NULL,
   `success` tinyint(1) NOT NULL DEFAULT 0,
   `error_message` text DEFAULT NULL,
+  -- Spring SDK integration columns
+  `spring_channel` INT NULL COMMENT 'Channel used by Spring SDK',
+  `spring_error_code` INT NULL COMMENT 'Spring SDK error code',
+  `spring_error_message` VARCHAR(255) NULL COMMENT 'Spring SDK error description',
+  `spring_tier` VARCHAR(20) NULL COMMENT 'Prize tier (gold/silver/bronze)',
+  `spring_success` BOOLEAN DEFAULT FALSE COMMENT 'Spring SDK dispensing success status',
+  `source` VARCHAR(20) DEFAULT 'legacy' COMMENT 'Dispensing source (legacy/spring_sdk)',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `score_id` (`score_id`),
@@ -69,8 +77,35 @@ CREATE TABLE IF NOT EXISTS `vending_logs` (
   CONSTRAINT `vending_logs_prize_id_foreign` FOREIGN KEY (`prize_id`) REFERENCES `prizes` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Additional indexes for better performance
+CREATE INDEX `idx_vending_logs_timestamp` ON `vending_logs` (`created_at`);
+CREATE INDEX `idx_vending_logs_score_id` ON `vending_logs` (`score_id`);
+CREATE INDEX `idx_vending_logs_source` ON `vending_logs` (`source`);
+
 -- =============================================
--- 5. Seed Prizes Table
+-- 5. Create Spring Vending Logs Table
+-- ============================================
+CREATE TABLE IF NOT EXISTS `spring_vending_logs` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `action` VARCHAR(50) NOT NULL COMMENT 'Action type (dispensing_attempt, dispensing_success, etc.)',
+  `tier` VARCHAR(20) NULL COMMENT 'Prize tier',
+  `channel` INT NULL COMMENT 'Channel number',
+  `score_id` INT NULL COMMENT 'Related score ID',
+  `success` BOOLEAN DEFAULT FALSE COMMENT 'Action success status',
+  `error_code` INT NULL COMMENT 'Spring SDK error code',
+  `error_message` TEXT NULL COMMENT 'Error description',
+  `source` VARCHAR(20) DEFAULT 'spring_sdk' COMMENT 'Log source',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Add indexes for performance
+CREATE INDEX `idx_spring_vending_logs_timestamp` ON `spring_vending_logs` (`timestamp`);
+CREATE INDEX `idx_spring_vending_logs_action` ON `spring_vending_logs` (`action`);
+CREATE INDEX `idx_spring_vending_logs_success` ON `spring_vending_logs` (`success`);
+
+-- =============================================
+-- 6. Seed Prizes Table
 -- ============================================
 INSERT INTO `prizes` (`name`, `message`, `slot`, `time_threshold`) VALUES
 ('Gold Prize', 'Incredible! You won the Gold Prize!', 1, 60000),
@@ -78,9 +113,7 @@ INSERT INTO `prizes` (`name`, `message`, `slot`, `time_threshold`) VALUES
 ('Bronze Prize', 'Great job! You won the Bronze Prize!', 3, 10000);
 
 -- =============================================
--- Migration Complete
--- =============================================
--- 6. Create Users Table for Authentication
+-- 7. Create Users Table for Authentication
 -- ============================================
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -93,15 +126,17 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 7. Insert Default Admin User
+-- =============================================
+-- 8. Insert Default Admin User
 -- =================================
 INSERT INTO `users` (`username`, `password`, `role`) VALUES
 ('admin', '$2y$10$K3L9x/w8eE8mKqF8lP6G3sJ', 'admin');
 
--- Your database is now set up for the Hanger Challenge application!
+-- Your database is now set up for the Hanger Challenge application with Spring SDK support!
 --
 -- To verify everything is working:
 -- 1. Check that all tables were created: SHOW TABLES;
 -- 2. Verify prizes were inserted: SELECT * FROM prizes;
 -- 3. Test your application endpoints
 -- 4. Default admin user created: username=admin, password=admin123
+-- 5. Spring SDK logging tables are ready for enhanced vending operations

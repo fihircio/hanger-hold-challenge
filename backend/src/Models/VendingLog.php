@@ -13,7 +13,13 @@ class VendingLog extends BaseModel
         'command',
         'response',
         'success',
-        'error_message'
+        'error_message',
+        'spring_channel',
+        'spring_error_code',
+        'spring_error_message',
+        'spring_tier',
+        'spring_success',
+        'source'
     ];
     
     protected $casts = [
