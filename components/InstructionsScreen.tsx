@@ -13,9 +13,14 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ onStart }) => {
         <div className="mt-32">
           <button
             onClick={onStart}
-            className="text-5xl font-bold bg-green-500 hover:bg-green-600 text-white py-8 px-24 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 drop-shadow-lg"
+            className="transform hover:scale-105 transition-transform duration-200 drop-shadow-lg"
           >
-            I'M READY!
+            <img
+              src="./UI/RB_zero_UI_slice_button_01.png"
+              alt="I'M READY!"
+              className="h-auto"
+              style={{ maxHeight: '80px' }}
+            />
           </button>
         </div>
       </div>
