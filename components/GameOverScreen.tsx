@@ -21,8 +21,23 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalTime, prize, onNex
             style={{ maxHeight: '70vh' }}
           />
           <div className="absolute inset-0 flex flex-col p-12 justify-center items-center">
-            <h1 className="text-6xl font-bold text-white mb-6">MANTAP !</h1>
-            <p className="text-3xl text-gray-300 mb-12">Your final time is:</p>
+            <div className="mb-6 flex justify-center">
+              <img
+                src="./UI/RB_zero_UI_slice_text_08.png"
+                alt="MANTAP !"
+                className="h-auto"
+                style={{ maxHeight: '80px' }}
+              />
+            </div>
+            
+            <div className="mb-12 flex justify-center">
+              <img
+                src="./UI/RB_zero_UI_slice_text_09.png"
+                alt="Your final time is:"
+                className="h-auto"
+                style={{ maxHeight: '60px' }}
+              />
+            </div>
             
             <TimerDisplay time={finalTime} className="text-7xl text-cyan-400 mb-12" />
 
@@ -32,15 +47,20 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalTime, prize, onNex
                 <p className="text-2xl mt-2">{prize.message}</p>
               </div>
             )}
+
+            <button
+              onClick={onNext}
+              className="transform hover:scale-105 transition-transform duration-200"
+            >
+              <img
+                src="./UI/RB_zero_UI_slice_button_05.png"
+                alt="VIEW LEADERBOARD"
+                className="h-auto"
+                style={{ maxHeight: '80px' }}
+              />
+            </button>
           </div>
         </div>
-
-        <button
-          onClick={onNext}
-          className="text-4xl font-bold bg-blue-500 hover:bg-blue-600 text-white py-6 px-20 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 mt-8"
-        >
-          VIEW LEADERBOARD
-        </button>
       </div>
     </BackgroundWrapper>
   );

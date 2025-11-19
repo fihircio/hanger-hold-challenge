@@ -50,9 +50,14 @@ const EnterDetailsScreen: React.FC<EnterDetailsScreenProps> = ({ onSubmit }) => 
   return (
     <BackgroundWrapper imagePath="./UI/04.gamescreen.png">
       <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8">
-        <h1 className="text-6xl font-bold text-white mb-8">ENTER YOUR DETAILS</h1>
-        <p className="text-3xl text-gray-300 text-center mb-8">Get your name on the leaderboard!</p>
-        
+        <div className="mb-6 flex justify-center">
+          <img
+            src="./UI/RB_zero_UI_slice_text_03.png"
+            alt="ENTER YOUR DETAILS"
+            className="h-auto"
+            style={{ maxHeight: '80px' }}
+          />
+        </div>
         <div className="relative w-full max-w-4xl">
           <img
             src="./UI/04.gamescreen_bg.png"
