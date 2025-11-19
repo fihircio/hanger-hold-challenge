@@ -1,6 +1,7 @@
 
 import React, { useState, useCallback } from 'react';
 import VirtualKeyboard from './VirtualKeyboard';
+import BackgroundWrapper from './BackgroundWrapper';
 
 interface EnterDetailsScreenProps {
   onSubmit: (details: { name: string; email: string; phone: string }) => void;
@@ -47,54 +48,68 @@ const EnterDetailsScreen: React.FC<EnterDetailsScreenProps> = ({ onSubmit }) => 
   const activeInputClasses = "border-cyan-400 ring-2 ring-cyan-400";
 
   return (
-    <div className="flex flex-col h-screen w-screen p-8">
-      <h1 className="text-6xl font-bold text-center mb-8">ENTER YOUR DETAILS</h1>
-      <p className="text-3xl text-gray-400 text-center mb-8">Get your name on the leaderboard!</p>
-      
-      <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto space-y-6">
-        <div>
-          <label className="text-3xl text-gray-300 mb-2 block">Name</label>
-          <input
-            type="text"
-            value={name}
-            onFocus={() => setActiveInput('name')}
-            readOnly
-            className={`${inputClasses} ${activeInput === 'name' ? activeInputClasses : 'border-gray-600'}`}
+    <BackgroundWrapper imagePath="./UI/04.gamescreen.png">
+      <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8">
+        <h1 className="text-6xl font-bold text-white mb-8">ENTER YOUR DETAILS</h1>
+        <p className="text-3xl text-gray-300 text-center mb-8">Get your name on the leaderboard!</p>
+        
+        <div className="relative w-full max-w-4xl">
+          <img
+            src="./UI/04.gamescreen_bg.png"
+            alt="Panel Background"
+            className="w-full h-auto"
+            style={{ maxHeight: '70vh' }}
           />
+          <div className="absolute inset-0 flex flex-col p-12">
+            <form onSubmit={handleSubmit} className="flex flex-col h-full justify-between space-y-4">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-2xl text-gray-300 mb-2 block">Name</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onFocus={() => setActiveInput('name')}
+                    readOnly
+                    className={`${inputClasses} ${activeInput === 'name' ? activeInputClasses : 'border-gray-600'}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-2xl text-gray-300 mb-2 block">Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onFocus={() => setActiveInput('email')}
+                    readOnly
+                    className={`${inputClasses} ${activeInput === 'email' ? activeInputClasses : 'border-gray-600'}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-2xl text-gray-300 mb-2 block">Phone</label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onFocus={() => setActiveInput('phone')}
+                    readOnly
+                    className={`${inputClasses} ${activeInput === 'phone' ? activeInputClasses : 'border-gray-600'}`}
+                  />
+                </div>
+                <button type="submit" className="w-full text-3xl font-bold bg-green-500 hover:bg-green-600 text-white py-4 rounded-lg shadow-lg">
+                  SUBMIT
+                </button>
+              </div>
+              
+              <div className="mt-auto">
+                <VirtualKeyboard
+                  onKeyPress={handleKeyPress}
+                  onBackspace={handleBackspace}
+                  onEnter={handleSubmit}
+                />
+              </div>
+            </form>
+          </div>
         </div>
-        <div>
-          <label className="text-3xl text-gray-300 mb-2 block">Email</label>
-          <input
-            type="email"
-            value={email}
-            onFocus={() => setActiveInput('email')}
-            readOnly
-            className={`${inputClasses} ${activeInput === 'email' ? activeInputClasses : 'border-gray-600'}`}
-          />
-        </div>
-        <div>
-          <label className="text-3xl text-gray-300 mb-2 block">Phone</label>
-          <input
-            type="tel"
-            value={phone}
-            onFocus={() => setActiveInput('phone')}
-            readOnly
-            className={`${inputClasses} ${activeInput === 'phone' ? activeInputClasses : 'border-gray-600'}`}
-          />
-        </div>
-        <button type="submit" className="w-full text-4xl font-bold bg-green-500 hover:bg-green-600 text-white py-6 rounded-lg shadow-lg">
-          SUBMIT
-        </button>
-      </form>
-      
-      <div className="flex-grow flex items-end mt-8">
-        <VirtualKeyboard
-          onKeyPress={handleKeyPress}
-          onBackspace={handleBackspace}
-          onEnter={handleSubmit}
-        />
       </div>
-    </div>
+    </BackgroundWrapper>
   );
 };
 

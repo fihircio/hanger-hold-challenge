@@ -1,4 +1,7 @@
 // Electron vending service for actual serial communication
+// Enhanced with Spring SDK protocol integration
+
+import { springVendingService, DispenseResult, VendingSystemStatus } from './springVendingService';
 
 export interface ElectronVendingResult {
   success: boolean;
@@ -8,6 +11,9 @@ export interface ElectronVendingResult {
 }
 
 class ElectronVendingService {
+  private springService = springVendingService;
+  private isInitialized: boolean = false;
+
   private isElectron(): boolean {
     return typeof window !== 'undefined' && !!window.electronAPI;
   }
@@ -34,7 +40,67 @@ class ElectronVendingService {
   }
 
   /**
-   * Sends command to vending machine via serial port
+   * Initialize Spring SDK enhanced vending service
+   */
+  async initializeVending(): Promise<boolean> {
+    if (!this.isElectron()) {
+      console.warn('Spring vending service called outside of Electron environment');
+      return false;
+    }
+
+    try {
+      this.isInitialized = await this.springService.initializeVending();
+      if (this.isInitialized) {
+        console.log('[ELECTRON VENDING] Spring SDK service initialized successfully');
+      }
+      return this.isInitialized;
+    } catch (error) {
+      console.error('[ELECTRON VENDING] Failed to initialize Spring SDK service:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Enhanced prize dispensing using Spring SDK protocol
+   */
+  async dispensePrizeByTier(tier: 'gold' | 'silver' | 'bronze', prizeId?: number, scoreId?: number): Promise<boolean> {
+    if (!this.isInitialized) {
+      console.warn('[ELECTRON VENDING] Spring SDK service not initialized');
+      return false;
+    }
+
+    try {
+      console.log(`[ELECTRON VENDING] Dispensing ${tier} prize...`);
+      
+      const result: DispenseResult = await this.springService.dispensePrizeByTier(tier);
+      
+      if (result.success) {
+        console.log(`[ELECTRON VENDING] Successfully dispensed ${tier} prize from channel ${result.channel}`);
+        
+        // If we have prizeId and scoreId, log to API
+        if (prizeId && scoreId) {
+          try {
+            const apiService = await import('./apiService');
+            await apiService.apiService.dispensePrize(prizeId, scoreId);
+            console.log(`[ELECTRON VENDING] Prize dispensing logged to API`);
+          } catch (apiError) {
+            console.error(`[ELECTRON VENDING] Failed to log to API:`, apiError);
+          }
+        }
+        
+        return true;
+      } else {
+        console.error(`[ELECTRON VENDING] Failed to dispense ${tier} prize: ${result.error}`);
+        return false;
+      }
+    } catch (error) {
+      console.error('[ELECTRON VENDING] An error occurred during prize dispensing:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Legacy method for backward compatibility - uses direct slot number
    */
   async dispensePrize(slotNumber: number, prizeId?: number, scoreId?: number): Promise<boolean> {
     if (!this.isElectron()) {
@@ -42,6 +108,22 @@ class ElectronVendingService {
       return false;
     }
 
+    // If Spring SDK is initialized, use enhanced method
+    if (this.isInitialized) {
+      // Map slot number to tier (1-5: gold, 6-15: silver, 16-25: bronze)
+      let tier: 'gold' | 'silver' | 'bronze';
+      if (slotNumber <= 5) {
+        tier = 'gold';
+      } else if (slotNumber <= 15) {
+        tier = 'silver';
+      } else {
+        tier = 'bronze';
+      }
+      
+      return await this.dispensePrizeByTier(tier, prizeId, scoreId);
+    }
+
+    // Fallback to original method
     try {
       const command = this.constructVendCommand(slotNumber);
       console.log(`[ELECTRON VENDING] Preparing to send command for slot ${slotNumber}...`);
@@ -149,6 +231,99 @@ class ElectronVendingService {
   }
 
   /**
+   * Get enhanced system status from Spring SDK
+   */
+  async getSystemStatus(): Promise<VendingSystemStatus | null> {
+    if (!this.isInitialized) {
+      console.warn('[ELECTRON VENDING] Spring SDK service not initialized');
+      return null;
+    }
+
+    try {
+      return await this.springService.getSystemStatus();
+    } catch (error) {
+      console.error('[ELECTRON VENDING] Failed to get system status:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Test specific channel
+   */
+  async testChannel(channel: number): Promise<boolean> {
+    if (!this.isInitialized) {
+      console.warn('[ELECTRON VENDING] Spring SDK service not initialized');
+      return false;
+    }
+
+    try {
+      return await this.springService.testChannel(channel);
+    } catch (error) {
+      console.error(`[ELECTRON VENDING] Failed to test channel ${channel}:`, error);
+      return false;
+    }
+  }
+
+  /**
+   * Get all channel statuses
+   */
+  async getAllChannelStatus(): Promise<any[]> {
+    if (!this.isInitialized) {
+      console.warn('[ELECTRON VENDING] Spring SDK service not initialized');
+      return [];
+    }
+
+    try {
+      return this.springService.getAllChannelStatus();
+    } catch (error) {
+      console.error('[ELECTRON VENDING] Failed to get channel statuses:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Perform system self-check
+   */
+  async performSelfCheck(): Promise<boolean> {
+    if (!this.isInitialized) {
+      console.warn('[ELECTRON VENDING] Spring SDK service not initialized');
+      return false;
+    }
+
+    try {
+      const result = await this.springService.performSelfCheck();
+      return result.success;
+    } catch (error) {
+      console.error('[ELECTRON VENDING] Self-check failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Disconnect from vending controller
+   */
+  async disconnect(): Promise<boolean> {
+    if (!this.isElectron()) {
+      return false;
+    }
+
+    try {
+      if (this.isInitialized) {
+        await this.springService.disconnect();
+        this.isInitialized = false;
+      }
+      
+      // Disconnect legacy serial port
+      const result = await window.electronAPI.disconnectSerialPort();
+      console.log('[ELECTRON VENDING] Disconnected from vending controller');
+      return result.success;
+    } catch (error) {
+      console.error('[ELECTRON VENDING] Failed to disconnect:', error);
+      return false;
+    }
+  }
+
+  /**
    * Gets platform information
    */
   getPlatformInfo(): { platform: string; version: string } | null {
@@ -160,6 +335,13 @@ class ElectronVendingService {
       platform: window.electronAPI.platform,
       version: window.electronAPI.version,
     };
+  }
+
+  /**
+   * Check if Spring SDK is initialized
+   */
+  isSpringSDKInitialized(): boolean {
+    return this.isInitialized;
   }
 }
 

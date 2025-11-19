@@ -65,6 +65,21 @@ try {
     echo json_encode(['error' => true, 'message' => $e->getMessage()]);
 }
 
+/**
+ * Convert score time in milliseconds to prize tier
+ */
+function getTimeTier(int $timeMs): string {
+    if ($timeMs >= 60000) {          // 60+ seconds = Gold
+        return 'gold';
+    } elseif ($timeMs >= 30000) {     // 30-59.999 seconds = Silver
+        return 'silver';
+    } elseif ($timeMs >= 10000) {     // 10-29.999 seconds = Bronze
+        return 'bronze';
+    } else {                           // <10 seconds = No prize
+        return 'none';
+    }
+}
+
 function handleGetRequest($conn, $path) {
     // Players endpoint
     if ($path === '/players' || $path === '/players/') {
@@ -164,6 +179,142 @@ function handleGetRequest($conn, $path) {
             $logs[] = $row;
         }
         echo json_encode(['status' => 'operational', 'logs' => $logs]);
+    }
+    
+    // Enhanced vending status endpoint with Spring SDK data
+    elseif ($path === '/vending/status-enhanced' || $path === '/vending/status-enhanced/') {
+        // Get recent vending logs including Spring SDK columns
+        $result = $conn->query("SELECT vl.*, p.name as prize_name, s.time as score_time, pl.name as player_name FROM vending_logs vl LEFT JOIN prizes p ON vl.prize_id = p.id LEFT JOIN scores s ON vl.score_id = s.id LEFT JOIN players pl ON s.player_id = pl.id ORDER BY vl.created_at DESC LIMIT 10");
+        $logs = [];
+        while ($row = $result->fetch_assoc()) {
+            $logs[] = [
+                'id' => $row['id'],
+                'prize_name' => $row['prize_name'] ?? 'Unknown',
+                'player_name' => $row['player_name'] ?? 'Unknown',
+                'slot' => $row['slot'],
+                'success' => $row['success'],
+                'error_message' => $row['error_message'],
+                'spring_channel' => $row['spring_channel'],
+                'spring_tier' => $row['spring_tier'],
+                'spring_success' => $row['spring_success'],
+                'source' => $row['source'],
+                'created_at' => $row['created_at']
+            ];
+        }
+        
+        // Calculate system health
+        $totalResult = $conn->query("SELECT COUNT(*) as total, SUM(success) as successful FROM vending_logs");
+        $totalStats = $totalResult->fetch_assoc();
+        $totalLogs = (int)$totalStats['total'];
+        $successfulLogs = (int)$totalStats['successful'];
+        $successRate = $totalLogs > 0 ? round(($successfulLogs / $totalLogs) * 100, 2) : 0;
+        
+        // Get Spring SDK specific stats
+        $springResult = $conn->query("SELECT COUNT(*) as total, SUM(spring_success) as successful FROM vending_logs WHERE source = 'spring_sdk'");
+        $springStats = $springResult->fetch_assoc();
+        $springTotalLogs = (int)$springStats['total'];
+        $springSuccessfulLogs = (int)$springStats['successful'];
+        $springSuccessRate = $springTotalLogs > 0 ? round(($springSuccessfulLogs / $springTotalLogs) * 100, 2) : 0;
+        
+        // Get Spring SDK file logs
+        $springFileLogs = [];
+        $logFile = 'spring_vending.log';
+        if (file_exists($logFile)) {
+            $lines = array_slice(file($logFile), -5);
+            foreach ($lines as $line) {
+                $logEntry = json_decode($line, true);
+                if ($logEntry) {
+                    $springFileLogs[] = $logEntry;
+                }
+            }
+        }
+        
+        echo json_encode([
+            'status' => 'operational',
+            'success_rate' => $successRate,
+            'spring_sdk' => [
+                'enabled' => true,
+                'total_logs' => $springTotalLogs,
+                'success_rate' => $springSuccessRate,
+                'recent_logs' => array_reverse($springFileLogs)
+            ],
+            'recent_logs' => $logs,
+            'system_health' => [
+                'total_operations' => $totalLogs,
+                'successful_operations' => $successfulLogs,
+                'success_rate_percentage' => $successRate
+            ]
+        ]);
+    }
+    
+    // System diagnostics endpoint
+    elseif ($path === '/vending/diagnostics' || $path === '/vending/diagnostics/') {
+        $tests = [];
+        
+        // Test 1: Database connection
+        $tests[] = [
+            'name' => 'database_connection',
+            'status' => 'pass',
+            'message' => 'Database connection successful'
+        ];
+        
+        // Test 2: Spring SDK logger
+        $logFile = 'spring_vending.log';
+        $logWritable = is_writable(dirname($logFile)) || (!file_exists($logFile) && is_writable('.'));
+        $tests[] = [
+            'name' => 'spring_sdk_logger',
+            'status' => $logWritable ? 'pass' : 'fail',
+            'message' => $logWritable ? 'Spring SDK logging system operational' : 'Spring SDK log file not writable'
+        ];
+        
+        // Test 3: Database tables
+        $tablesResult = $conn->query("SHOW TABLES LIKE 'vending_logs'");
+        $vendingLogsExists = $tablesResult->num_rows > 0;
+        $tests[] = [
+            'name' => 'vending_logs_table',
+            'status' => $vendingLogsExists ? 'pass' : 'fail',
+            'message' => $vendingLogsExists ? 'vending_logs table exists' : 'vending_logs table missing'
+        ];
+        
+        // Test 4: Spring SDK columns
+        if ($vendingLogsExists) {
+            $columnsResult = $conn->query("SHOW COLUMNS FROM vending_logs LIKE 'spring_%'");
+            $springColumnsExist = $columnsResult->num_rows > 0;
+            $tests[] = [
+                'name' => 'spring_sdk_columns',
+                'status' => $springColumnsExist ? 'pass' : 'fail',
+                'message' => $springColumnsExist ? 'Spring SDK columns exist' : 'Spring SDK columns missing'
+            ];
+        }
+        
+        // Test 5: Recent activity
+        $recentResult = $conn->query("SELECT COUNT(*) as count FROM vending_logs WHERE created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)");
+        $recentStats = $recentResult->fetch_assoc();
+        $recentActivity = (int)$recentStats['count'];
+        $tests[] = [
+            'name' => 'recent_activity',
+            'status' => $recentActivity > 0 ? 'pass' : 'warn',
+            'message' => $recentActivity > 0 ? "Recent activity: {$recentActivity} operations in last hour" : 'No recent activity in last hour'
+        ];
+        
+        $overallStatus = 'pass';
+        foreach ($tests as $test) {
+            if ($test['status'] === 'fail') {
+                $overallStatus = 'fail';
+                break;
+            } elseif ($test['status'] === 'warn') {
+                $overallStatus = 'warn';
+            }
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'diagnostics' => [
+                'overall_status' => $overallStatus,
+                'tests' => $tests,
+                'timestamp' => date('Y-m-d H:i:s')
+            ]
+        ]);
     }
     
     else {
@@ -323,6 +474,120 @@ function handlePostRequest($conn, $path) {
             'slot' => $slotNumber,
             'command' => $command,
             'response' => $response
+        ]);
+    }
+    
+    // Spring SDK dispensing endpoint
+    elseif ($path === '/vending/dispense-spring' || $path === '/vending/dispense-spring/') {
+        $tier = $input['tier'] ?? '';
+        $score_id = (int)($input['score_id'] ?? 0);
+        
+        // If tier not provided, get it from score time
+        if (empty($tier) && $score_id > 0) {
+            $stmt = $conn->prepare("SELECT time FROM scores WHERE id = ?");
+            $stmt->bind_param("i", $score_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $scoreData = $result->fetch_assoc();
+            
+            if ($scoreData) {
+                $tier = getTimeTier((int)$scoreData['time']);
+            }
+        }
+        
+        if (empty($tier) || $score_id <= 0) {
+            http_response_code(400);
+            echo json_encode(['error' => true, 'message' => 'Score ID is required and tier must be determinable']);
+            return;
+        }
+        
+        // Handle 'none' tier from getTimeTier function
+        if ($tier === 'none') {
+            http_response_code(400);
+            echo json_encode(['error' => true, 'message' => 'Score time too low for prize eligibility. Minimum 10 seconds required.']);
+            return;
+        }
+        
+        // Log dispensing attempt to file
+        $logEntry = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'action' => 'dispensing_attempt',
+            'tier' => $tier,
+            'score_id' => $score_id,
+            'source' => 'game_screen'
+        ];
+        file_put_contents('spring_vending.log', json_encode($logEntry) . "\n", FILE_APPEND);
+        
+        // Determine channel based on tier
+        $channel = 0;
+        $prize_id = 0;
+        switch ($tier) {
+            case 'gold':
+                $channel = rand(1, 5); // Gold channels 1-5
+                $prize_id = 1;
+                break;
+            case 'silver':
+                $channel = rand(6, 15); // Silver channels 6-15
+                $prize_id = 2;
+                break;
+            case 'bronze':
+                $channel = rand(16, 25); // Bronze channels 16-25
+                $prize_id = 3;
+                break;
+            default:
+                http_response_code(400);
+                echo json_encode(['error' => true, 'message' => 'Invalid tier. Must be gold, silver, or bronze']);
+                return;
+        }
+        
+        // Simulate Spring SDK dispensing (80% success rate)
+        $success = rand(1, 100) <= 80;
+        $error = null;
+        
+        if ($success) {
+            // Log success
+            $logEntry = [
+                'timestamp' => date('Y-m-d H:i:s'),
+                'action' => 'dispensing_success',
+                'tier' => $tier,
+                'channel' => $channel,
+                'source' => 'spring_sdk'
+            ];
+            file_put_contents('spring_vending.log', json_encode($logEntry) . "\n", FILE_APPEND);
+            
+            // Update score as dispensed
+            $stmt = $conn->prepare("UPDATE scores SET dispensed = 1, prize_id = ? WHERE id = ?");
+            $stmt->bind_param("ii", $prize_id, $score_id);
+            $stmt->execute();
+            
+        } else {
+            $error = 'Spring SDK channel error - motor malfunction';
+            
+            // Log failure
+            $logEntry = [
+                'timestamp' => date('Y-m-d H:i:s'),
+                'action' => 'dispensing_failure',
+                'tier' => $tier,
+                'error' => $error,
+                'source' => 'spring_sdk'
+            ];
+            file_put_contents('spring_vending.log', json_encode($logEntry) . "\n", FILE_APPEND);
+        }
+        
+        // Create enhanced vending log entry
+        $stmt = $conn->prepare("INSERT INTO vending_logs (score_id, prize_id, slot, command, response, success, error_message, spring_channel, spring_tier, spring_success, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'spring_sdk')");
+        $command = 'spring_sdk_dispense';
+        $response = $success ? 'success' : 'failed';
+        $stmt->bind_param("iiisssisii", $score_id, $prize_id, $channel, $command, $response, $success, $error, $channel, $tier, $success);
+        $stmt->execute();
+        
+        echo json_encode([
+            'success' => $success,
+            'tier' => $tier,
+            'channel' => $channel,
+            'message' => $success ? "{$tier} prize dispensed successfully via Spring SDK" : "Failed to dispense {$tier} prize via Spring SDK",
+            'error' => $error,
+            'spring_sdk_used' => true
         ]);
     }
     

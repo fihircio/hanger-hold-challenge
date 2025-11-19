@@ -29,6 +29,7 @@ declare global {
 
 export enum GameState {
   INSTRUCTIONS,
+  HOWTO,
   READY,
   HOLDING,
   GAME_OVER,

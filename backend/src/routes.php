@@ -44,4 +44,7 @@ return function (App $app) {
     // Vending routes
     $app->post('/api/vending/dispense', VendingController::class . ':dispense');
     $app->get('/api/vending/status', VendingController::class . ':status');
+    $app->post('/api/vending/dispense-spring', VendingController::class . ':dispenseWithSpringSDK');
+    $app->get('/api/vending/status-enhanced', VendingController::class . ':statusEnhanced');
+    $app->get('/api/vending/diagnostics', VendingController::class . ':diagnostics');
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { GameState, Score } from './types';
 import InstructionsScreen from './components/InstructionsScreen';
+import HowToScreen from './components/HowToScreen';
 import GameScreen from './components/GameScreen';
 import GameOverScreen from './components/GameOverScreen';
 import EnterDetailsScreen from './components/EnterDetailsScreen';
@@ -43,6 +44,10 @@ const App: React.FC = () => {
   }, [gameState]);
 
   const handleStart = useCallback(() => {
+    setGameState(GameState.HOWTO);
+  }, []);
+
+  const handleHowToNext = useCallback(() => {
     setGameState(GameState.ENTER_DETAILS);
   }, []);
   
@@ -122,6 +127,8 @@ const App: React.FC = () => {
     switch (gameState) {
       case GameState.INSTRUCTIONS:
         return <InstructionsScreen onStart={handleStart} />;
+      case GameState.HOWTO:
+        return <HowToScreen onNext={handleHowToNext} />;
       case GameState.ENTER_DETAILS:
         return <EnterDetailsScreen onSubmit={handleDetailsSubmit} />;
       case GameState.READY:
