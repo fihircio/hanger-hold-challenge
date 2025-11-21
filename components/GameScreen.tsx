@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import TimerDisplay from './TimerDisplay';
 import { arduinoSensorService } from '../services/arduinoSensorService';
+import { dispensePrizeByTier } from '../services/vendingService';
 import BackgroundWrapper from './BackgroundWrapper';
 
 interface GameScreenProps {
@@ -13,6 +14,7 @@ interface GameScreenProps {
 const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldEnd }) => {
   const [time, setTime] = useState(0);
   const [arduinoState, setArduinoState] = useState<number>(0);
+  const [vendingStatus, setVendingStatus] = useState<string>('Ready');
   const startTimeRef = useRef<number | null>(null);
   const animationFrameRef = useRef<number>();
 
@@ -38,6 +40,47 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
     };
   }, [isHolding]);
 
+  // Handle game end and prize dispensing
+  const handleGameEnd = async () => {
+    const finalTime = time;
+    onHoldEnd();
+    
+    console.log(`[GAME SCREEN] Game ended with time: ${finalTime}ms`);
+    
+    // Calculate tier based on time
+    let tier: 'gold' | 'silver' | 'bronze' | null = null;
+    if (finalTime >= 60000) {
+      tier = 'gold';
+    } else if (finalTime >= 30000) {
+      tier = 'silver';
+    } else if (finalTime >= 10000) {
+      tier = 'bronze';
+    }
+    
+    if (tier) {
+      setVendingStatus(`Dispensing ${tier} prize...`);
+      
+      try {
+        const success = await dispensePrizeByTier(tier);
+        
+        if (success) {
+          setVendingStatus(`${tier.charAt(0).toUpperCase() + tier.slice(1)} prize dispensed!`);
+          setTimeout(() => setVendingStatus('Ready'), 3000);
+        } else {
+          setVendingStatus('Failed to dispense prize');
+          setTimeout(() => setVendingStatus('Ready'), 3000);
+        }
+      } catch (error) {
+        console.error('[GAME SCREEN] Dispensing error:', error);
+        setVendingStatus('Dispensing error');
+        setTimeout(() => setVendingStatus('Ready'), 3000);
+      }
+    } else {
+      setVendingStatus('Time too short - no prize');
+      setTimeout(() => setVendingStatus('Ready'), 3000);
+    }
+  };
+
   // Set up Arduino sensor service
   useEffect(() => {
     // Check if we're in Electron environment
@@ -53,8 +96,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
             onHoldStart();
           },
           onSensorEnd: () => {
-            console.log('Arduino sensor END - triggering hold end');
-            onHoldEnd();
+            console.log('Arduino sensor END - triggering hold end and prize dispensing');
+            handleGameEnd();
           },
           onSensorChange: (state: number) => {
             setArduinoState(state);
@@ -117,9 +160,10 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
                 {!isHolding ? "" : ""}
               </h3>
               {window.electronAPI && (
-                <p className="text-lg mt-2 text-gray-400">
-                  Arduino Sensor: {arduinoState === 1 ? "DETECTED" : "NO DETECTION"}
-                </p>
+                <div className="text-lg mt-2 text-gray-400 space-y-2">
+                  <p>Arduino Sensor: {arduinoState === 1 ? "DETECTED" : "NO DETECTION"}</p>
+                  <p>Vending Status: {vendingStatus}</p>
+                </div>
               )}
             </div>
 
@@ -129,9 +173,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
 
             <button
               onMouseDown={onHoldStart}
-              onMouseUp={onHoldEnd}
+              onMouseUp={handleGameEnd}
               onTouchStart={onHoldStart}
-              onTouchEnd={onHoldEnd}
+              onTouchEnd={handleGameEnd}
               className={`w-3/4 max-w-2xl transform hover:scale-105 transition-all duration-300 focus:outline-none ${
                 isHolding
                   ? 'bg-red-600 shadow-[0_0_80px_rgba(220,38,38,0.8)]'

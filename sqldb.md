@@ -1,4 +1,0 @@
-url=vendinghanger.eeelab.xyz
-db=eeelab46_vendinghangerdb
-user=eeelab46_vendinghangeruser
-password=vendinghanger@2025

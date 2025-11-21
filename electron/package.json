@@ -12,7 +12,12 @@
     "build:renderer": "cd .. && npm run build",
     "build:main": "tsc main/main.ts --target es2020 --outDir main --module commonjs",
     "build:preload": "tsc preload/preload.ts --target es2020 --outDir preload --module commonjs",
-    "build:win": "electron-builder --win",
+    "build:win": "electron-builder --win --publish=never",
+    "build:win-no-sign": "electron-builder --win --publish=never -c.win.sign=false",
+    "build:win-dir": "electron-builder --win --dir --publish=never",
+    "build:win-portable": "electron-builder --win portable --publish=never",
+    "build:win-simple": "electron-builder --win portable --x64 --publish=never",
+    "build:win-manual": "node scripts/manual-build.js",
     "dist": "npm run build && electron-builder",
     "postinstall": "electron-builder install-app-deps",
     "rebuild-native": "electron-rebuild -f -w win32 -a x64",
@@ -42,22 +47,49 @@
       "main/**/*",
       "preload/**/*",
       "../dist/**/*",
+      "../index.html",
+      "../index.css",
+      "../UI/**/*",
       "node_modules/**/*"
     ],
     "extraResources": [
       {
-        "from": "../dist",
-        "to": "dist"
+        "from": "../dist/assets",
+        "to": "assets"
+      },
+      {
+        "from": "../index.html",
+        "to": "index.html"
+      },
+      {
+        "from": "../index.css",
+        "to": "index.css"
+      },
+      {
+        "from": "../UI",
+        "to": "UI"
       }
+    ],
+    "asarUnpack": [
+      "**/node_modules/serialport/**/*"
     ],
     "npmRebuild": true,
     "win": {
       "target": [
         {
-          "target": "nsis",
-          "arch": ["x64"]
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
         }
-      ]
+      ],
+      "sign": false,
+      "signingHashAlgorithms": false,
+      "verifyUpdateCodeSignature": false,
+      "publisherName": null,
+      "certificateFile": null,
+      "certificatePassword": null,
+      "certificateSubjectName": null
     },
     "mac": {
       "icon": "assets/icon.icns",
@@ -68,7 +100,9 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ]
     },

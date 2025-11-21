@@ -31,6 +31,7 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
+            webSecurity: false,
             preload: path.join(__dirname, '../preload/preload.js'),
         },
     });
@@ -40,7 +41,39 @@ function createWindow() {
         mainWindow.webContents.openDevTools();
     }
     else {
-        mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
+        // Try multiple possible paths for index.html to handle different build configurations
+        const fs = require('fs');
+        let indexPath = '';
+        // Path 1: For ASAR builds (standard electron-builder)
+        const asarPath = path.join(__dirname, '../index.html');
+        // Path 2: For unpackaged builds (like manual-build.js)
+        const unpackedPath = path.join(__dirname, '../../index.html');
+        // Path 3: Alternative path for some electron-builder configurations
+        const alternativePath = path.join(process.resourcesPath, 'index.html');
+        if (fs.existsSync(asarPath)) {
+            indexPath = asarPath;
+        }
+        else if (fs.existsSync(unpackedPath)) {
+            indexPath = unpackedPath;
+        }
+        else if (fs.existsSync(alternativePath)) {
+            indexPath = alternativePath;
+        }
+        else {
+            console.error('Index.html not found at any of these paths:');
+            console.error('  - ASAR path:', asarPath);
+            console.error('  - Unpacked path:', unpackedPath);
+            console.error('  - Alternative path:', alternativePath);
+            electron_1.dialog.showErrorBox('File Not Found', `Could not find index.html at any expected location.\n\nPlease check your installation.`);
+            return;
+        }
+        console.log('Loading index.html from:', indexPath);
+        mainWindow.loadFile(indexPath).then(() => {
+            console.log('Index.html loaded successfully');
+        }).catch((error) => {
+            console.error('Failed to load index.html:', error);
+            electron_1.dialog.showErrorBox('Loading Error', `Failed to load index.html:\n${error.message}\n\nPlease check your installation.`);
+        });
         mainWindow.webContents.openDevTools(); // Open DevTools for debugging
     }
     // Emitted when the window is closed
