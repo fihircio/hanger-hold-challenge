@@ -120,15 +120,25 @@ class InventoryStorageService {
    * Get all slot inventory data
    */
   async getAllSlotInventory(): Promise<SlotInventoryData[]> {
-    if (!this.db) throw new Error('Database not initialized');
+    if (!this.db) {
+      console.warn('[INVENTORY STORAGE] Database not initialized, attempting to initialize...');
+      await this.initialize();
+      if (!this.db) {
+        console.error('[INVENTORY STORAGE] Still cannot initialize database');
+        return [];
+      }
+    }
 
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(['slotInventory'], 'readonly');
       const store = transaction.objectStore('slotInventory');
       const request = store.getAll();
 
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => {
+        console.error('[INVENTORY STORAGE] Error getting slot inventory:', request.error);
+        resolve([]); // Return empty array instead of rejecting
+      };
     });
   }
 
@@ -136,7 +146,14 @@ class InventoryStorageService {
    * Get inventory for a specific slot
    */
   async getSlotInventory(slot: number): Promise<SlotInventoryData | null> {
-    if (!this.db) throw new Error('Database not initialized');
+    if (!this.db) {
+      console.warn('[INVENTORY STORAGE] Database not initialized, attempting to initialize...');
+      await this.initialize();
+      if (!this.db) {
+        console.error('[INVENTORY STORAGE] Still cannot initialize database');
+        return null;
+      }
+    }
 
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(['slotInventory'], 'readonly');
@@ -144,7 +161,10 @@ class InventoryStorageService {
       const request = store.get(slot);
 
       request.onsuccess = () => resolve(request.result || null);
-      request.onerror = () => reject(request.error);
+      request.onerror = () => {
+        console.error('[INVENTORY STORAGE] Error getting slot inventory:', request.error);
+        resolve(null); // Return null instead of rejecting
+      };
     });
   }
 

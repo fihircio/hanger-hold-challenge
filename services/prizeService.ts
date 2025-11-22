@@ -8,16 +8,15 @@ export interface Prize {
   slot: number;
 }
 
-// Fallback prize tiers for offline mode
+// Fallback prize tiers for offline mode (updated for 2-tier system)
 const FALLBACK_PRIZE_TIERS: { time: number; prize: Prize }[] = [
-  { time: 60000, prize: { name: 'Gold Prize', message: 'Incredible! You won the Gold Prize!', slot: 1 } }, // 60s
-  { time: 30000, prize: { name: 'Silver Prize', message: 'Amazing! You won the Silver Prize!', slot: 2 } }, // 30s
-  { time: 10000, prize: { name: 'Bronze Prize', message: 'Great job! You won the Bronze Prize!', slot: 3 } }, // 10s
+  { time: 60000, prize: { name: 'Gold Prize', message: 'Incredible! You won the Gold Prize!', slot: 24 } }, // 60s - Gold slot 24
+  { time: 30000, prize: { name: 'Silver Prize', message: 'Amazing! You won the Silver Prize!', slot: 1 } }, // 30s - Silver slot 1
 ];
 
 /**
- * Checks the player's time against prize tiers and triggers the vending machine
- * to dispense the corresponding prize.
+ * Checks player's time against prize tiers and triggers vending machine
+ * to dispense corresponding prize.
  * @param time The player's final score in milliseconds.
  * @returns The prize that was won, or null if no prize was won.
  */
@@ -58,7 +57,7 @@ export const checkAndDispensePrize = async (time: number, scoreId?: string): Pro
   } catch (error) {
     console.error('Failed to check prize eligibility from API, using fallback:', error);
     
-    // Fallback to local logic for offline mode
+    // Fallback to local logic for offline mode (updated for 2-tier system)
     for (const tier of FALLBACK_PRIZE_TIERS) {
       if (time >= tier.time) {
         console.log(`Time of ${time}ms qualifies for ${tier.prize.name} (fallback mode).`);
