@@ -75,9 +75,7 @@ function getTimeTier(int $timeMs): string {
         return 'gold';
     } elseif ($timeMs >= 30000) {     // 30-59.999 seconds = Silver
         return 'silver';
-    } elseif ($timeMs >= 10000) {     // 10-29.999 seconds = Bronze
-        return 'bronze';
-    } else {                           // <10 seconds = No prize
+    } else {                           // <30 seconds = No prize
         return 'none';
     }
 }
@@ -918,7 +916,7 @@ function handlePostRequest($conn, $path) {
         // Handle 'none' tier from getTimeTier function
         if ($tier === 'none') {
             http_response_code(400);
-            echo json_encode(['error' => true, 'message' => 'Score time too low for prize eligibility. Minimum 10 seconds required.']);
+            echo json_encode(['error' => true, 'message' => 'Score time too low for prize eligibility. Minimum 30 seconds required.']);
             return;
         }
         
@@ -944,13 +942,9 @@ function handlePostRequest($conn, $path) {
                 $channel = rand(6, 15); // Silver channels 6-15
                 $prize_id = 2;
                 break;
-            case 'bronze':
-                $channel = rand(16, 25); // Bronze channels 16-25
-                $prize_id = 3;
-                break;
             default:
                 http_response_code(400);
-                echo json_encode(['error' => true, 'message' => 'Invalid tier. Must be gold, silver, or bronze']);
+                echo json_encode(['error' => true, 'message' => 'Invalid tier. Must be gold or silver']);
                 return;
         }
         

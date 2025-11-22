@@ -105,12 +105,11 @@ CREATE INDEX `idx_spring_vending_logs_action` ON `spring_vending_logs` (`action`
 CREATE INDEX `idx_spring_vending_logs_success` ON `spring_vending_logs` (`success`);
 
 -- =============================================
--- 6. Seed Prizes Table
+-- 6. Seed Prizes Table (Updated for 2-tier system)
 -- ============================================
 INSERT INTO `prizes` (`name`, `message`, `slot`, `time_threshold`) VALUES
-('Gold Prize', 'Incredible! You won the Gold Prize!', 1, 60000),
-('Silver Prize', 'Amazing! You won the Silver Prize!', 2, 30000),
-('Bronze Prize', 'Great job! You won the Bronze Prize!', 3, 10000);
+('Gold Prize', 'Incredible! You won the Gold Prize!', 24, 60000),
+('Silver Prize', 'Amazing! You won the Silver Prize!', 1, 30000);
 
 -- =============================================
 -- 7. Create Users Table for Authentication
