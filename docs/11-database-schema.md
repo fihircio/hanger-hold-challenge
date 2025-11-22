@@ -121,6 +121,71 @@ CREATE TABLE `spring_vending_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
+### 6. Slot Inventory Table
+
+Tracks individual slot dispensing counts and capacity management.
+
+```sql
+CREATE TABLE `slot_inventory` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `slot` INT NOT NULL COMMENT 'Physical slot number',
+  `tier` ENUM('gold', 'silver') NOT NULL COMMENT 'Prize tier for this slot',
+  `dispense_count` INT DEFAULT 0 COMMENT 'Number of times dispensed',
+  `max_dispenses` INT DEFAULT 5 COMMENT 'Maximum dispenses before refill',
+  `needs_refill` BOOLEAN DEFAULT FALSE COMMENT 'Whether slot needs refilling',
+  `last_dispensed_at` TIMESTAMP NULL COMMENT 'Last dispensing timestamp',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Slot creation timestamp',
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last update timestamp',
+  
+  UNIQUE KEY `unique_slot` (`slot`),
+  INDEX `idx_slot_inventory_tier` (`tier`),
+  INDEX `idx_slot_inventory_needs_refill` (`needs_refill`),
+  INDEX `idx_slot_inventory_dispense_count` (`dispense_count`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+### 7. Dispensing Logs Table
+
+Detailed logging of all dispensing events with success/failure tracking.
+
+```sql
+CREATE TABLE `dispensing_logs` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `slot` INT NOT NULL COMMENT 'Slot number used',
+  `tier` ENUM('gold', 'silver') NOT NULL COMMENT 'Prize tier',
+  `success` BOOLEAN NOT NULL COMMENT 'Whether dispensing succeeded',
+  `error` TEXT NULL COMMENT 'Error message if failed',
+  `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Event timestamp',
+  `source` VARCHAR(50) DEFAULT 'tcn_integration' COMMENT 'Source of dispensing event',
+  `score_id` INT NULL COMMENT 'Associated score ID',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Log creation timestamp',
+  
+  INDEX `idx_dispensing_logs_timestamp` (`timestamp`),
+  INDEX `idx_dispensing_logs_slot` (`slot`),
+  INDEX `idx_dispensing_logs_tier` (`tier`),
+  INDEX `idx_dispensing_logs_success` (`success`),
+  INDEX `idx_dispensing_logs_score_id` (`score_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+### 8. Out of Stock Logs Table
+
+Records when prize tiers run out of available slots.
+
+```sql
+CREATE TABLE `out_of_stock_logs` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `tier` ENUM('gold', 'silver') NOT NULL COMMENT 'Prize tier that ran out',
+  `out_of_stock` BOOLEAN DEFAULT TRUE COMMENT 'Whether tier is out of stock',
+  `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Event timestamp',
+  `source` VARCHAR(50) DEFAULT 'tcn_integration' COMMENT 'Source of out of stock event',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Log creation timestamp',
+  
+  INDEX `idx_out_of_stock_logs_timestamp` (`timestamp`),
+  INDEX `idx_out_of_stock_logs_tier` (`tier`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
 ## Indexes
 
 ### Performance Indexes
@@ -142,6 +207,22 @@ CREATE INDEX `idx_spring_vending_logs_timestamp` ON `spring_vending_logs`(`times
 CREATE INDEX `idx_spring_vending_logs_action` ON `spring_vending_logs`(`action`);
 CREATE INDEX `idx_spring_vending_logs_success` ON `spring_vending_logs`(`success`);
 CREATE INDEX `idx_spring_vending_logs_score_id` ON `spring_vending_logs`(`score_id`);
+
+-- Slot inventory indexes
+CREATE INDEX `idx_slot_inventory_tier` ON `slot_inventory`(`tier`);
+CREATE INDEX `idx_slot_inventory_needs_refill` ON `slot_inventory`(`needs_refill`);
+CREATE INDEX `idx_slot_inventory_dispense_count` ON `slot_inventory`(`dispense_count`);
+
+-- Dispensing logs indexes
+CREATE INDEX `idx_dispensing_logs_timestamp` ON `dispensing_logs`(`timestamp`);
+CREATE INDEX `idx_dispensing_logs_slot` ON `dispensing_logs`(`slot`);
+CREATE INDEX `idx_dispensing_logs_tier` ON `dispensing_logs`(`tier`);
+CREATE INDEX `idx_dispensing_logs_success` ON `dispensing_logs`(`success`);
+CREATE INDEX `idx_dispensing_logs_score_id` ON `dispensing_logs`(`score_id`);
+
+-- Out of stock logs indexes
+CREATE INDEX `idx_out_of_stock_logs_timestamp` ON `out_of_stock_logs`(`timestamp`);
+CREATE INDEX `idx_out_of_stock_logs_tier` ON `out_of_stock_logs`(`tier`);
 ```
 
 ## Data Relationships
@@ -162,6 +243,18 @@ players (1) ←→ (many) scores (many)
 scores (many) ←→ (many) vending_logs (many)
    ↓                    ↓
    id                    score_id
+   ↓                    ↓
+   id                    id
+
+scores (many) ←→ (many) dispensing_logs (many)
+   ↓                    ↓
+   id                    score_id
+   ↓                    ↓
+   id                    id
+
+slot_inventory (1) ←→ (many) dispensing_logs (many)
+   ↓                    ↓
+   slot                  slot
    ↓                    ↓
    id                    id
 ```
@@ -185,6 +278,11 @@ Gold:   ≥ 60000 (60 seconds)
 Silver:  ≥ 30000 (30 seconds) AND < 60000
 Bronze:  ≥ 10000 (10 seconds) AND < 30000
 None:   < 10000
+
+-- Slot Configuration (Updated for 2-tier system)
+Gold:   Slots 24-25 (2 slots)
+Silver:  Slots 1-23 (23 slots)
+Total:   25 slots (updated from 36 in new inventory system)
 ```
 
 ## Database Migration

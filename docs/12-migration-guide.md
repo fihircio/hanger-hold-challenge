@@ -59,6 +59,9 @@ migrations/
 ├── 005_seed_prizes_table.sql
 ├── 006_add_spring_vending_columns.sql
 ├── 007_create_spring_vending_logs_table.sql
+├── 008_create_slot_inventory_table.sql
+├── 009_create_dispensing_logs_table.sql
+├── 010_create_out_of_stock_logs_table.sql
 └── complete_migration.sql
 ```
 
@@ -114,6 +117,15 @@ for migration in "$MIGRATION_DIR"/*.sql; do
             ;;
         "007_create_spring_vending_logs_table.sql")
             execute_migration "$migration" "Create Spring vending logs table"
+            ;;
+        "008_create_slot_inventory_table.sql")
+            execute_migration "$migration" "Create slot inventory table"
+            ;;
+        "009_create_dispensing_logs_table.sql")
+            execute_migration "$migration" "Create dispensing logs table"
+            ;;
+        "010_create_out_of_stock_logs_table.sql")
+            execute_migration "$migration" "Create out of stock logs table"
             ;;
         *)
             echo "Unknown migration: $(basename "$migration")"
@@ -216,8 +228,88 @@ CREATE INDEX `idx_spring_vending_logs_score_id` ON `spring_vending_logs`(`score_
 #### Data Migration: Initialize Spring SDK Logging
 ```sql
 -- Insert initial Spring SDK log entry
-INSERT INTO `spring_vending_logs` (`action`, `source`, `created_at`) 
+INSERT INTO `spring_vending_logs` (`action`, `source`, `created_at`)
 VALUES ('system_initialized', 'spring_sdk', NOW());
+```
+
+### Migration 3: Inventory Management System
+
+#### Migration File: 008_create_slot_inventory_table.sql
+```sql
+-- Create slot inventory tracking table
+CREATE TABLE `slot_inventory` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `slot` INT NOT NULL COMMENT 'Physical slot number',
+  `tier` ENUM('gold', 'silver') NOT NULL COMMENT 'Prize tier for this slot',
+  `dispense_count` INT DEFAULT 0 COMMENT 'Number of times dispensed',
+  `max_dispenses` INT DEFAULT 5 COMMENT 'Maximum dispenses before refill',
+  `needs_refill` BOOLEAN DEFAULT FALSE COMMENT 'Whether slot needs refilling',
+  `last_dispensed_at` TIMESTAMP NULL COMMENT 'Last dispensing timestamp',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Slot creation timestamp',
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last update timestamp',
+  
+  UNIQUE KEY `unique_slot` (`slot`),
+  INDEX `idx_slot_inventory_tier` (`tier`),
+  INDEX `idx_slot_inventory_needs_refill` (`needs_refill`),
+  INDEX `idx_slot_inventory_dispense_count` (`dispense_count`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+#### Data Migration: Initialize Slot Inventory
+```sql
+-- Insert 36 slots (2 gold, 34 silver) with proper configuration
+INSERT INTO `slot_inventory` (`slot`, `tier`, `max_dispenses`) VALUES
+-- Gold slots (24-25)
+(24, 'gold', 5),
+(25, 'gold', 5),
+-- Silver slots (1-23)
+(1, 'silver', 5), (2, 'silver', 5), (3, 'silver', 5), (4, 'silver', 5), (5, 'silver', 5),
+(6, 'silver', 5), (7, 'silver', 5), (8, 'silver', 5), (9, 'silver', 5), (10, 'silver', 5),
+(11, 'silver', 5), (12, 'silver', 5), (13, 'silver', 5), (14, 'silver', 5), (15, 'silver', 5),
+(16, 'silver', 5), (17, 'silver', 5), (18, 'silver', 5), (19, 'silver', 5), (20, 'silver', 5),
+(21, 'silver', 5), (22, 'silver', 5), (23, 'silver', 5);
+```
+
+### Migration 4: Enhanced Dispensing Logging
+
+#### Migration File: 009_create_dispensing_logs_table.sql
+```sql
+-- Create detailed dispensing logs table
+CREATE TABLE `dispensing_logs` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `slot` INT NOT NULL COMMENT 'Slot number used',
+  `tier` ENUM('gold', 'silver') NOT NULL COMMENT 'Prize tier',
+  `success` BOOLEAN NOT NULL COMMENT 'Whether dispensing succeeded',
+  `error` TEXT NULL COMMENT 'Error message if failed',
+  `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Event timestamp',
+  `source` VARCHAR(50) DEFAULT 'tcn_integration' COMMENT 'Source of dispensing event',
+  `score_id` INT NULL COMMENT 'Associated score ID',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Log creation timestamp',
+  
+  INDEX `idx_dispensing_logs_timestamp` (`timestamp`),
+  INDEX `idx_dispensing_logs_slot` (`slot`),
+  INDEX `idx_dispensing_logs_tier` (`tier`),
+  INDEX `idx_dispensing_logs_success` (`success`),
+  INDEX `idx_dispensing_logs_score_id` (`score_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+### Migration 5: Out of Stock Tracking
+
+#### Migration File: 010_create_out_of_stock_logs_table.sql
+```sql
+-- Create out of stock logs table
+CREATE TABLE `out_of_stock_logs` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `tier` ENUM('gold', 'silver') NOT NULL COMMENT 'Prize tier that ran out',
+  `out_of_stock` BOOLEAN DEFAULT TRUE COMMENT 'Whether tier is out of stock',
+  `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Event timestamp',
+  `source` VARCHAR(50) DEFAULT 'tcn_integration' COMMENT 'Source of out of stock event',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Log creation timestamp',
+  
+  INDEX `idx_out_of_stock_logs_timestamp` (`timestamp`),
+  INDEX `idx_out_of_stock_logs_tier` (`tier`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
 ## Configuration Migrations
@@ -356,8 +448,12 @@ INSERT INTO `migration_versions` (`version`, `description`, `executed_at`, `succ
 VALUES ('1.0.0', 'Initial database setup', NOW(), TRUE, FALSE);
 
 -- Record Spring SDK migration
-INSERT INTO `migration_versions` (`version`, `description`, `executed_at`, `success`) 
+INSERT INTO `migration_versions` (`version`, `description`, `executed_at`, `success`)
 VALUES ('1.1.0', 'Add Spring SDK support', NOW(), TRUE, FALSE);
+
+-- Record Inventory Management migration
+INSERT INTO `migration_versions` (`version`, `description`, `executed_at`, `success`)
+VALUES ('1.2.0', 'Add inventory management system', NOW(), TRUE, FALSE);
 ```
 
 ### Migration Status API

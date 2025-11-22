@@ -95,6 +95,7 @@ Total Channels:  25 channels
 - **PlayerController**: User management
 - **ScoreController**: Game scoring
 - **PrizeController**: Prize configuration
+- **InventoryController**: Slot inventory management and tracking
 - **SpringVendingLogger**: Enhanced logging
 - **VendingDiagnostics**: System health monitoring
 
@@ -105,6 +106,8 @@ Total Channels:  25 channels
 - **springVendingService**: Spring SDK integration
 - **tcnSerialService**: TCN hardware control
 - **arduinoSensorService**: Game input handling
+- **tcnIntegrationService**: TCN hardware integration with inventory tracking
+- **inventoryStorageService**: Local inventory data persistence
 
 ## Database Schema
 
@@ -114,12 +117,17 @@ Total Channels:  25 channels
 - **prizes**: Prize configuration and tiers
 - **vending_logs**: Operation history and tracking
 - **spring_vending_logs**: Enhanced Spring SDK logging
+- **slot_inventory**: Individual slot tracking and dispensing counts
+- **dispensing_logs**: Detailed dispensing event logging
+- **out_of_stock_logs**: Out-of-stock event tracking
 
 ### Key Relationships
 ```
 players → scores (one-to-many)
 scores → prizes (many-to-one via time thresholds)
 scores → vending_logs (one-to-many for dispensing)
+scores → dispensing_logs (one-to-many for detailed tracking)
+slot_inventory → dispensing_logs (one-to-many for slot usage)
 ```
 
 ## Security Considerations

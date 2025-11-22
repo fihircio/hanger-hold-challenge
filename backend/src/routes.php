@@ -47,4 +47,17 @@ return function (App $app) {
     $app->post('/api/vending/dispense-spring', VendingController::class . ':dispenseWithSpringSDK');
     $app->get('/api/vending/status-enhanced', VendingController::class . ':statusEnhanced');
     $app->get('/api/vending/diagnostics', VendingController::class . ':diagnostics');
+    
+    // Inventory routes
+    $app->get('/api/inventory/slots', InventoryController::class . ':getSlots');
+    $app->get('/api/inventory/slots/{tier}', InventoryController::class . ':getSlotsByTier');
+    $app->get('/api/inventory/stats', InventoryController::class . ':getStatistics');
+    $app->get('/api/inventory/slots-needing-refill', InventoryController::class . ':getSlotsNeedingRefill');
+    $app->post('/api/inventory/slot/{slot}/increment', InventoryController::class . ':incrementSlot');
+    $app->post('/api/inventory/reset', InventoryController::class . ':resetAllSlots');
+    $app->post('/api/inventory/log-dispensing', InventoryController::class . ':logDispensing');
+    $app->post('/api/inventory/log-out-of-stock', InventoryController::class . ':logOutOfStock');
+    $app->get('/api/inventory/dispensing-logs', InventoryController::class . ':getDispensingLogs');
+    $app->get('/api/inventory/out-of-stock-logs', InventoryController::class . ':getOutOfStockLogs');
+    $app->get('/api/inventory/system-health', InventoryController::class . ':getSystemHealth');
 };

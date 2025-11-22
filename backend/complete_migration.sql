@@ -2,7 +2,7 @@
 -- This file contains all migrations in the correct order
 -- Upload this file to your MySQL server and execute it
 -- Created: 2025-11-11
--- Updated: 2025-11-14 (Added Spring SDK integration)
+-- Updated: 2025-11-22 (Added Inventory Management System)
 
 -- =============================================
 -- 1. Create Players Table
@@ -132,11 +132,89 @@ CREATE TABLE IF NOT EXISTS `users` (
 INSERT INTO `users` (`username`, `password`, `role`) VALUES
 ('admin', '$2y$10$K3L9x/w8eE8mKqF8lP6G3sJ', 'admin');
 
--- Your database is now set up for the Hanger Challenge application with Spring SDK support!
+-- =============================================
+-- 9. Create Slot Inventory Table
+-- =============================================
+CREATE TABLE IF NOT EXISTS `slot_inventory` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `slot` int(11) NOT NULL UNIQUE,
+  `tier` enum('gold', 'silver') NOT NULL,
+  `dispense_count` int(11) NOT NULL DEFAULT 0,
+  `max_dispenses` int(11) NOT NULL DEFAULT 5,
+  `last_dispensed_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_slot` (`slot`),
+  KEY `idx_tier` (`tier`),
+  KEY `idx_dispense_count` (`dispense_count`),
+  KEY `idx_updated_at` (`updated_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- 10. Create Dispensing Logs Table
+-- =============================================
+CREATE TABLE IF NOT EXISTS `dispensing_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `slot` int(11) NOT NULL,
+  `tier` enum('gold', 'silver') NOT NULL,
+  `success` tinyint(1) NOT NULL DEFAULT 0,
+  `error` text DEFAULT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `source` varchar(50) NOT NULL DEFAULT 'tcn_integration',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_slot` (`slot`),
+  KEY `idx_tier` (`tier`),
+  KEY `idx_success` (`success`),
+  KEY `idx_timestamp` (`timestamp`),
+  KEY `idx_source` (`source`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- 11. Create Out of Stock Logs Table
+-- =============================================
+CREATE TABLE IF NOT EXISTS `out_of_stock_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tier` enum('gold', 'silver') NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `source` varchar(50) NOT NULL DEFAULT 'tcn_integration',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_tier` (`tier`),
+  KEY `idx_timestamp` (`timestamp`),
+  KEY `idx_source` (`source`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- 12. Seed Slot Inventory Data
+-- =============================================
+-- Gold slots (24-25)
+INSERT INTO `slot_inventory` (`slot`, `tier`) VALUES
+(24, 'gold'),
+(25, 'gold');
+
+-- Silver slots (1-8, 11-18, 21-28, 31-38, 45-48, 51-58)
+INSERT INTO `slot_inventory` (`slot`, `tier`) VALUES
+(1, 'silver'), (2, 'silver'), (3, 'silver'), (4, 'silver'),
+(5, 'silver'), (6, 'silver'), (7, 'silver'), (8, 'silver'),
+(11, 'silver'), (12, 'silver'), (13, 'silver'), (14, 'silver'),
+(15, 'silver'), (16, 'silver'), (17, 'silver'), (18, 'silver'),
+(21, 'silver'), (22, 'silver'), (23, 'silver'), (24, 'silver'),
+(25, 'silver'), (26, 'silver'), (27, 'silver'), (28, 'silver'),
+(31, 'silver'), (32, 'silver'), (33, 'silver'), (34, 'silver'),
+(35, 'silver'), (36, 'silver'), (37, 'silver'), (38, 'silver'),
+(45, 'silver'), (46, 'silver'), (47, 'silver'), (48, 'silver'),
+(51, 'silver'), (52, 'silver'), (53, 'silver'), (54, 'silver'),
+(55, 'silver'), (56, 'silver'), (57, 'silver'), (58, 'silver');
+
+-- Your database is now set up for the Hanger Challenge application with Spring SDK and Inventory Management support!
 --
 -- To verify everything is working:
 -- 1. Check that all tables were created: SHOW TABLES;
 -- 2. Verify prizes were inserted: SELECT * FROM prizes;
--- 3. Test your application endpoints
--- 4. Default admin user created: username=admin, password=admin123
--- 5. Spring SDK logging tables are ready for enhanced vending operations
+-- 3. Verify slot inventory was created: SELECT * FROM slot_inventory;
+-- 4. Test your application endpoints
+-- 5. Default admin user created: username=admin, password=admin123
+-- 6. Spring SDK logging tables are ready for enhanced vending operations
+-- 7. Inventory management system is ready with 36 slots (2 gold, 34 silver)

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import TimerDisplay from './TimerDisplay';
 import { arduinoSensorService } from '../services/arduinoSensorService';
 import { dispensePrizeByTier } from '../services/vendingService';
+import { tcnIntegrationService } from '../services/tcnIntegrationService';
 import BackgroundWrapper from './BackgroundWrapper';
 
 interface GameScreenProps {
@@ -15,8 +16,24 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
   const [time, setTime] = useState(0);
   const [arduinoState, setArduinoState] = useState<number>(0);
   const [vendingStatus, setVendingStatus] = useState<string>('Ready');
+  const [showMaintenance, setShowMaintenance] = useState<boolean>(false);
+  const [slotInventory, setSlotInventory] = useState<{[key: number]: number}>({});
+  const [slotsNeedingRefill, setSlotsNeedingRefill] = useState<number[]>([]);
   const startTimeRef = useRef<number | null>(null);
   const animationFrameRef = useRef<number>();
+
+  // Update slot inventory periodically
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const inventory = await tcnIntegrationService.getSlotInventory();
+      setSlotInventory(inventory);
+      
+      const needingRefill = await tcnIntegrationService.getSlotsNeedingRefill(0.8);
+      setSlotsNeedingRefill(needingRefill);
+    }, 2000); // Update every 2 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (isHolding) {
@@ -118,6 +135,32 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
     }
   }, [onHoldStart, onHoldEnd]);
 
+  // Manual maintenance functions
+  const handleManualDispense = async (tier: 'gold' | 'silver') => {
+    const success = await tcnIntegrationService.dispensePrizeManually(tier);
+    if (success) {
+      setVendingStatus(`Manual ${tier} prize dispensed!`);
+      setTimeout(() => setVendingStatus('Ready'), 2000);
+    } else {
+      setVendingStatus('Manual dispensing failed');
+      setTimeout(() => setVendingStatus('Ready'), 2000);
+    }
+  };
+
+  const handleResetCounts = () => {
+    tcnIntegrationService.resetSlotCounts();
+    setVendingStatus('Slot counts reset');
+    setTimeout(() => setVendingStatus('Ready'), 1500);
+  };
+
+  const getSlotStatusColor = (count: number, maxCount: number) => {
+    const percentage = count / maxCount;
+    if (percentage >= 0.8) return 'text-green-500';
+    if (percentage >= 0.6) return 'text-yellow-500';
+    if (percentage >= 0.4) return 'text-orange-500';
+    return 'text-red-500';
+  };
+
   return (
     <BackgroundWrapper imagePath="./UI/04.gamescreen.png">
       <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8">
@@ -163,6 +206,29 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
                 <div className="text-lg mt-2 text-gray-400 space-y-2">
                   <p>Arduino Sensor: {arduinoState === 1 ? "DETECTED" : "NO DETECTION"}</p>
                   <p>Vending Status: {vendingStatus}</p>
+                  
+                  {/* Slot Inventory Display */}
+                  <div className="mt-4 p-2 bg-gray-800 rounded text-sm">
+                    <p className="text-yellow-400 font-semibold mb-2">Slot Inventory:</p>
+                    <div className="grid grid-cols-5 gap-1 text-xs">
+                      {Object.entries(slotInventory).map(([slotNum, count]) => (
+                        <div key={slotNum} className={`text-center p-1 rounded ${getSlotStatusColor(Number(count), 5)}`}>
+                          <div className="font-semibold">S{slotNum}</div>
+                          <div>{Number(count)}/5</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Maintenance Controls */}
+                  <div className="mt-4 space-x-2">
+                    <button
+                      onClick={() => setShowMaintenance(!showMaintenance)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
+                    >
+                      {showMaintenance ? 'Hide' : 'Show'} Maintenance
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -189,6 +255,66 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
                 style={{ maxHeight: '80px' }}
               />
             </button>
+            
+            {/* Maintenance Panel */}
+            {showMaintenance && (
+              <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center p-8">
+                <div className="bg-gray-900 p-6 rounded-lg max-w-md w-full">
+                  <h2 className="text-xl font-bold text-white mb-4">Maintenance Panel</h2>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-2">Manual Dispense</h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => handleManualDispense('gold')}
+                          className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded"
+                        >
+                          Gold
+                        </button>
+                        <button
+                          onClick={() => handleManualDispense('silver')}
+                          className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+                        >
+                          Silver
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-2">Slot Management</h3>
+                      <div className="space-y-2">
+                        <button
+                          onClick={handleResetCounts}
+                          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full"
+                        >
+                          Reset All Slot Counts
+                        </button>
+                        
+                        <div className="text-white text-sm">
+                          <p className="mb-1">Max dispenses per slot: 5</p>
+                          <p>Slots needing refill (≤80% used):</p>
+                          <div className="grid grid-cols-5 gap-1 text-xs mt-2">
+                            {slotsNeedingRefill.map(slotNum => (
+                              <div key={slotNum} className="bg-red-800 text-white p-1 rounded text-center">
+                                S{slotNum}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={() => setShowMaintenance(false)}
+                      className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded w-full mt-4"
+                    >
+                      Close Maintenance
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

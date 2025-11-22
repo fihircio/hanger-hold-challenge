@@ -80,6 +80,22 @@ function getTimeTier(int $timeMs): string {
     }
 }
 
+/**
+ * Get request body as associative array
+ */
+function getRequestBody() {
+    $input = file_get_contents('php://input');
+    return json_decode($input, true) ?: [];
+}
+
+/**
+ * Get route parameter from path
+ */
+function getRouteParam($path, $index) {
+    $parts = explode('/', trim($path, '/'));
+    return isset($parts[$index]) ? $parts[$index] : null;
+}
+
 function handleGetRequest($conn, $path) {
     // Players endpoint
     if ($path === '/players' || $path === '/players/') {
@@ -313,6 +329,374 @@ function handleGetRequest($conn, $path) {
                 'overall_status' => $overallStatus,
                 'tests' => $tests,
                 'timestamp' => date('Y-m-d H:i:s')
+            ]
+        ]);
+    }
+    
+    // Inventory endpoints
+    elseif ($path === '/api/inventory/slots' || $path === '/api/inventory/slots/') {
+        $result = $conn->query("SELECT slot, tier, dispense_count, max_dispenses, last_dispensed_at, updated_at FROM slot_inventory ORDER BY slot");
+        $slots = [];
+        while ($row = $result->fetch_assoc()) {
+            $usagePercentage = $row['max_dispenses'] > 0 ? round(($row['dispense_count'] / $row['max_dispenses']) * 100, 1) : 0;
+            $slots[] = [
+                'slot' => (int)$row['slot'],
+                'tier' => $row['tier'],
+                'dispense_count' => (int)$row['dispense_count'],
+                'max_dispenses' => (int)$row['max_dispenses'],
+                'last_dispensed_at' => $row['last_dispensed_at'],
+                'updated_at' => $row['updated_at'],
+                'usage_percentage' => $usagePercentage,
+                'needs_refill' => $row['dispense_count'] >= ($row['max_dispenses'] * 0.8)
+            ];
+        }
+        echo json_encode(['success' => true, 'data' => $slots, 'total_slots' => count($slots)]);
+    }
+
+    elseif (strpos($path, '/api/inventory/slots/') === 0) {
+        $tier = getRouteParam($path, 3);
+        if (in_array($tier, ['gold', 'silver'])) {
+            $stmt = $conn->prepare("SELECT slot, tier, dispense_count, max_dispenses FROM slot_inventory WHERE tier = ? ORDER BY slot");
+            $stmt->bind_param("s", $tier);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $slots = [];
+            while ($row = $result->fetch_assoc()) {
+                $usagePercentage = $row['max_dispenses'] > 0 ? round(($row['dispense_count'] / $row['max_dispenses']) * 100, 1) : 0;
+                $slots[] = [
+                    'slot' => (int)$row['slot'],
+                    'tier' => $row['tier'],
+                    'dispense_count' => (int)$row['dispense_count'],
+                    'max_dispenses' => (int)$row['max_dispenses'],
+                    'usage_percentage' => $usagePercentage,
+                    'needs_refill' => $row['dispense_count'] >= ($row['max_dispenses'] * 0.8)
+                ];
+            }
+            echo json_encode(['success' => true, 'tier' => $tier, 'data' => $slots, 'total_tier_slots' => count($slots)]);
+        } else {
+            http_response_code(400);
+            echo json_encode(['error' => true, 'message' => 'Invalid tier. Must be gold or silver']);
+        }
+    }
+
+    elseif ($path === '/api/inventory/stats' || $path === '/api/inventory/stats/') {
+        $result = $conn->query("SELECT tier, COUNT(*) as count, SUM(dispense_count) as total_dispensed FROM slot_inventory GROUP BY tier");
+        $stats = [];
+        $totalSlots = 0;
+        $totalDispensed = 0;
+        while ($row = $result->fetch_assoc()) {
+            $stats[$row['tier']] = [
+                'slots' => (int)$row['count'],
+                'dispensed' => (int)$row['total_dispensed']
+            ];
+            $totalSlots += (int)$row['count'];
+            $totalDispensed += (int)$row['total_dispensed'];
+        }
+        
+        $goldSlots = $stats['gold']['slots'] ?? 0;
+        $silverSlots = $stats['silver']['slots'] ?? 0;
+        $goldDispensed = $stats['gold']['dispensed'] ?? 0;
+        $silverDispensed = $stats['silver']['dispensed'] ?? 0;
+        
+        $emptySlotsResult = $conn->query("SELECT COUNT(*) as count FROM slot_inventory WHERE dispense_count >= max_dispenses");
+        $emptySlots = (int)($emptySlotsResult->fetch_assoc()['count']);
+        
+        $needingRefillResult = $conn->query("SELECT COUNT(*) as count FROM slot_inventory WHERE dispense_count >= 4");
+        $slotsNeedingRefill = (int)($needingRefillResult->fetch_assoc()['count']);
+        
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'total_slots' => $totalSlots,
+                'gold_slots' => $goldSlots,
+                'silver_slots' => $silverSlots,
+                'total_dispensed' => $totalDispensed,
+                'gold_dispensed' => $goldDispensed,
+                'silver_dispensed' => $silverDispensed,
+                'empty_slots' => $emptySlots,
+                'slots_needing_refill' => $slotsNeedingRefill,
+                'overall_usage_percentage' => $totalSlots > 0 ? round(($totalDispensed / ($totalSlots * 5)) * 100, 1) : 0,
+                'gold_usage_percentage' => $goldSlots > 0 ? round(($goldDispensed / ($goldSlots * 5)) * 100, 1) : 0,
+                'silver_usage_percentage' => $silverSlots > 0 ? round(($silverDispensed / ($silverSlots * 5)) * 100, 1) : 0
+            ]
+        ]);
+    }
+
+    elseif ($path === '/api/inventory/slots-needing-refill' || $path === '/api/inventory/slots-needing-refill/') {
+        $threshold = isset($_GET['threshold']) ? (float)$_GET['threshold'] : 0.8;
+        $thresholdCount = floor(5 * $threshold);
+        
+        $stmt = $conn->prepare("SELECT slot, tier, dispense_count, max_dispenses FROM slot_inventory WHERE dispense_count >= ? ORDER BY slot");
+        $stmt->bind_param("i", $thresholdCount);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $slots = [];
+        while ($row = $result->fetch_assoc()) {
+            $usagePercentage = round(($row['dispense_count'] / $row['max_dispenses']) * 100, 1);
+            $slots[] = [
+                'slot' => (int)$row['slot'],
+                'tier' => $row['tier'],
+                'dispense_count' => (int)$row['dispense_count'],
+                'max_dispenses' => (int)$row['max_dispenses'],
+                'usage_percentage' => $usagePercentage
+            ];
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'threshold' => $threshold,
+            'threshold_count' => $thresholdCount,
+            'data' => $slots,
+            'total_slots_needing_refill' => count($slots)
+        ]);
+    }
+
+    elseif ($path === '/api/inventory/dispensing-logs' || $path === '/api/inventory/dispensing-logs/') {
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 50;
+        $tier = $_GET['tier'] ?? null;
+        
+        $query = "SELECT id, slot, tier, success, error, timestamp, source, created_at FROM dispensing_logs";
+        $params = [];
+        
+        if ($tier) {
+            $query .= " WHERE tier = ?";
+            $params[] = $tier;
+        }
+        
+        $query .= " ORDER BY created_at DESC LIMIT ?";
+        $params[] = $limit;
+        
+        $stmt = $conn->prepare($query);
+        if ($params) {
+            $types = str_repeat('s', count($params) - 1) . 'i';
+            $stmt->bind_param($types, ...$params);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $logs = [];
+        while ($row = $result->fetch_assoc()) {
+            $logs[] = [
+                'id' => (int)$row['id'],
+                'slot' => (int)$row['slot'],
+                'tier' => $row['tier'],
+                'success' => (bool)$row['success'],
+                'error' => $row['error'],
+                'timestamp' => $row['timestamp'],
+                'source' => $row['source'],
+                'created_at' => $row['created_at']
+            ];
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $logs,
+            'total_logs' => count($logs),
+            'limit' => $limit,
+            'tier_filter' => $tier
+        ]);
+    }
+
+    elseif ($path === '/api/inventory/out-of-stock-logs' || $path === '/api/inventory/out-of-stock-logs/') {
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 20;
+        $tier = $_GET['tier'] ?? null;
+        
+        $query = "SELECT id, tier, timestamp, source, created_at FROM out_of_stock_logs";
+        $params = [];
+        
+        if ($tier) {
+            $query .= " WHERE tier = ?";
+            $params[] = $tier;
+        }
+        
+        $query .= " ORDER BY created_at DESC LIMIT ?";
+        $params[] = $limit;
+        
+        $stmt = $conn->prepare($query);
+        if ($params) {
+            $types = str_repeat('s', count($params) - 1) . 'i';
+            $stmt->bind_param($types, ...$params);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $logs = [];
+        while ($row = $result->fetch_assoc()) {
+            $logs[] = [
+                'id' => (int)$row['id'],
+                'tier' => $row['tier'],
+                'timestamp' => $row['timestamp'],
+                'source' => $row['source'],
+                'created_at' => $row['created_at']
+            ];
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $logs,
+            'total_logs' => count($logs),
+            'limit' => $limit,
+            'tier_filter' => $tier
+        ]);
+    }
+
+    elseif ($path === '/api/inventory/system-health' || $path === '/api/inventory/system-health/') {
+        $totalSlotsResult = $conn->query("SELECT COUNT(*) as count FROM slot_inventory");
+        $totalSlots = (int)($totalSlotsResult->fetch_assoc()['count']);
+        
+        $emptySlotsResult = $conn->query("SELECT COUNT(*) as count FROM slot_inventory WHERE dispense_count >= max_dispenses");
+        $emptySlots = (int)($emptySlotsResult->fetch_assoc()['count']);
+        
+        $criticalSlotsResult = $conn->query("SELECT COUNT(*) as count FROM slot_inventory WHERE dispense_count >= 4");
+        $criticalSlots = (int)($criticalSlotsResult->fetch_assoc()['count']);
+        
+        $recentLogsResult = $conn->query("SELECT success FROM dispensing_logs ORDER BY created_at DESC LIMIT 10");
+        $recentFailures = 0;
+        $totalRecentLogs = 0;
+        while ($row = $recentLogsResult->fetch_assoc()) {
+            $totalRecentLogs++;
+            if (!$row['success']) $recentFailures++;
+        }
+        
+        $healthStatus = $criticalSlots > 0 ? 'warning' : 'healthy';
+        $successRate = $totalRecentLogs > 0 ? round((($totalRecentLogs - $recentFailures) / $totalRecentLogs) * 100, 1) : 100;
+        
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'total_slots' => $totalSlots,
+                'empty_slots' => $emptySlots,
+                'critical_slots' => $criticalSlots,
+                'operational_slots' => $totalSlots - $emptySlots,
+                'health_status' => $healthStatus,
+                'recent_failures' => $recentFailures,
+                'success_rate' => $successRate,
+                'timestamp' => date('Y-m-d H:i:s')
+            ]
+        ]);
+    }
+    
+    // Inventory POST endpoints
+    elseif (strpos($path, '/api/inventory/slot/') === 0 && strpos($path, '/increment') !== false) {
+        $pathParts = explode('/', trim($path, '/'));
+        $slot = isset($pathParts[3]) ? (int)$pathParts[3] : 0;
+        
+        if ($slot <= 0) {
+            http_response_code(400);
+            echo json_encode(['error' => true, 'message' => 'Valid slot number is required']);
+            return;
+        }
+        
+        $stmt = $conn->prepare("SELECT slot, tier, dispense_count, max_dispenses FROM slot_inventory WHERE slot = ?");
+        $stmt->bind_param("i", $slot);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $slotData = $result->fetch_assoc();
+        
+        if (!$slotData) {
+            http_response_code(404);
+            echo json_encode(['error' => true, 'message' => 'Slot not found']);
+            return;
+        }
+        
+        if ($slotData['dispense_count'] >= $slotData['max_dispenses']) {
+            http_response_code(400);
+            echo json_encode(['error' => true, 'message' => 'Slot already at maximum capacity']);
+            return;
+        }
+        
+        $newCount = $slotData['dispense_count'] + 1;
+        $usagePercentage = round(($newCount / $slotData['max_dispenses']) * 100, 1);
+        
+        $updateStmt = $conn->prepare("UPDATE slot_inventory SET dispense_count = ?, last_dispensed_at = NOW(), updated_at = NOW() WHERE slot = ?");
+        $updateStmt->bind_param("ii", $newCount, $slot);
+        $updateStmt->execute();
+        
+        echo json_encode([
+            'success' => true,
+            'message' => "Slot {$slot} incremented successfully",
+            'data' => [
+                'slot' => (int)$slot,
+                'tier' => $slotData['tier'],
+                'dispense_count' => $newCount,
+                'max_dispenses' => (int)$slotData['max_dispenses'],
+                'usage_percentage' => $usagePercentage
+            ]
+        ]);
+    }
+
+    elseif ($path === '/api/inventory/reset' || $path === '/api/inventory/reset/') {
+        $result = $conn->query("UPDATE slot_inventory SET dispense_count = 0, last_dispensed_at = NULL, updated_at = NOW()");
+        $affectedRows = $conn->affected_rows;
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'All slot counts reset successfully',
+            'total_slots_reset' => $affectedRows
+        ]);
+    }
+
+    elseif ($path === '/api/inventory/log-dispensing' || $path === '/api/inventory/log-dispensing/') {
+        $input = getRequestBody();
+        
+        $requiredFields = ['slot', 'tier', 'success', 'timestamp', 'source'];
+        foreach ($requiredFields as $field) {
+            if (empty($input[$field])) {
+                http_response_code(400);
+                echo json_encode(['error' => true, 'message' => "Missing required field: {$field}"]);
+                return;
+            }
+        }
+        
+        $stmt = $conn->prepare("INSERT INTO dispensing_logs (slot, tier, success, error, timestamp, source) VALUES (?, ?, ?, ?, ?, ?)");
+        $error = $input['error'] ?? null;
+        $stmt->bind_param("isisss", $input['slot'], $input['tier'], $input['success'], $error, $input['timestamp'], $input['source']);
+        $stmt->execute();
+        
+        $logId = $conn->insert_id;
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Dispensing log recorded successfully',
+            'data' => [
+                'log_id' => $logId,
+                'slot' => $input['slot'],
+                'tier' => $input['tier'],
+                'success' => $input['success'],
+                'error' => $error,
+                'timestamp' => $input['timestamp'],
+                'source' => $input['source']
+            ]
+        ]);
+    }
+
+    elseif ($path === '/api/inventory/log-out-of-stock' || $path === '/api/inventory/log-out-of-stock/') {
+        $input = getRequestBody();
+        
+        $requiredFields = ['tier', 'timestamp', 'source'];
+        foreach ($requiredFields as $field) {
+            if (empty($input[$field])) {
+                http_response_code(400);
+                echo json_encode(['error' => true, 'message' => "Missing required field: {$field}"]);
+                return;
+            }
+        }
+        
+        $stmt = $conn->prepare("INSERT INTO out_of_stock_logs (tier, timestamp, source) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $input['tier'], $input['timestamp'], $input['source']);
+        $stmt->execute();
+        
+        $logId = $conn->insert_id;
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Out of stock log recorded successfully',
+            'data' => [
+                'log_id' => $logId,
+                'tier' => $input['tier'],
+                'timestamp' => $input['timestamp'],
+                'source' => $input['source']
             ]
         ]);
     }

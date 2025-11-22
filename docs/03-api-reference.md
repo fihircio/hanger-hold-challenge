@@ -406,6 +406,9 @@ Content-Type: application/json
 - `VENDING_FAILED` - Prize dispensing failed
 - `SPRING_SDK_ERROR` - Spring SDK specific error
 - `DATABASE_ERROR` - Database operation failed
+- `INVENTORY_ERROR` - Inventory management error
+- `SLOT_NOT_FOUND` - Slot number not found
+- `SLOT_FULL` - Slot has reached maximum dispense count
 
 ## Rate Limiting
 
