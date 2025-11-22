@@ -6,8 +6,9 @@
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+header('Access-Control-Max-Age: 86400'); // Cache preflight for 24 hours
 
 // Get request method
 $method = $_SERVER['REQUEST_METHOD'];
@@ -50,6 +51,7 @@ try {
         case 'OPTIONS':
             // Handle preflight requests
             http_response_code(200);
+            echo json_encode(['status' => 'preflight_ok']);
             break;
             
         default:

@@ -1,6 +1,6 @@
 // API service for communicating with PHP backend
 
-const API_BASE_URL = (window as any).process?.env?.REACT_APP_API_URL || 'https://vendinghanger.eeelab.xyz/api_endpoints_for_server.php';
+const API_BASE_URL = (window as any).process?.env?.REACT_APP_API_URL || 'https://vendinghanger.eeelab.xyz/apiendpoints.php';
 
 export interface Player {
   id: number;
