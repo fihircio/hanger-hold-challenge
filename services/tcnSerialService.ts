@@ -491,7 +491,7 @@ export class TCNSerialService {
       this.addEventListener('DISPENSE_FAILURE', dispenseListener);
       
       // Set timeout
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         if (!resolved) {
           resolved = true;
           this.removeEventListener('DISPENSE_SUCCESS', dispenseListener);
@@ -504,6 +504,25 @@ export class TCNSerialService {
           });
         }
       }, timeoutMs);
+      
+      // For mock system, simulate immediate response after a short delay
+      if (this.port instanceof MockSerialPort) {
+        setTimeout(() => {
+          if (!resolved) {
+            resolved = true;
+            this.removeEventListener('DISPENSE_SUCCESS', dispenseListener);
+            this.removeEventListener('DISPENSE_FAILURE', dispenseListener);
+            clearTimeout(timeoutId);
+            
+            // Simulate success for mock testing
+            resolve({
+              success: true,
+              channel,
+              error: undefined
+            });
+          }
+        }, 1000); // 1 second delay for mock response
+      }
     });
   }
 

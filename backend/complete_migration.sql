@@ -194,19 +194,16 @@ INSERT INTO `slot_inventory` (`slot`, `tier`) VALUES
 (24, 'gold'),
 (25, 'gold');
 
--- Silver slots (1-8, 11-18, 21-28, 31-38, 45-48, 51-58)
+-- Silver slots (1-8, 11-18, 21-28, 31-38)
 INSERT INTO `slot_inventory` (`slot`, `tier`) VALUES
 (1, 'silver'), (2, 'silver'), (3, 'silver'), (4, 'silver'),
 (5, 'silver'), (6, 'silver'), (7, 'silver'), (8, 'silver'),
 (11, 'silver'), (12, 'silver'), (13, 'silver'), (14, 'silver'),
 (15, 'silver'), (16, 'silver'), (17, 'silver'), (18, 'silver'),
-(21, 'silver'), (22, 'silver'), (23, 'silver'), (24, 'silver'),
-(25, 'silver'), (26, 'silver'), (27, 'silver'), (28, 'silver'),
-(31, 'silver'), (32, 'silver'), (33, 'silver'), (34, 'silver'),
-(35, 'silver'), (36, 'silver'), (37, 'silver'), (38, 'silver'),
-(45, 'silver'), (46, 'silver'), (47, 'silver'), (48, 'silver'),
-(51, 'silver'), (52, 'silver'), (53, 'silver'), (54, 'silver'),
-(55, 'silver'), (56, 'silver'), (57, 'silver'), (58, 'silver');
+(21, 'silver'), (22, 'silver'), (23, 'silver'), (26, 'silver'),
+(27, 'silver'), (28, 'silver'), (31, 'silver'), (32, 'silver'),
+(33, 'silver'), (34, 'silver'), (35, 'silver'), (36, 'silver'),
+(37, 'silver'), (38, 'silver');
 
 -- Your database is now set up for the Hanger Challenge application with Spring SDK and Inventory Management support!
 --

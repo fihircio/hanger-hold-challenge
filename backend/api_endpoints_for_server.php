@@ -189,6 +189,34 @@ function handleGetRequest($conn, $path) {
         }
     }
     
+    // API Prizes endpoint (for compatibility with backend routes)
+    elseif ($path === '/api/prizes/check' || $path === '/api/prizes/check/') {
+        // Check prize eligibility
+        $time = (int)($_GET['time'] ?? 0);
+        $stmt = $conn->prepare("SELECT * FROM prizes WHERE active = 1 AND time_threshold <= ? ORDER BY time_threshold DESC LIMIT 1");
+        $stmt->bind_param("i", $time);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $prize = $result->fetch_assoc();
+        
+        if ($prize) {
+            echo json_encode(['eligible' => true, 'prize' => $prize]);
+        } else {
+            echo json_encode(['eligible' => false, 'message' => 'No prize eligible for this time']);
+        }
+    }
+    
+    // API Prizes endpoint (for compatibility with backend routes)
+    elseif ($path === '/api/prizes' || $path === '/api/prizes/') {
+        // Get all prizes
+        $result = $conn->query("SELECT * FROM prizes WHERE active = 1 ORDER BY time_threshold DESC");
+        $prizes = [];
+        while ($row = $result->fetch_assoc()) {
+            $prizes[] = $row;
+        }
+        echo json_encode(['prizes' => $prizes]);
+    }
+    
     // Vending status endpoint
     elseif ($path === '/vending/status' || $path === '/vending/status/') {
         $result = $conn->query("SELECT vl.*, p.name as prize_name, s.time as score_time FROM vending_logs vl JOIN prizes p ON vl.prize_id = p.id LEFT JOIN scores s ON vl.score_id = s.id ORDER BY vl.created_at DESC LIMIT 10");
