@@ -278,3 +278,9 @@ For issues and questions:
 ## Version History
 
 - v1.0.0 - Initial release with full system integration
+
+## Intro Video
+
+- **Placement**: Put your `video.mp4` file in the project's `public/` folder (create it if missing): `public/video.mp4`.
+- **How it's used**: The app shows an intro video at startup (`GameState.VIDEO`) using the HTML5 `<video>` element with `src="/video.mp4"`. The video loops until the user taps the screen, which advances to the instructions.
+- **Notes**: For autoplay to work across browsers, the video is muted by default. If you want audio, the user will need to tap to start audio playback.

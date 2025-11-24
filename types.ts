@@ -28,6 +28,7 @@ declare global {
 }
 
 export enum GameState {
+  VIDEO,
   INSTRUCTIONS,
   HOWTO,
   READY,

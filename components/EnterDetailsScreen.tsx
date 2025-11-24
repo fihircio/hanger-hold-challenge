@@ -50,23 +50,23 @@ const EnterDetailsScreen: React.FC<EnterDetailsScreenProps> = ({ onSubmit }) => 
   return (
     <BackgroundWrapper imagePath="./UI/04.gamescreen.png">
       <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8">
-        <div className="mb-6 flex justify-center">
-          <img
-            src="./UI/RB_zero_UI_slice_text_03.png"
-            alt="ENTER YOUR DETAILS"
-            className="h-auto"
-            style={{ maxHeight: '80px' }}
-          />
-        </div>
         <div className="relative w-full max-w-4xl">
           <img
             src="./UI/04.gamescreen_bg.png"
             alt="Panel Background"
             className="w-full h-auto"
-            style={{ maxHeight: '70vh' }}
+            style={{ maxHeight: '850px' }}
           />
-          <div className="absolute inset-0 flex flex-col p-12">
-            <form onSubmit={handleSubmit} className="flex flex-col h-full justify-between space-y-4">
+          <div className="absolute inset-0 flex flex-col px-6 py-4 justify-center items-center">
+            <div className="mb-1">
+              <img
+                src="./UI/RB_zero_UI_slice_text_03.png"
+                alt="ENTER YOUR DETAILS"
+                className="h-auto"
+                style={{ maxHeight: '70px' }}
+              />
+            </div>
+            <form onSubmit={handleSubmit} className="flex flex-col w-full h-full justify-between space-y-1 transform scale-[0.9] origin-top">
               <div className="space-y-4">
                 <div>
                   <label className="text-2xl text-gray-300 mb-2 block">Name</label>
@@ -98,8 +98,13 @@ const EnterDetailsScreen: React.FC<EnterDetailsScreenProps> = ({ onSubmit }) => 
                     className={`${inputClasses} ${activeInput === 'phone' ? activeInputClasses : 'border-gray-600'}`}
                   />
                 </div>
-                <button type="submit" className="w-full text-3xl font-bold bg-green-500 hover:bg-green-600 text-white py-4 rounded-lg shadow-lg">
-                  SUBMIT
+                <button type="submit" className="w-full transform hover:scale-105 transition-transform duration-200 drop-shadow-lg">
+                  <img
+                    src="./UI/RB_zero_UI_slice_button_06.png"
+                    alt="SUBMIT"
+                    className="h-auto mx-auto"
+                    style={{ maxHeight: '80px' }}
+                  />
                 </button>
               </div>
               
