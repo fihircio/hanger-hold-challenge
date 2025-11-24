@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import TimerDisplay from './TimerDisplay';
 import { Prize } from '../services/prizeService';
 import BackgroundWrapper from './BackgroundWrapper';
+import MaintenancePanel from './MaintenancePanel';
 
 interface GameOverScreenProps {
   finalTime: number;
@@ -10,6 +11,22 @@ interface GameOverScreenProps {
 }
 
 const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalTime, prize, onNext }) => {
+  const [showMaintenance, setShowMaintenance] = useState<boolean>(false);
+
+  // Keyboard activation: Ctrl+M opens maintenance, Esc closes it
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+      if (e.ctrlKey && key === 'm') {
+        setShowMaintenance(true);
+      } else if (key === 'escape') {
+        setShowMaintenance(false);
+      }
+    };
+
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
   return (
     <BackgroundWrapper imagePath="./UI/04.gamescreen.png">
       <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8">
@@ -59,6 +76,8 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalTime, prize, onNex
                 style={{ maxHeight: '80px' }}
               />
             </button>
+
+            <MaintenancePanel visible={showMaintenance} onClose={() => setShowMaintenance(false)} />
           </div>
         </div>
       </div>

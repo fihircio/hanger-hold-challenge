@@ -137,9 +137,16 @@ export class TCNSerialService {
   
   // Channel mapping for prize tiers
   private readonly prizeChannels = {
-    gold: [1, 2, 3, 4, 5],
-    silver: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-    bronze: [16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+    gold: [24, 25],
+    silver: [
+      1, 2, 3, 4, 5, 6, 7, 8,
+      11, 12, 13, 14, 15, 16, 17, 18,
+      21, 22, 23, 26, 27, 28,
+      31, 32, 33, 34, 35, 36, 37, 38,
+      45, 46, 47, 48,
+      51, 52, 53, 54, 55, 56, 57, 58
+    ],
+    bronze: []
   };
 
   constructor() {
@@ -612,12 +619,17 @@ export class TCNSerialService {
     const healthyChannels = Array.from(this.channelStatus.values())
       .filter(status => status.isHealthy).length;
 
+    // Compute total channels from configured prizeChannels
+    const channelLists = Object.values(this.prizeChannels) as number[][];
+    const allChannels = channelLists.flat();
+    const totalChannels = allChannels.length > 0 ? Math.max(...allChannels) : 0;
+
     return {
       connected: this.isConnected,
       port: this.port?.path || 'Unknown',
       baudRate: this.port?.baudRate || 0,
       healthyChannels,
-      totalChannels: 25,
+      totalChannels,
       lastError: this.lastError,
       lastResponse: this.lastResponse
     };

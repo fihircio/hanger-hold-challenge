@@ -16,24 +16,13 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
   const [time, setTime] = useState(0);
   const [arduinoState, setArduinoState] = useState<number>(0);
   const [vendingStatus, setVendingStatus] = useState<string>('Ready');
-  const [showMaintenance, setShowMaintenance] = useState<boolean>(false);
-  const [slotInventory, setSlotInventory] = useState<{[key: number]: number}>({});
-  const [slotsNeedingRefill, setSlotsNeedingRefill] = useState<number[]>([]);
+  // Show maintenance in development mode (activator now on GameOverScreen)
+  const isDevelopmentMode = !window.electronAPI; // true for npm run dev, false for electron exe
+  
   const startTimeRef = useRef<number | null>(null);
   const animationFrameRef = useRef<number>();
 
-  // Update slot inventory periodically
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      const inventory = await tcnIntegrationService.getSlotInventory();
-      setSlotInventory(inventory);
-      
-      const needingRefill = await tcnIntegrationService.getSlotsNeedingRefill(0.8);
-      setSlotsNeedingRefill(needingRefill);
-    }, 2000); // Update every 2 seconds
-
-    return () => clearInterval(interval);
-  }, []);
+  // Slot inventory and maintenance controls moved to `MaintenancePanel`
 
   useEffect(() => {
     if (isHolding) {
@@ -202,35 +191,10 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
               <h3 className="text-3xl font-semibold text-gray-300">
                 {!isHolding ? "" : ""}
               </h3>
-              {window.electronAPI && (
-                <div className="text-lg mt-2 text-gray-400 space-y-2">
-                  <p>Arduino Sensor: {arduinoState === 1 ? "DETECTED" : "NO DETECTION"}</p>
-                  <p>Vending Status: {vendingStatus}</p>
-                  
-                  {/* Slot Inventory Display */}
-                  <div className="mt-4 p-2 bg-gray-800 rounded text-sm">
-                    <p className="text-yellow-400 font-semibold mb-2">Slot Inventory:</p>
-                    <div className="grid grid-cols-5 gap-1 text-xs">
-                      {Object.entries(slotInventory).map(([slotNum, count]) => (
-                        <div key={slotNum} className={`text-center p-1 rounded ${getSlotStatusColor(Number(count), 5)}`}>
-                          <div className="font-semibold">S{slotNum}</div>
-                          <div>{Number(count)}/5</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Maintenance Controls */}
-                  <div className="mt-4 space-x-2">
-                    <button
-                      onClick={() => setShowMaintenance(!showMaintenance)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
-                    >
-                      {showMaintenance ? 'Hide' : 'Show'} Maintenance
-                    </button>
-                  </div>
-                </div>
-              )}
+              {/* Show a brief sensor status; full maintenance moved to panel */}
+              <div className="text-lg mt-2 text-gray-400 space-y-2">
+                <p>Arduino Sensor: {arduinoState === 1 ? "DETECTED" : "NO DETECTION"}</p>
+              </div>
             </div>
 
             <div className="flex-grow flex items-center justify-center">
@@ -256,65 +220,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
               />
             </button>
             
-            {/* Maintenance Panel */}
-            {showMaintenance && (
-              <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center p-8">
-                <div className="bg-gray-900 p-6 rounded-lg max-w-md w-full">
-                  <h2 className="text-xl font-bold text-white mb-4">Maintenance Panel</h2>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-2">Manual Dispense</h3>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() => handleManualDispense('gold')}
-                          className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded"
-                        >
-                          Gold
-                        </button>
-                        <button
-                          onClick={() => handleManualDispense('silver')}
-                          className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
-                        >
-                          Silver
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-2">Slot Management</h3>
-                      <div className="space-y-2">
-                        <button
-                          onClick={handleResetCounts}
-                          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full"
-                        >
-                          Reset All Slot Counts
-                        </button>
-                        
-                        <div className="text-white text-sm">
-                          <p className="mb-1">Max dispenses per slot: 5</p>
-                          <p>Slots needing refill (≤80% used):</p>
-                          <div className="grid grid-cols-5 gap-1 text-xs mt-2">
-                            {slotsNeedingRefill.map(slotNum => (
-                              <div key={slotNum} className="bg-red-800 text-white p-1 rounded text-center">
-                                S{slotNum}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <button
-                      onClick={() => setShowMaintenance(false)}
-                      className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded w-full mt-4"
-                    >
-                      Close Maintenance
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Maintenance activator moved to GameOverScreen */}
           </div>
         </div>
       </div>

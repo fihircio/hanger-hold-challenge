@@ -1,6 +1,9 @@
 // Inventory Storage Service - Handles persistent storage with offline support
 // Uses IndexedDB for local storage and syncs with server when online
 
+// API base URL configuration
+const API_BASE_URL = (window as any).process?.env?.REACT_APP_API_URL || 'https://vendinghanger.eeelab.xyz/apiendpoints.php';
+
 export interface SlotInventoryData {
   slot: number;
   tier: 'gold' | 'silver';
@@ -434,7 +437,7 @@ class InventoryStorageService {
    */
   private async syncDispensingLog(log: DispensingLog): Promise<void> {
     try {
-      const response = await fetch('/api/inventory/log-dispensing', {
+      const response = await fetch(`${API_BASE_URL}/api/inventory/log-dispensing`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -458,7 +461,7 @@ class InventoryStorageService {
    */
   private async syncOutOfStockLog(log: OutOfStockLog): Promise<void> {
     try {
-      const response = await fetch('/api/inventory/log-out-of-stock', {
+      const response = await fetch(`${API_BASE_URL}/api/inventory/log-out-of-stock`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

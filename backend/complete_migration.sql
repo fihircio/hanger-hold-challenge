@@ -204,8 +204,14 @@ INSERT INTO `slot_inventory` (`slot`, `tier`) VALUES
 (33, 'silver'), (34, 'silver'), (35, 'silver'), (36, 'silver'),
 (37, 'silver'), (38, 'silver');
 
+-- Additional silver slots added (45-48, 51-58)
+INSERT INTO `slot_inventory` (`slot`, `tier`) VALUES
+(45, 'silver'), (46, 'silver'), (47, 'silver'), (48, 'silver'),
+(51, 'silver'), (52, 'silver'), (53, 'silver'), (54, 'silver'),
+(55, 'silver'), (56, 'silver'), (57, 'silver'), (58, 'silver');
+
 -- Your database is now set up for the Hanger Challenge application with Spring SDK and Inventory Management support!
---
+
 -- To verify everything is working:
 -- 1. Check that all tables were created: SHOW TABLES;
 -- 2. Verify prizes were inserted: SELECT * FROM prizes;
@@ -213,4 +219,4 @@ INSERT INTO `slot_inventory` (`slot`, `tier`) VALUES
 -- 4. Test your application endpoints
 -- 5. Default admin user created: username=admin, password=admin123
 -- 6. Spring SDK logging tables are ready for enhanced vending operations
--- 7. Inventory management system is ready with 36 slots (2 gold, 34 silver)
+-- 7. Inventory management system is ready with 46 slots (2 gold, 44 silver)

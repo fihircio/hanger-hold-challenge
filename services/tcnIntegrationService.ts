@@ -5,6 +5,9 @@ import { tcnSerialService } from './tcnSerialService';
 import { arduinoSensorService } from './arduinoSensorService';
 import { inventoryStorageService } from './inventoryStorageService';
 
+// API base URL configuration
+const API_BASE_URL = (window as any).process?.env?.REACT_APP_API_URL || 'https://vendinghanger.eeelab.xyz/apiendpoints.php';
+
 export interface VendingIntegrationStatus {
   tcnConnected: boolean;
   arduinoConnected: boolean;
@@ -27,7 +30,14 @@ export class TCNIntegrationService {
   // Updated slot configuration for 2-tier system
   private readonly prizeChannels = {
     gold: [24, 25],
-    silver: [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38]
+    silver: [
+      1, 2, 3, 4, 5, 6, 7, 8,
+      11, 12, 13, 14, 15, 16, 17, 18,
+      21, 22, 23, 26, 27, 28,
+      31, 32, 33, 34, 35, 36, 37, 38,
+      45, 46, 47, 48,
+      51, 52, 53, 54, 55, 56, 57, 58
+    ]
   };
 
   private constructor() {
@@ -588,7 +598,7 @@ export class TCNIntegrationService {
       };
       
       // Try to send to server, but don't wait for it (non-blocking)
-      this.sendLogToServer('/api/inventory/log-dispensing', logEntry).catch(err => {
+      this.sendLogToServer(`${API_BASE_URL}/api/inventory/log-dispensing`, logEntry).catch(err => {
         console.warn('[TCN INTEGRATION] Failed to log dispensing to server (will queue for later):', err);
         this.queueOfflineLog(logEntry);
       });
@@ -609,7 +619,7 @@ export class TCNIntegrationService {
         source: 'tcn_integration'
       };
       
-      this.sendLogToServer('/api/inventory/log-out-of-stock', logEntry).catch(err => {
+      this.sendLogToServer(`${API_BASE_URL}/api/inventory/log-out-of-stock`, logEntry).catch(err => {
         console.warn('[TCN INTEGRATION] Failed to log out of stock to server:', err);
         this.queueOfflineLog(logEntry);
       });
@@ -621,12 +631,12 @@ export class TCNIntegrationService {
   /**
    * Send log data to server
    */
-  private async sendLogToServer(endpoint: string, data: any): Promise<void> {
+  private async sendLogToServer(fullUrl: string, data: any): Promise<void> {
     if (typeof window === 'undefined' || !window.fetch) {
       throw new Error('Fetch API not available');
     }
     
-    const response = await fetch(endpoint, {
+    const response = await fetch(fullUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

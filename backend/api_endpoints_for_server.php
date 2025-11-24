@@ -14,15 +14,19 @@ header('Access-Control-Max-Age: 86400'); // Cache preflight for 24 hours
 $method = $_SERVER['REQUEST_METHOD'];
 
 // Handle different endpoints based on URL path
-$requestUri = $_SERVER['REQUEST_URI'];
-$scriptName = $_SERVER['SCRIPT_NAME'];
+// Use parse_url to strip query string so routes like '/apiendpoints.php/prizes?check=1' match '/prizes'
+$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$scriptName = parse_url($_SERVER['SCRIPT_NAME'], PHP_URL_PATH);
 
-// Remove the script name from the request URI to get the actual path
-$path = str_replace($scriptName, '', $requestUri);
+// Remove the script name from the request path to get the actual route
+$path = $requestUri;
+if ($scriptName && strpos($requestUri, $scriptName) === 0) {
+    $path = substr($requestUri, strlen($scriptName));
+}
 
 // Ensure path starts with a '/'
-if (empty($path) || $path[0] !== '/') {
-    $path = '/' . $path;
+if ($path === '' || $path[0] !== '/') {
+    $path = '/' . ltrim($path, '/');
 }
 
 // Database connection (using your existing credentials)
@@ -738,6 +742,40 @@ function handleGetRequest($conn, $path) {
 function handlePostRequest($conn, $path) {
     // Get POST data
     $input = json_decode(file_get_contents('php://input'), true);
+    
+    // Inventory POST endpoint - Log dispensing (was implemented under GET accidentally)
+    if ($path === '/api/inventory/log-dispensing' || $path === '/api/inventory/log-dispensing/') {
+        $requiredFields = ['slot', 'tier', 'success', 'timestamp', 'source'];
+        foreach ($requiredFields as $field) {
+            if (empty($input[$field]) && $input[$field] !== false && $input[$field] !== 0) {
+                http_response_code(400);
+                echo json_encode(['error' => true, 'message' => "Missing required field: {$field}"]);
+                return;
+            }
+        }
+
+        $stmt = $conn->prepare("INSERT INTO dispensing_logs (slot, tier, success, error, timestamp, source) VALUES (?, ?, ?, ?, ?, ?)");
+        $error = $input['error'] ?? null;
+        $stmt->bind_param("isisss", $input['slot'], $input['tier'], $input['success'], $error, $input['timestamp'], $input['source']);
+        $stmt->execute();
+
+        $logId = $conn->insert_id;
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Dispensing log recorded successfully',
+            'data' => [
+                'log_id' => $logId,
+                'slot' => $input['slot'],
+                'tier' => $input['tier'],
+                'success' => $input['success'],
+                'error' => $error,
+                'timestamp' => $input['timestamp'],
+                'source' => $input['source']
+            ]
+        ]);
+        return;
+    }
     
     // Players endpoint - Create new player
     if ($path === '/players' || $path === '/players/') {
