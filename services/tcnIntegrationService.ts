@@ -53,9 +53,11 @@ export class TCNIntegrationService {
       
       // Initialize persistent storage first
       const storageInitialized = await inventoryStorageService.initialize();
-      if (!storageInitialized) {
-        console.error('[TCN INTEGRATION] Failed to initialize storage service');
-        return false;
+        if (!storageInitialized) {
+          // Don't fail overall initialization just because persistent storage
+          // couldn't be set up. Continue and fall back to in-memory cache so
+          // TCN hardware connection can proceed.
+          console.warn('[TCN INTEGRATION] Failed to initialize storage service - continuing with in-memory fallback');
       }
       
       // Load existing slot data

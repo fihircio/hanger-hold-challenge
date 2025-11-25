@@ -207,18 +207,118 @@ class SpringVendingService {
       // Get available serial ports
       const ports = await window.electronAPI.getSerialPorts();
       console.log('[SPRING VENDING] Available ports:', ports);
-      
-      // Try to find vending controller (look for COM ports on Windows)
-      const vendingPort = ports.find((port: any) => 
-        port.path.startsWith('COM') && !port.path.includes('Bluetooth')
-      ) || ports[0]; // Fallback to first port
-      
+
+      // Helper: perform active probe on a given portPath by connecting, sending a short STATUS probe
+      // and waiting for an identifying reply (e.g. 'STATUS:', 'UCS V4', 'DISPENSE'). If successful,
+      // it leaves the connection open; otherwise it disconnects.
+      const probePort = async (portInfo: any, timeoutMs = 1500): Promise<boolean> => {
+        try {
+          // clear existing listeners to isolate probe
+          window.electronAPI.removeAllSerialListeners();
+
+          const connectResult = await window.electronAPI.connectSerialPort(portInfo.path);
+          if (!connectResult.success) {
+            return false;
+          }
+
+          let responded = false;
+
+          const responsePromise = new Promise<boolean>((resolve) => {
+            const onData = (data: string) => {
+              const str = (data || '').toString();
+              // look for TCN / Spring identifying phrases
+              if (str.includes('STATUS') || str.includes('UCS V4') || str.includes('DISPENSE') || str.includes('Controller')) {
+                responded = true;
+                resolve(true);
+              }
+            };
+
+            const onError = () => {
+              resolve(false);
+            };
+
+            window.electronAPI.onSerialData(onData);
+            window.electronAPI.onSerialError(onError);
+
+            // send lightweight status probe which TCN/Spring controllers respond to
+            window.electronAPI.sendSerialCommand('STATUS\r\n').catch(() => {});
+
+            setTimeout(() => {
+              if (!responded) resolve(false);
+            }, timeoutMs);
+          });
+
+          const probeSuccess = await responsePromise;
+
+          if (!probeSuccess) {
+            // No response; be polite and disconnect
+            await window.electronAPI.disconnectSerialPort();
+          }
+
+          // leave the port open if this was a success so the rest of the flow can use it
+          return probeSuccess;
+        } catch (err) {
+          try { await window.electronAPI.disconnectSerialPort(); } catch {};
+          return false;
+        }
+      };
+
+      // Build candidate port list -- platform-agnostic heuristics
+      const likelyCandidates = ports.filter((p: any) => {
+        const path = (p.path || '').toLowerCase();
+        const mfr = (p.manufacturer || '').toLowerCase();
+
+        // Common USB-to-serial patterns across macOS/Linux/Windows
+        if (mfr.includes('prolific') || mfr.includes('ftdi') || mfr.includes('ch340') || mfr.includes('cp210') || mfr.includes('qinheng')) return true;
+        if (path.includes('usb') || path.includes('tty') || path.includes('cu.') || path.includes('cu-') || path.includes('com')) return true;
+        return false;
+      });
+
+      // If we have likely candidates, probe them first; otherwise fall back to the first few ports
+      const portsToTry = likelyCandidates.length > 0 ? likelyCandidates : ports.slice(0, Math.min(ports.length, 5));
+
+      let vendingPort: any | undefined;
+
+      // Try each candidate with a handshake probe
+      for (const p of portsToTry) {
+        console.log(`[SPRING VENDING] Probing port ${p.path}...`);
+        // attempt to probe
+        const ok = await probePort(p, 1800);
+        if (ok) {
+          vendingPort = p;
+          console.log(`[SPRING VENDING] Port ${p.path} responded to probe`);
+          break;
+        }
+        console.log(`[SPRING VENDING] Port ${p.path} did not respond to probe`);
+      }
+
+      // Last resort: attempt to connect to the first available port
+      if (!vendingPort && ports.length > 0) {
+        console.warn('[SPRING VENDING] No probed port responded. Falling back to first available port.');
+        const first = ports[0];
+        const connectResult = await window.electronAPI.connectSerialPort(first.path);
+        if (connectResult.success) vendingPort = first;
+      }
+
       if (!vendingPort) {
         throw new Error('No suitable serial port found');
       }
-      
-      // Connect to the port
-      const connectResult = await window.electronAPI.connectSerialPort(vendingPort.path);
+
+      // If probe left the port open (probePort succeeded) the connection is already established.
+      // If we fell back to first port we have already connected above; otherwise ensure connected
+      if (!this.isConnected) {
+        // connect explicitly if not already connected
+        const connectResult = await window.electronAPI.connectSerialPort(vendingPort.path);
+        if (!connectResult.success) {
+          throw new Error(`Failed to connect to ${vendingPort.path}`);
+        }
+        this.isConnected = true;
+        this.serialPort = vendingPort.path;
+      }
+      console.log(`[SPRING VENDING] Connected to ${vendingPort.path}`);
+
+      // Set up data listener
+      this.setupDataListener();
       
       if (connectResult.success) {
         this.isConnected = true;

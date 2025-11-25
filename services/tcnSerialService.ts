@@ -54,9 +54,29 @@ class MockReadlineParser {
   }
 }
 
-// Use mock classes for now - replace with real serialport when hardware is available
-const SerialPort = MockSerialPort;
-const ReadlineParser = MockReadlineParser;
+// Prefer the real serialport package when available (production/electron),
+// otherwise fall back to the mock classes for development / unit tests.
+let SerialPort: any = MockSerialPort;
+let ReadlineParser: any = MockReadlineParser;
+
+try {
+  // Try to load 'serialport' (may not be installed in web / test environments)
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const serialportPkg = require('serialport');
+  SerialPort = serialportPkg.default || serialportPkg;
+
+  // Parser may be available either as a separate package or under SerialPort.parsers
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const readlinePkg = require('@serialport/parser-readline');
+    ReadlineParser = readlinePkg.default || readlinePkg;
+  } catch (e) {
+    ReadlineParser = serialportPkg.parsers?.ReadlineParser || MockReadlineParser;
+  }
+  console.log('[TCN SERIAL] Using native serialport implementation');
+} catch (e) {
+  console.log('[TCN SERIAL] serialport not available, using MockSerialPort');
+}
 
 export enum TCNErrorCode {
   NORMAL = 0,
@@ -164,14 +184,26 @@ export class TCNSerialService {
       const ports = await SerialPort.list();
       console.log('[TCN SERIAL] Available ports:', ports);
       
-      // Look for TCN-compatible adapters (Prolific, CH340, FTDI)
-      const tcnPorts = ports.filter(port => 
-        port.manufacturer?.toLowerCase().includes('prolific') ||
-        port.manufacturer?.toLowerCase().includes('ch340') ||
-        port.manufacturer?.toLowerCase().includes('ftdi') ||
-        port.manufacturer?.toLowerCase().includes('qinheng') ||
-        port.path.includes('COM')
-      );
+      // Look for TCN-compatible adapters (Prolific, CH340, FTDI, Qinheng)
+      // and include common serial device path names on macOS (/dev/tty*, /dev/cu*)
+      const tcnPorts = ports.filter(port => {
+        const mfr = (port.manufacturer || '').toLowerCase();
+        const path = (port.path || '').toLowerCase();
+
+        return (
+          mfr.includes('prolific') ||
+          mfr.includes('ch340') ||
+          mfr.includes('ftdi') ||
+          mfr.includes('qinheng') ||
+          // Windows COM-style
+          path.includes('com') ||
+          // macOS/Unix device names
+          path.startsWith('/dev/tty') ||
+          path.startsWith('/dev/cu') ||
+          // USB-serial friendly substring
+          path.includes('usbserial')
+        );
+      });
 
       // Try each likely port
       const portsToTry = tcnPorts.length > 0 ? tcnPorts : ports.slice(0, 5);
