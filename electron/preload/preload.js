@@ -26,4 +26,6 @@ electron_1.contextBridge.exposeInMainWorld('electronAPI', {
     // App information
     platform: process.platform,
     version: process.version,
+    // TCN / Serial status
+    getTcnStatus: () => electron_1.ipcRenderer.invoke('get-tcn-status'),
 });

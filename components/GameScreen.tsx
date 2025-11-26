@@ -2,14 +2,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import TimerDisplay from './TimerDisplay';
 import { arduinoSensorService } from '../services/arduinoSensorService';
-import { dispensePrizeByTier } from '../services/vendingService';
 import { tcnIntegrationService } from '../services/tcnIntegrationService';
 import BackgroundWrapper from './BackgroundWrapper';
 
 interface GameScreenProps {
   isHolding: boolean;
-  onHoldStart: () => void;
-  onHoldEnd: () => void;
+  // Optional start timestamp (ms) may be passed by sensor
+  onHoldStart: (startTimestamp?: number) => void;
+  // onHoldEnd: either measured duration (ms) or (endTimestamp, true)
+  onHoldEnd: (value?: number, isTimestamp?: boolean) => void;
 }
 
 const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldEnd }) => {
@@ -49,42 +50,13 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
   // Handle game end and prize dispensing
   const handleGameEnd = async () => {
     const finalTime = time;
-    onHoldEnd();
-    
+    // Pass the measured finalTime to the parent so it doesn't rely on ref timing
+    // Prefer letting the App compute/validate duration from its own startTimeRef by calling onHoldEnd()
+    // without a measured value when sensor-based triggers are used. However, when button
+    // release calls this function we provide the measured `finalTime` as a fallback.
+    onHoldEnd(finalTime);
+
     console.log(`[GAME SCREEN] Game ended with time: ${finalTime}ms`);
-    
-    // Calculate tier based on time
-    let tier: 'gold' | 'silver' | 'bronze' | null = null;
-    if (finalTime >= 60000) {
-      tier = 'gold';
-    } else if (finalTime >= 30000) {
-      tier = 'silver';
-    } else if (finalTime >= 10000) {
-      tier = 'bronze';
-    }
-    
-    if (tier) {
-      setVendingStatus(`Dispensing ${tier} prize...`);
-      
-      try {
-        const success = await dispensePrizeByTier(tier);
-        
-        if (success) {
-          setVendingStatus(`${tier.charAt(0).toUpperCase() + tier.slice(1)} prize dispensed!`);
-          setTimeout(() => setVendingStatus('Ready'), 3000);
-        } else {
-          setVendingStatus('Failed to dispense prize');
-          setTimeout(() => setVendingStatus('Ready'), 3000);
-        }
-      } catch (error) {
-        console.error('[GAME SCREEN] Dispensing error:', error);
-        setVendingStatus('Dispensing error');
-        setTimeout(() => setVendingStatus('Ready'), 3000);
-      }
-    } else {
-      setVendingStatus('Time too short - no prize');
-      setTimeout(() => setVendingStatus('Ready'), 3000);
-    }
   };
 
   // Set up Arduino sensor service
@@ -97,16 +69,23 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
       arduinoSensorService.initialize().then(() => {
         // Set up event handlers
         arduinoSensorService.setEventHandlers({
-          onSensorStart: () => {
-            console.log('Arduino sensor START - triggering hold start');
-            onHoldStart();
+          onSensorStart: (ts?: number) => {
+            console.log('Arduino sensor START - triggering hold start @', ts || Date.now());
+            // Allow parent to accept an explicit timestamp if provided
+            try { onHoldStart(ts as any); } catch (e) { onHoldStart(); }
           },
-          onSensorEnd: () => {
-            console.log('Arduino sensor END - triggering hold end and prize dispensing');
-            handleGameEnd();
+          onSensorEnd: (ts?: number) => {
+            console.log('Arduino sensor END - triggering hold end @', ts || Date.now());
+            // Small safety wait to allow UI to stabilize (helps with very short pulses)
+            const WAIT_MS = 50;
+            setTimeout(() => {
+              // Pass the end timestamp and mark it as a timestamp via second parameter
+              try { onHoldEnd(ts as any, true); } catch (e) { onHoldEnd(undefined, true); }
+            }, WAIT_MS);
           },
-          onSensorChange: (state: number) => {
+          onSensorChange: (state: number, ts?: number) => {
             setArduinoState(state);
+            console.log('Arduino sensor state update:', state, 'ts=', ts || Date.now());
           }
         });
 

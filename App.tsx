@@ -8,6 +8,7 @@ import GameOverScreen from './components/GameOverScreen';
 import EnterDetailsScreen from './components/EnterDetailsScreen';
 import LeaderboardScreen from './components/LeaderboardScreen';
 import FullScreenButton from './components/FullScreenButton';
+import MaintenancePanel from './components/MaintenancePanel';
 import { useIdleTimer } from './hooks/useIdleTimer';
 import * as dataService from './services/dataService';
 import * as prizeService from './services/prizeService';
@@ -20,6 +21,7 @@ const App: React.FC = () => {
   const [leaderboard, setLeaderboard] = useState<Score[]>([]);
   const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null);
   const [playerDetails, setPlayerDetails] = useState<{ name: string; email: string; phone: string } | null>(null);
+  const [showMaintenance, setShowMaintenance] = useState<boolean>(true);
 
   useEffect(() => {
     setLeaderboard(dataService.getLeaderboard());
@@ -66,17 +68,15 @@ const App: React.FC = () => {
     setGameState(GameState.HOLDING);
   }, []);
 
-  const handleHoldEnd = useCallback(async (startTime: number) => {
+  const handleHoldComplete = useCallback(async (duration: number) => {
     if (!playerDetails) {
       console.error("Player details not found. Cannot submit score.");
       resetGame();
       return;
     }
 
-    const endTime = Date.now();
-    const duration = endTime - startTime;
     setFinalTime(duration);
-    
+
     const awardedPrize = await prizeService.checkAndDispensePrize(duration);
     setPrize(awardedPrize);
 
@@ -130,19 +130,44 @@ const App: React.FC = () => {
       const [isHolding, setIsHolding] = useState(false);
       const startTimeRef = React.useRef(0);
 
-      const start = useCallback(() => {
-          startTimeRef.current = Date.now();
+        // Accept an optional start timestamp (ms since epoch)
+        const start = useCallback((startTimestamp?: number) => {
+          startTimeRef.current = typeof startTimestamp === 'number' && startTimestamp > 0 ? startTimestamp : Date.now();
           setIsHolding(true);
           handleHoldStart();
-      }, [handleHoldStart]);
+        }, [handleHoldStart]);
 
-      const end = useCallback(() => {
-          if (startTimeRef.current > 0) {
-              handleHoldEnd(startTimeRef.current);
+        // Accept an optional measured duration (ms). If not provided, compute from startTimeRef.
+        // `value` may be either a measured duration (ms) OR an end timestamp (ms since epoch)
+        // `isTimestamp` disambiguates the meaning when true.
+        const end = useCallback((value?: number, isTimestamp?: boolean) => {
+          let duration: number;
+
+          if (isTimestamp && typeof value === 'number' && startTimeRef.current > 0) {
+            // value is an end timestamp
+            duration = value - startTimeRef.current;
+          } else if (typeof value === 'number' && !isTimestamp) {
+            // value is a measured duration
+            duration = value;
+          } else if (startTimeRef.current > 0) {
+            duration = Date.now() - startTimeRef.current;
+          } else {
+            duration = 0;
           }
+
+          // Diagnostics: log measured vs computed duration and startTimeRef
+          try {
+            console.log('[HOLD TIMER] end called:', { value, isTimestamp, computedFromRef: duration, startTimeRef: startTimeRef.current, timestamp: Date.now() });
+          } catch (e) {
+            // ignore
+          }
+
+          // Fire the completion handler with the resolved duration
+          handleHoldComplete(duration);
+
           setIsHolding(false);
           startTimeRef.current = 0;
-      }, [handleHoldEnd]);
+        }, [handleHoldComplete]);
       
       return { isHolding, start, end };
   };
@@ -175,6 +200,7 @@ const App: React.FC = () => {
     <div className="w-screen h-screen bg-gray-900 text-white font-sans overflow-hidden">
       <FullScreenButton />
       {renderContent()}
+      <MaintenancePanel visible={showMaintenance} onClose={() => setShowMaintenance(false)} />
     </div>
   );
 };

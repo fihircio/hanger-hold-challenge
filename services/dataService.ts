@@ -45,6 +45,17 @@ export const getLeaderboard = async (): Promise<Score[]> => {
 };
 
 export const addScore = async (newScore: Score): Promise<Score[]> => {
+  // Reject clearly invalid times early to avoid sending malformed data to the API
+  if (newScore.time == null || Number.isNaN(Number(newScore.time)) || Number(newScore.time) <= 0) {
+    console.warn('Rejected score with non-positive or invalid time:', newScore);
+    try {
+      const cached = await getLeaderboard();
+      return cached;
+    } catch (err) {
+      return [];
+    }
+  }
+
   try {
     // First, create or get player
     const playerResponse = await apiService.createPlayer({
@@ -53,6 +64,21 @@ export const addScore = async (newScore: Score): Promise<Score[]> => {
       phone: newScore.phone,
     });
     
+    // Validate player response
+    if (!playerResponse || !playerResponse.id) {
+      console.error('Invalid player response when submitting score:', playerResponse);
+      throw new Error('Invalid player response');
+    }
+
+    // Validate time
+    if (newScore.time == null || Number.isNaN(Number(newScore.time))) {
+      console.error('Attempted to submit score without a valid time:', newScore);
+      throw new Error('Missing or invalid time');
+    }
+
+    // Log the exact payload we will send to the API
+    console.log('Submitting score to API:', { player_id: playerResponse.id, time: newScore.time });
+
     // Then submit the score
     const scoreResponse = await apiService.submitScore({
       player_id: playerResponse.id,
@@ -71,6 +97,7 @@ export const addScore = async (newScore: Score): Promise<Score[]> => {
     
     try {
       localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(updatedScores));
+      console.log('Enqueuing score for sync (local fallback):', newScore);
       addToSyncQueue(newScore);
     } catch (cacheError) {
       console.error('Failed to save score to local storage:', cacheError);
@@ -92,6 +119,8 @@ const getSyncQueue = (): Score[] => {
 
 const addToSyncQueue = (score: Score) => {
   const queue = getSyncQueue();
+  // Log what we are adding so we can inspect malformed entries
+  console.log('Adding to sync queue:', score);
   queue.push(score);
   try {
     localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(queue));
@@ -116,13 +145,26 @@ export const syncData = async (): Promise<void> => {
   try {
     // Create a separate function for direct API submission to avoid recursion
     const submitScoreDirectly = async (score: Score): Promise<void> => {
+      // Log the score we're about to sync
+      console.log('Sync: submitting score to API:', score);
+
       // First, create or get player
       const playerResponse = await apiService.createPlayer({
         name: score.name,
         email: score.email,
         phone: score.phone,
       });
-      
+
+      if (!playerResponse || !playerResponse.id) {
+        console.error('Sync: invalid player response for score:', score, playerResponse);
+        throw new Error('Invalid player response during sync');
+      }
+
+      if (score.time == null || Number.isNaN(Number(score.time))) {
+        console.error('Sync: skipping submission for score with invalid time:', score);
+        throw new Error('Invalid score time during sync');
+      }
+
       // Then submit the score
       await apiService.submitScore({
         player_id: playerResponse.id,
@@ -130,12 +172,30 @@ export const syncData = async (): Promise<void> => {
       });
     };
     
+    const remaining: Score[] = [];
     for (const score of queue) {
-      await submitScoreDirectly(score);
+      // Skip and drop invalid queued entries (non-positive times)
+      if (score.time == null || Number.isNaN(Number(score.time)) || Number(score.time) <= 0) {
+        console.warn('Dropping invalid queued score during sync:', score);
+        continue;
+      }
+
+      try {
+        await submitScoreDirectly(score);
+      } catch (err) {
+        // Keep this score for the next sync attempt
+        console.error('Failed to submit queued score, will keep in queue:', score, err);
+        remaining.push(score);
+      }
     }
-    
-    console.log('Sync successful. Clearing queue.');
-    localStorage.removeItem(SYNC_QUEUE_KEY);
+
+    if (remaining.length === 0) {
+      console.log('Sync successful. Clearing queue.');
+      localStorage.removeItem(SYNC_QUEUE_KEY);
+    } else {
+      console.log(`Sync partially successful. ${remaining.length} item(s) remain in queue.`);
+      localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(remaining));
+    }
   } catch (error) {
     console.error('Sync failed. Data remains in queue:', error);
   }

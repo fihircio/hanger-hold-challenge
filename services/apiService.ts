@@ -35,12 +35,12 @@ export interface VendingResult {
   success: boolean;
   score_id: number;
   prize_id: number;
-  prize_name: string;
+  prize_name?: string;
   slot: number;
   command?: string;
   response?: string;
   error?: string;
-  log_id: number;
+  log_id?: number;
 }
 
 class ApiService {
@@ -78,7 +78,7 @@ class ApiService {
   }
 
   async getPlayer(id: number): Promise<Player> {
-    return this.request(`/players/${id}`);
+    return this.request(`/players?id=${id}`);
   }
 
   // Score endpoints
@@ -114,7 +114,7 @@ class ApiService {
   }
 
   async getVendingStatus(): Promise<{ status: string; recent_logs: any[] }> {
-    return this.request('/api/vending/status');
+    return this.request('/vending/status');
   }
 }
 

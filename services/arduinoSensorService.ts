@@ -1,9 +1,9 @@
 // Arduino Sensor Service with debouncing and state management
 
 export interface SensorEventHandlers {
-  onSensorStart?: () => void;
-  onSensorEnd?: () => void;
-  onSensorChange?: (state: number) => void;
+  onSensorStart?: (timestamp?: number) => void;
+  onSensorEnd?: (timestamp?: number) => void;
+  onSensorChange?: (state: number, timestamp?: number) => void;
 }
 
 class ArduinoSensorService {
@@ -12,7 +12,7 @@ class ArduinoSensorService {
   private currentState: number = 0;
   private lastStableState: number = 0;
   private debounceTimer: NodeJS.Timeout | null = null;
-  private readonly DEBOUNCE_DELAY = 200; // ms - require stable state for 200ms
+  private readonly DEBOUNCE_DELAY = 300; // ms - require stable state for 300ms (reduced bounce issues)
   private eventHandlers: SensorEventHandlers = {};
   private serialListenerSetup: boolean = false;
 
@@ -121,11 +121,12 @@ class ArduinoSensorService {
     this.lastStableState = newState;
     this.currentState = newState;
 
-    console.log(`Stable sensor state: ${oldState} -> ${newState}`);
+    const ts = Date.now();
+    console.log(`Stable sensor state: ${oldState} -> ${newState} @ ${ts}`);
 
-    // Trigger appropriate events
+    // Trigger appropriate events (include timestamp for clearer ordering)
     if (this.eventHandlers.onSensorChange) {
-      this.eventHandlers.onSensorChange(newState);
+      try { this.eventHandlers.onSensorChange(newState, ts); } catch (e) { console.error('onSensorChange handler failed', e); }
     }
 
     // Trigger start/end events based on state transitions
@@ -133,13 +134,13 @@ class ArduinoSensorService {
       // Rising edge: sensor detected something
       console.log('Arduino sensor START detected');
       if (this.eventHandlers.onSensorStart) {
-        this.eventHandlers.onSensorStart();
+        try { this.eventHandlers.onSensorStart(ts); } catch (e) { console.error('onSensorStart handler failed', e); }
       }
     } else if (oldState === 1 && newState === 0) {
       // Falling edge: sensor no longer detecting
       console.log('Arduino sensor END detected');
       if (this.eventHandlers.onSensorEnd) {
-        this.eventHandlers.onSensorEnd();
+        try { this.eventHandlers.onSensorEnd(ts); } catch (e) { console.error('onSensorEnd handler failed', e); }
       }
     }
   }

@@ -285,6 +285,32 @@ electron_1.ipcMain.handle('disconnect-serial-port', async () => {
         throw error;
     }
 });
+// IPC handler to return TCN / serial status for the renderer (maintenance)
+electron_1.ipcMain.handle('get-tcn-status', async () => {
+    try {
+        const connected = !!(serialPort && serialPort.isOpen);
+        const mode = serialPortError ? 'mock' : 'native';
+        const portInfo = serialPort ? {
+            path: serialPort.path,
+            baudRate: serialPort.baudRate
+        } : null;
+        // Basic status summary
+        const status = {
+            connected,
+            mode,
+            port: portInfo ? portInfo.path : null,
+            baudRate: portInfo ? portInfo.baudRate : null,
+            lastError: null,
+            connectedToTCN: connected, // best-effort; more advanced handshake can update this
+            timestamp: new Date().toISOString()
+        };
+        return status;
+    }
+    catch (err) {
+        console.error('Error in get-tcn-status handler:', err);
+        return { connected: false, mode: serialPortError ? 'mock' : 'native', lastError: err?.message || String(err) };
+    }
+});
 // Clean up on app quit
 electron_1.app.on('before-quit', async () => {
     if (serialPort && serialPort.isOpen) {

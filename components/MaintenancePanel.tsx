@@ -18,6 +18,7 @@ const MaintenancePanel: React.FC<MaintenancePanelProps> = ({ visible, onClose })
   const [slotInventory, setSlotInventory] = useState<{ [key: number]: number }>({});
   const [slotsNeedingRefill, setSlotsNeedingRefill] = useState<number[]>([]);
   const [vendingStatus, setVendingStatus] = useState<string>('Ready');
+  const [tcnStatus, setTcnStatus] = useState<any>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -67,6 +68,20 @@ const MaintenancePanel: React.FC<MaintenancePanelProps> = ({ visible, onClose })
     setTimeout(() => setVendingStatus('Ready'), 1500);
   };
 
+  const handleRefreshTcnStatus = async () => {
+    try {
+      if (!(window as any).electronAPI || !(window as any).electronAPI.getTcnStatus) {
+        setTcnStatus({ error: 'electronAPI.getTcnStatus not available' });
+        return;
+      }
+      const status = await (window as any).electronAPI.getTcnStatus();
+      setTcnStatus(status);
+    } catch (err) {
+      console.error('[MAINTENANCE PANEL] Failed to fetch TCN status', err);
+      setTcnStatus({ error: err && err.message ? err.message : String(err) });
+    }
+  };
+
   if (!visible) return null;
 
   return (
@@ -90,6 +105,20 @@ const MaintenancePanel: React.FC<MaintenancePanelProps> = ({ visible, onClose })
         </div>
 
         <div className="space-y-4 mt-4">
+          <div className="mb-3">
+            <h3 className="text-lg font-semibold text-white mb-2">TCN / Serial Status</h3>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleRefreshTcnStatus}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
+              >
+                Refresh TCN Status
+              </button>
+              <div className="text-sm text-gray-300">
+                {tcnStatus ? <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(tcnStatus, null, 2)}</pre> : <span>Not fetched</span>}
+              </div>
+            </div>
+          </div>
           <div>
             <h3 className="text-lg font-semibold text-white mb-2">Manual Dispense</h3>
             <div className="grid grid-cols-2 gap-2">

@@ -13,11 +13,11 @@ interface GameOverScreenProps {
 const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalTime, prize, onNext }) => {
   const [showMaintenance, setShowMaintenance] = useState<boolean>(false);
 
-  // Keyboard activation: Ctrl+M opens maintenance, Esc closes it
+  // Keyboard activation: Ctrl+Z opens maintenance, Esc closes it
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
-      if (e.ctrlKey && key === 'm') {
+      if (e.ctrlKey && key === 'z') {
         setShowMaintenance(true);
       } else if (key === 'escape') {
         setShowMaintenance(false);

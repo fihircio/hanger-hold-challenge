@@ -78,6 +78,10 @@ try {
   console.log('[TCN SERIAL] serialport not available, using MockSerialPort');
 }
 
+// Indicate mode (mock vs native) for clearer startup logs
+const IS_TCN_MOCK = SerialPort === MockSerialPort;
+console.log(`[TCN SERIAL] Mode: ${IS_TCN_MOCK ? 'MOCK' : 'NATIVE'}`);
+
 export enum TCNErrorCode {
   NORMAL = 0,
   PHOTOSENSOR_NO_EMISSION_SIGNAL = 1,
@@ -209,7 +213,7 @@ export class TCNSerialService {
       const portsToTry = tcnPorts.length > 0 ? tcnPorts : ports.slice(0, 5);
       
       for (const portInfo of portsToTry) {
-        console.log(`[TCN SERIAL] Trying port: ${portInfo.path}`);
+        console.log(`[TCN SERIAL] Trying port: ${portInfo.path} (manufacturer=${portInfo.manufacturer || 'unknown'})`);
         const connected = await this.connect(portInfo.path, 115200);
         if (connected) {
           console.log(`[TCN SERIAL] Successfully connected to ${portInfo.path}`);
@@ -230,7 +234,7 @@ export class TCNSerialService {
    */
   async connect(portPath: string, baudRate: number = 115200): Promise<boolean> {
     try {
-      console.log(`[TCN SERIAL] Connecting to ${portPath} at ${baudRate} baud...`);
+      console.log(`[TCN SERIAL] Connecting to ${portPath} at ${baudRate} baud... (mode=${IS_TCN_MOCK ? 'MOCK' : 'NATIVE'})`);
       
       this.port = new SerialPort({
         path: portPath,
@@ -251,6 +255,7 @@ export class TCNSerialService {
             resolve(false);
           } else {
             console.log(`[TCN SERIAL] Connected to ${portPath}`);
+            console.log(`[TCN SERIAL] Port details: path=${this.port.path}, baudRate=${this.port.baudRate}`);
             this.isConnected = true;
             this.setupDataParser();
             
@@ -446,7 +451,7 @@ export class TCNSerialService {
     const startTime = Date.now();
     
     try {
-      console.log(`[TCN SERIAL] Dispensing from channel ${channel}`);
+      console.log(`[TCN SERIAL] Dispensing from channel ${channel} (mock=${this.port instanceof MockSerialPort})`);
       
       // Send dispense command
       const command = `DISPENSE ${channel}\r\n`;
@@ -456,6 +461,7 @@ export class TCNSerialService {
       
       if (success) {
         console.log(`[TCN SERIAL] Dispense command sent to channel ${channel}`);
+        console.log('[TCN SERIAL] Waiting for dispense result...');
         
         // Wait for dispense completion
         const result = await this.waitForDispenseResult(channel, 15000);
@@ -546,6 +552,7 @@ export class TCNSerialService {
       
       // For mock system, simulate immediate response after a short delay
       if (this.port instanceof MockSerialPort) {
+        console.log('[TCN SERIAL] Mock mode: simulating dispense result in 1s');
         setTimeout(() => {
           if (!resolved) {
             resolved = true;
