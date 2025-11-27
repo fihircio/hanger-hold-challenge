@@ -182,31 +182,44 @@ export class TCNSerialService {
    */
   async autoConnect(): Promise<boolean> {
     try {
+      console.log('=== TCN SERIAL AUTO-CONNECT ===');
+      console.log(`[TCN SERIAL] MODE: ${IS_TCN_MOCK ? 'MOCK' : 'NATIVE'}`);
       console.log('[TCN SERIAL] Starting auto-detection...');
       
       // Get available serial ports
       const ports = await SerialPort.list();
-      console.log('[TCN SERIAL] Available ports:', ports);
+      console.log(`[TCN SERIAL] Found ${ports.length} available ports:`, ports);
+      console.log(`[TCN SERIAL] Serial implementation: ${this.port instanceof MockSerialPort ? 'MOCK' : 'NATIVE'}`);
+      
+      console.log('[TCN SERIAL] Analyzing ports for TCN compatibility...');
       
       // Look for TCN-compatible adapters (Prolific, CH340, FTDI, Qinheng)
       // and include common serial device path names on macOS (/dev/tty*, /dev/cu*)
       const tcnPorts = ports.filter(port => {
         const mfr = (port.manufacturer || '').toLowerCase();
         const path = (port.path || '').toLowerCase();
-
-        return (
+        
+        console.log(`[TCN SERIAL] Port ${port.path}: manufacturer="${mfr}", pnpId="${port.pnpId || 'N/A'}"`);
+        
+        const isUSBAdapter = (
           mfr.includes('prolific') ||
           mfr.includes('ch340') ||
           mfr.includes('ftdi') ||
           mfr.includes('qinheng') ||
-          // Windows COM-style
-          path.includes('com') ||
-          // macOS/Unix device names
-          path.startsWith('/dev/tty') ||
-          path.startsWith('/dev/cu') ||
           // USB-serial friendly substring
-          path.includes('usbserial')
+          path.includes('usbserial') ||
+          // Check PnP ID for USB devices
+          (port.pnpId && port.pnpId.toLowerCase().includes('usb'))
         );
+        
+        const isCOMPort = path.includes('com');
+        const isUnixDevice = path.startsWith('/dev/tty') || path.startsWith('/dev/cu');
+        
+        const isTCNCompatible = isUSBAdapter || (isCOMPort && !mfr.includes('acpi')) || isUnixDevice;
+        
+        console.log(`[TCN SERIAL] Port ${port.path}: USB=${isUSBAdapter}, COM=${isCOMPort}, Unix=${isUnixDevice}, TCN=${isTCNCompatible}`);
+        
+        return isTCNCompatible;
       });
 
       // Try each likely port
@@ -422,11 +435,19 @@ export class TCNSerialService {
    * Dispense prize by tier (gold, silver, bronze)
    */
   async dispensePrizeByTier(tier: 'gold' | 'silver' | 'bronze'): Promise<TCNDispenseResult> {
+    console.log(`=== TCN DISPENSE REQUEST ===`);
+    console.log(`[TCN SERIAL] Tier: ${tier.toUpperCase()}`);
+    console.log(`[TCN SERIAL] Mode: ${IS_TCN_MOCK ? 'MOCK' : 'NATIVE'}`);
+    console.log(`[TCN SERIAL] Connected: ${this.isConnected}`);
+    console.log(`[TCN SERIAL] Port type: ${this.port instanceof MockSerialPort ? 'MOCK' : 'NATIVE'}`);
+    
     if (!this.isConnected || !this.port) {
       throw new Error('TCN not connected');
     }
 
     const availableChannels = this.prizeChannels[tier];
+    console.log(`[TCN SERIAL] Available ${tier} channels:`, availableChannels);
+    
     const workingChannel = await this.findWorkingChannel(availableChannels);
     
     if (!workingChannel) {
@@ -437,7 +458,30 @@ export class TCNSerialService {
       };
     }
 
+    console.log(`[TCN SERIAL] Selected channel: ${workingChannel}`);
     return await this.dispenseFromChannel(workingChannel);
+  }
+
+  /**
+   * Constructs 6-byte HEX command for TCN UCS-V4.x protocol
+   * Format: 00 FF [SLOT] [CHECKSUM] AA 55
+   */
+  private constructTCNCommand(slotNumber: number): string {
+    if (slotNumber < 1 || slotNumber > 80) {
+      throw new Error('Slot number must be between 1 and 80.');
+    }
+
+    const command = new Uint8Array(6);
+    command[0] = 0x00;  // Command byte
+    command[1] = 0xFF;  // Fixed byte
+    command[2] = slotNumber;  // Slot number
+    command[3] = 0xFF - slotNumber;  // Checksum (0xFF - slot)
+    command[4] = 0xAA;  // Delivery detection ON
+    command[5] = 0x55;  // Delivery detection ON
+
+    return Array.from(command)
+      .map(byte => byte.toString(16).toUpperCase().padStart(2, '0'))
+      .join(' ');
   }
 
   /**
@@ -449,18 +493,25 @@ export class TCNSerialService {
     }
 
     const startTime = Date.now();
+    const isMockMode = this.port instanceof MockSerialPort;
     
     try {
-      console.log(`[TCN SERIAL] Dispensing from channel ${channel} (mock=${this.port instanceof MockSerialPort})`);
+      console.log(`=== TCN CHANNEL DISPENSE ===`);
+      console.log(`[TCN SERIAL] Channel: ${channel}`);
+      console.log(`[TCN SERIAL] Mode: ${isMockMode ? 'MOCK' : 'NATIVE'}`);
+      console.log(`[TCN SERIAL] Port type: ${this.port.constructor.name}`);
       
-      // Send dispense command
-      const command = `DISPENSE ${channel}\r\n`;
+      // Send dispense command using proper TCN HEX format
+      const command = this.constructTCNCommand(channel);
+      console.log(`[TCN SERIAL] Constructed HEX command: ${command}`);
+      
       const success = await this.sendCommand(command, 10000);
       
       const responseTime = Date.now() - startTime;
       
       if (success) {
-        console.log(`[TCN SERIAL] Dispense command sent to channel ${channel}`);
+        console.log(`[TCN SERIAL] ✓ TCN HEX command sent to channel ${channel}: ${command}`);
+        console.log(`[TCN SERIAL] Response time: ${responseTime}ms`);
         console.log('[TCN SERIAL] Waiting for dispense result...');
         
         // Wait for dispense completion
@@ -477,7 +528,7 @@ export class TCNSerialService {
         return {
           success: false,
           channel,
-          error: 'Failed to send dispense command',
+          error: 'Failed to send TCN HEX dispense command',
           responseTime
         };
       }
@@ -602,6 +653,7 @@ export class TCNSerialService {
     }
 
     try {
+      // Use TCN HEX command format for consistency
       const command = `STATUS ${channel}\r\n`;
       const success = await this.sendCommand(command, 3000);
       

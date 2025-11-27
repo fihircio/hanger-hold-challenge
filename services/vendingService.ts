@@ -123,6 +123,10 @@ const simulateDispense = async (tier: 'gold' | 'silver' | 'bronze', prizeId?: nu
   }
 
   const command = constructVendCommand(slotNumber);
+  console.log(`[VENDING SIMULATION] === MOCK MODE - HEX COMMAND DEBUG ===`);
+  console.log(`[VENDING SIMULATION] Tier: ${tier.toUpperCase()}`);
+  console.log(`[VENDING SIMULATION] Selected Slot: ${slotNumber}`);
+  console.log(`[VENDING SIMULATION] HEX Command: ${command}`);
   console.log(`[VENDING SIMULATION] Preparing to send command for slot ${slotNumber}...`);
   console.log(`[VENDING SIMULATION] Command (HEX): ${command}`);
 
@@ -188,6 +192,9 @@ export const dispensePrize = async (slotNumber: number, prizeId?: number, scoreI
   }
   try {
     const command = constructVendCommand(slotNumber);
+    console.log(`[VENDING SIMULATION] === MOCK MODE - HEX COMMAND DEBUG ===`);
+    console.log(`[VENDING SIMULATION] Direct Slot: ${slotNumber}`);
+    console.log(`[VENDING SIMULATION] HEX Command: ${command}`);
     console.log(`[VENDING SIMULATION] Preparing to send command for slot ${slotNumber}...`);
     console.log(`[VENDING SIMULATION] Command (HEX): ${command}`);
 

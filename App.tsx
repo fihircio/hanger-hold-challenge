@@ -13,6 +13,7 @@ import { useIdleTimer } from './hooks/useIdleTimer';
 import * as dataService from './services/dataService';
 import * as prizeService from './services/prizeService';
 import { arduinoSensorService } from './services/arduinoSensorService';
+import { tcnIntegrationService } from './services/tcnIntegrationService';
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(GameState.VIDEO);
@@ -30,6 +31,13 @@ const App: React.FC = () => {
     // Initialize Arduino sensor service globally
     if (window.electronAPI) {
       arduinoSensorService.initialize();
+      
+      // Initialize TCN integration service
+      tcnIntegrationService.initialize().then(success => {
+        console.log(`[APP] TCN Integration initialization: ${success ? 'SUCCESS' : 'FAILED'}`);
+      }).catch(error => {
+        console.error('[APP] TCN Integration initialization error:', error);
+      });
     }
   }, []);
 
@@ -77,6 +85,8 @@ const App: React.FC = () => {
 
     setFinalTime(duration);
 
+    console.log(`[APP] Game completed with duration: ${duration}ms`);
+    
     const awardedPrize = await prizeService.checkAndDispensePrize(duration);
     setPrize(awardedPrize);
 

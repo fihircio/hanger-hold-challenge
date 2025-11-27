@@ -10,7 +10,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Serial port operations
   sendSerialCommand: (command: string) => ipcRenderer.invoke('send-serial-command', command),
   getSerialPorts: () => ipcRenderer.invoke('get-serial-ports'),
-  connectSerialPort: (portPath: string) => ipcRenderer.invoke('connect-serial-port', portPath),
+  connectSerialPort: (portPath: string, baud?: number) => ipcRenderer.invoke('connect-serial-port', portPath, baud),
   disconnectSerialPort: () => ipcRenderer.invoke('disconnect-serial-port'),
   
   // Event listeners for serial data
@@ -45,7 +45,7 @@ export interface ElectronAPI {
     vendorId?: string;
     productId?: string;
   }>>;
-  connectSerialPort: (portPath: string) => Promise<{ success: boolean }>;
+  connectSerialPort: (portPath: string, baud?: number) => Promise<{ success: boolean }>;
   disconnectSerialPort: () => Promise<{ success: boolean; message?: string }>;
   onSerialData: (callback: (data: string) => void) => void;
   onSerialError: (callback: (error: string) => void) => void;

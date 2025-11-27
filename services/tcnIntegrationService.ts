@@ -255,10 +255,15 @@ export class TCNIntegrationService {
               await this.logDispensingToServer(selectedSlot, tier, false, result.error);
             }
           } else {
-            console.log('[TCN INTEGRATION] TCN not available - simulating dispensing');
+            console.log('[TCN INTEGRATION] TCN not available - showing HEX command that would be sent');
+            
+            // Show the HEX command that would be sent (for debugging)
+            const mockHexCommand = this.constructMockHexCommand(selectedSlot);
+            console.log(`[TCN INTEGRATION] MOCK HEX COMMAND: ${mockHexCommand} (slot ${selectedSlot})`);
+            
             // Simulate dispensing and increment count
             await this.incrementSlotCount(selectedSlot);
-            await this.logDispensingToServer(selectedSlot, tier, true, 'Simulated - TCN not connected');
+            await this.logDispensingToServer(selectedSlot, tier, true, `Simulated - TCN not connected (HEX: ${mockHexCommand})`);
           }
         } else {
           console.warn(`[TCN INTEGRATION] No available slots for ${tier} tier - machine may be empty`);
@@ -544,8 +549,8 @@ export class TCNIntegrationService {
   }
 
   /**
-    * Manual prize dispensing with automatic slot selection (for testing)
-    */
+     * Manual prize dispensing with automatic slot selection (for testing)
+     */
   async dispensePrizeManually(tier: 'gold' | 'silver'): Promise<boolean> {
     try {
       console.log(`[TCN INTEGRATION] Manual ${tier} prize dispensing requested`);
@@ -574,15 +579,99 @@ export class TCNIntegrationService {
           return false;
         }
       } else {
-        console.warn('[TCN INTEGRATION] TCN not connected for manual dispensing - simulating');
+        console.warn('[TCN INTEGRATION] TCN not connected for manual dispensing - showing HEX command that would be sent');
+        
+        // Show the HEX command that would be sent (for debugging)
+        const mockHexCommand = this.constructMockHexCommand(selectedSlot);
+        console.log(`[TCN INTEGRATION] MOCK HEX COMMAND: ${mockHexCommand} (slot ${selectedSlot})`);
+        
         await this.incrementSlotCount(selectedSlot);
-        await this.logDispensingToServer(selectedSlot, tier, true, 'Manual dispensing - Simulated');
+        await this.logDispensingToServer(selectedSlot, tier, true, `Manual dispensing - Simulated (HEX: ${mockHexCommand})`);
         return true;
       }
     } catch (error) {
       console.error('[TCN INTEGRATION] Manual dispensing error:', error);
       return false;
     }
+  }
+
+  /**
+   * Handle prize dispensing when game ends (called from prize service)
+   * @param time The game time in milliseconds
+   * @param scoreId Optional score ID for API logging
+   */
+  async handlePrizeDispensing(time: number, scoreId?: string): Promise<void> {
+    try {
+      console.log(`[TCN INTEGRATION] Handling prize dispensing for game time: ${time}ms`);
+      
+      // Determine prize tier based on game time
+      const tier = this.determinePrizeTierByTime(time);
+      
+      if (tier) {
+        console.log(`[TCN INTEGRATION] Game time ${time}ms qualifies for ${tier} prize`);
+        
+        // Get next available slot for this tier with automatic progression
+        const selectedSlot = await this.getNextAvailableSlot(tier);
+        
+        if (selectedSlot) {
+          console.log(`[TCN INTEGRATION] Selected slot ${selectedSlot} for ${tier} prize`);
+           
+          if (tcnSerialService.isConnectedToTCN()) {
+            console.log(`[TCN INTEGRATION] Dispensing ${tier} prize via TCN hardware from slot ${selectedSlot}`);
+            
+            const result = await tcnSerialService.dispenseFromChannel(selectedSlot);
+            
+            if (result.success) {
+              console.log(`[TCN INTEGRATION] ${tier} prize dispensed successfully from slot ${selectedSlot}`);
+              // Increment slot count after successful dispensing
+              await this.incrementSlotCount(selectedSlot);
+              
+              // Log to backend if available
+              await this.logDispensingToServer(selectedSlot, tier, true);
+            } else {
+              console.error(`[TCN INTEGRATION] Failed to dispense ${tier} prize from slot ${selectedSlot}: ${result.error}`);
+              
+              // Log failed attempt
+              await this.logDispensingToServer(selectedSlot, tier, false, result.error);
+            }
+          } else {
+            console.log('[TCN INTEGRATION] TCN not available - showing HEX command that would be sent');
+            
+            // Show HEX command that would be sent (for debugging)
+            const mockHexCommand = this.constructMockHexCommand(selectedSlot);
+            console.log(`[TCN INTEGRATION] MOCK HEX COMMAND: ${mockHexCommand} (slot ${selectedSlot})`);
+            
+            // Simulate dispensing and increment count
+            await this.incrementSlotCount(selectedSlot);
+            await this.logDispensingToServer(selectedSlot, tier, true, `Simulated - TCN not connected (HEX: ${mockHexCommand})`);
+          }
+        } else {
+          console.warn(`[TCN INTEGRATION] No available slots for ${tier} tier - machine may be empty`);
+          // Log out of stock situation
+          await this.logOutOfStockToServer(tier);
+        }
+      } else {
+        console.log('[TCN INTEGRATION] No prize awarded - game time too short');
+      }
+    } catch (error) {
+      console.error('[TCN INTEGRATION] Error handling prize dispensing:', error);
+    }
+  }
+
+  /**
+   * Determine prize tier based on game time (updated for 2-tier system)
+   * @param time Game time in milliseconds
+   * @returns Prize tier or null if no prize
+   */
+  private determinePrizeTierByTime(time: number): 'gold' | 'silver' | null {
+    // Updated prize thresholds for 2-tier system
+    if (time >= 60000) { // 60 seconds or more
+      return 'gold';
+    } else if (time >= 30000) { // 30 seconds or more
+      return 'silver';
+    }
+    
+    return null; // Less than 30 seconds - no prize
   }
 
   /**
@@ -657,6 +746,28 @@ export class TCNIntegrationService {
   private queueOfflineLog(logEntry: any): void {
     // This will be implemented when we create offline storage system
     console.log('[TCN INTEGRATION] Queued offline log:', logEntry);
+  }
+
+  /**
+   * Construct mock HEX command for debugging (same format as TCN Serial service)
+   * Format: 00 FF [SLOT] [CHECKSUM] AA 55
+   */
+  private constructMockHexCommand(slotNumber: number): string {
+    if (slotNumber < 1 || slotNumber > 80) {
+      throw new Error('Slot number must be between 1 and 80.');
+    }
+
+    const command = new Uint8Array(6);
+    command[0] = 0x00;  // Command byte
+    command[1] = 0xFF;  // Fixed byte
+    command[2] = slotNumber;  // Slot number
+    command[3] = 0xFF - slotNumber;  // Checksum (0xFF - slot)
+    command[4] = 0xAA;  // Delivery detection ON
+    command[5] = 0x55;  // Delivery detection ON
+
+    return Array.from(command)
+      .map(byte => byte.toString(16).toUpperCase().padStart(2, '0'))
+      .join(' ');
   }
 }
 

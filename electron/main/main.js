@@ -86,11 +86,16 @@ electron_1.app.whenReady().then(() => {
     createWindow();
     // Initialize serial port
     initializeSerialPort();
+    // Debug: log Node/Electron versions and serial module presence
+    console.log('Process versions:', process.versions);
+    console.log('SerialPort module loaded:', !!SerialPortModule, 'serialPortError:', serialPortError);
     electron_1.app.on('activate', () => {
         // On macOS it's common to re-create a window in the app when the dock icon is clicked
         if (electron_1.BrowserWindow.getAllWindows().length === 0)
             createWindow();
     });
+}).catch(error => {
+    console.error('Electron app initialization failed:', error);
 });
 // Quit when all windows are closed
 electron_1.app.on('window-all-closed', () => {
@@ -102,13 +107,20 @@ electron_1.app.on('window-all-closed', () => {
 async function initializeSerialPort() {
     // Skip serial port initialization if module failed to load
     if (serialPortError) {
-        console.log('Skipping serial port initialization due to module loading error');
+        console.log('=== SERIAL PORT STATUS ===');
+        console.log('MODE: MOCK (SerialPort module failed to load)');
+        console.log('REASON: SerialPort module not available');
+        console.log('All serial operations will be simulated');
         return;
     }
     try {
         // Try to detect available serial ports
         const ports = await SerialPortModule.SerialPort.list();
+        console.log('=== SERIAL PORT DETECTION ===');
+        console.log('SerialPort module status: LOADED');
+        console.log('Available serial ports found:', ports.length);
         console.log('Available serial ports:', ports);
+        console.log('Platform:', process.platform);
         // Platform-specific default port
         const isWindows = process.platform === 'win32';
         let portPath = isWindows ? 'COM1' : '/dev/ttyUSB0'; // default fallback
@@ -160,13 +172,36 @@ async function initializeSerialPort() {
                 }
             }
         }
-        serialPort = new SerialPort({
-            path: portPath,
-            baudRate: 9600,
-            dataBits: 8,
-            parity: 'none',
-            stopBits: 1,
-        });
+        // Try common baud rates (prefer 115200 for modern devices like TCN/Arduino) and fall back to 9600
+        const candidateBaudRates = [115200, 9600];
+        let opened = false;
+        for (const br of candidateBaudRates) {
+            try {
+                serialPort = new SerialPort({
+                    path: portPath,
+                    baudRate: br,
+                    dataBits: 8,
+                    parity: 'none',
+                    stopBits: 1,
+                });
+                // Wait briefly for open event; some SerialPort builds expose .open callback
+                // We'll attach listeners and break if successful
+                serialPort.on('open', () => {
+                    console.log(`Serial port ${portPath} opened at baud ${br}`);
+                });
+                // If no error thrown by constructor, assume success for now
+                opened = true;
+                break;
+            }
+            catch (openErr) {
+                console.warn(`Failed to open ${portPath} at baud ${br}:`, openErr);
+                // try next baud rate
+            }
+        }
+        if (!opened) {
+            // Last resort: try default 9600 in case constructor didn't throw but port not open
+            serialPort = new SerialPort({ path: portPath, baudRate: 9600, dataBits: 8, parity: 'none', stopBits: 1 });
+        }
         serialPort.on('open', () => {
             console.log(`Serial port ${portPath} opened`);
         });
@@ -247,7 +282,7 @@ electron_1.ipcMain.handle('get-serial-ports', async () => {
         return [];
     }
 });
-electron_1.ipcMain.handle('connect-serial-port', async (event, portPath) => {
+electron_1.ipcMain.handle('connect-serial-port', async (event, portPath, baudRate) => {
     if (serialPortError) {
         throw new Error('Serial Port module is not available. Please reinstall the application.');
     }
@@ -255,13 +290,16 @@ electron_1.ipcMain.handle('connect-serial-port', async (event, portPath) => {
         if (serialPort && serialPort.isOpen) {
             await serialPort.close();
         }
+        // Accept an optional baud rate parameter from the renderer
+        const br = baudRate || 9600;
         serialPort = new SerialPort({
             path: portPath,
-            baudRate: 9600,
+            baudRate: br,
             dataBits: 8,
             parity: 'none',
             stopBits: 1,
         });
+        console.log(`Attempting to connect to serial port ${portPath} at baud ${br}`);
         return { success: true };
     }
     catch (error) {
@@ -294,15 +332,35 @@ electron_1.ipcMain.handle('get-tcn-status', async () => {
             path: serialPort.path,
             baudRate: serialPort.baudRate
         } : null;
+        console.log('=== TCN STATUS REQUEST ===');
+        console.log('Mode:', mode.toUpperCase());
+        console.log('Connected:', connected);
+        console.log('Port Info:', portInfo);
+        // Also collect available ports list when serial module is present
+        let ports = [];
+        if (!serialPortError && SerialPortModule && SerialPortModule.SerialPort && SerialPortModule.SerialPort.list) {
+            try {
+                const listed = await SerialPortModule.SerialPort.list();
+                ports = listed.map((p) => ({ path: p.path, manufacturer: p.manufacturer, vendorId: p.vendorId, productId: p.productId, serialNumber: p.serialNumber }));
+            }
+            catch (listErr) {
+                console.error('Failed to list serial ports for status:', listErr);
+            }
+        }
         // Basic status summary
         const status = {
             connected,
             mode,
             port: portInfo ? portInfo.path : null,
             baudRate: portInfo ? portInfo.baudRate : null,
+            ports,
             lastError: null,
             connectedToTCN: connected, // best-effort; more advanced handshake can update this
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            // Add explicit detection flags
+            isMockMode: serialPortError,
+            hasRealHardware: ports.length > 0 && !serialPortError,
+            serialModuleLoaded: !!SerialPortModule && !serialPortError
         };
         return status;
     }

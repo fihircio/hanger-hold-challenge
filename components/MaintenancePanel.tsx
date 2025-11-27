@@ -82,6 +82,49 @@ const MaintenancePanel: React.FC<MaintenancePanelProps> = ({ visible, onClose })
     }
   };
 
+  const handleConnectPort = async (path: string) => {
+    try {
+      if (!(window as any).electronAPI || !(window as any).electronAPI.connectSerialPort) {
+        setTcnStatus({ error: 'electronAPI.connectSerialPort not available' });
+        return;
+      }
+      await (window as any).electronAPI.connectSerialPort(path);
+      // refresh
+      await handleRefreshTcnStatus();
+    } catch (err) {
+      console.error('[MAINTENANCE PANEL] Failed to connect to port', err);
+      setTcnStatus({ error: err && err.message ? err.message : String(err) });
+    }
+  };
+
+  const handleConnectPortWithBaud = async (path: string, baud: number) => {
+    try {
+      if (!(window as any).electronAPI || !(window as any).electronAPI.connectSerialPort) {
+        setTcnStatus({ error: 'electronAPI.connectSerialPort not available' });
+        return;
+      }
+      await (window as any).electronAPI.connectSerialPort(path, baud);
+      await handleRefreshTcnStatus();
+    } catch (err) {
+      console.error('[MAINTENANCE PANEL] Failed to connect to port with baud', err);
+      setTcnStatus({ error: err && err.message ? err.message : String(err) });
+    }
+  };
+
+  const handleDisconnectPort = async () => {
+    try {
+      if (!(window as any).electronAPI || !(window as any).electronAPI.disconnectSerialPort) {
+        setTcnStatus({ error: 'electronAPI.disconnectSerialPort not available' });
+        return;
+      }
+      await (window as any).electronAPI.disconnectSerialPort();
+      await handleRefreshTcnStatus();
+    } catch (err) {
+      console.error('[MAINTENANCE PANEL] Failed to disconnect port', err);
+      setTcnStatus({ error: err && err.message ? err.message : String(err) });
+    }
+  };
+
   if (!visible) return null;
 
   return (
@@ -115,7 +158,42 @@ const MaintenancePanel: React.FC<MaintenancePanelProps> = ({ visible, onClose })
                 Refresh TCN Status
               </button>
               <div className="text-sm text-gray-300">
-                {tcnStatus ? <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(tcnStatus, null, 2)}</pre> : <span>Not fetched</span>}
+                {tcnStatus ? (
+                  <div className="text-xs">
+                    <div className="mb-1">Mode: <strong>{tcnStatus.mode}</strong> — Connected: <strong>{String(tcnStatus.connected)}</strong></div>
+                    <div className="mb-1">Selected Port: <strong>{tcnStatus.port || 'None'}</strong> {tcnStatus.baudRate ? `(baud ${tcnStatus.baudRate})` : ''}</div>
+                    {tcnStatus.lastError ? <div className="text-red-400">Error: {tcnStatus.lastError}</div> : null}
+                    <div className="mt-2">
+                      <div className="font-semibold">Available Ports:</div>
+                      <div className="mt-2 mb-2">
+                        <button onClick={() => handleConnectPortWithBaud('COM1', 115200)} className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-xs">Auto-connect COM1 @115200</button>
+                        <span className="text-gray-400 text-xs ml-2">(Quick test if COM1 is your device)</span>
+                      </div>
+                      {Array.isArray(tcnStatus.ports) && tcnStatus.ports.length > 0 ? (
+                        <div className="mt-1 grid gap-1">
+                          {tcnStatus.ports.map((p: any) => (
+                            <div key={p.path} className="flex items-center justify-between bg-gray-800 p-1 rounded">
+                              <div className="text-xs">
+                                <div className="font-semibold">{p.path}</div>
+                                <div className="text-gray-400">{p.manufacturer || ''} {p.vendorId ? ` · vid:${p.vendorId}` : ''} {p.productId ? ` · pid:${p.productId}` : ''}</div>
+                              </div>
+                              <div className="ml-2 flex gap-1">
+                                <button onClick={() => handleConnectPort(p.path)} className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs">Connect</button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-gray-500">No ports found</div>
+                      )}
+                    </div>
+
+                    <div className="mt-2 flex gap-2">
+                      <button onClick={handleDisconnectPort} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs">Disconnect</button>
+                      <button onClick={handleRefreshTcnStatus} className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-xs">Refresh</button>
+                    </div>
+                  </div>
+                ) : <span>Not fetched</span>}
               </div>
             </div>
           </div>

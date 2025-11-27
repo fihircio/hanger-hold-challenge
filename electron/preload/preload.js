@@ -10,7 +10,7 @@ electron_1.contextBridge.exposeInMainWorld('electronAPI', {
     // Serial port operations
     sendSerialCommand: (command) => electron_1.ipcRenderer.invoke('send-serial-command', command),
     getSerialPorts: () => electron_1.ipcRenderer.invoke('get-serial-ports'),
-    connectSerialPort: (portPath) => electron_1.ipcRenderer.invoke('connect-serial-port', portPath),
+    connectSerialPort: (portPath, baud) => electron_1.ipcRenderer.invoke('connect-serial-port', portPath, baud),
     disconnectSerialPort: () => electron_1.ipcRenderer.invoke('disconnect-serial-port'),
     // Event listeners for serial data
     onSerialData: (callback) => {
