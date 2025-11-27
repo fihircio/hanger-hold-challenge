@@ -68,7 +68,14 @@ export class TCNIntegrationService {
       const tcnConnected = await tcnSerialService.autoConnect();
       
       if (!tcnConnected) {
-        console.warn('[TCN INTEGRATION] TCN hardware not available, will use simulation');
+        console.warn('[TCN INTEGRATION] Auto-connect failed, trying COM1 force connection...');
+        const forceConnected = await tcnSerialService.forceConnectCOM1();
+        
+        if (!forceConnected) {
+          console.warn('[TCN INTEGRATION] TCN hardware not available, will use simulation');
+        } else {
+          console.log('[TCN INTEGRATION] TCN hardware connected successfully via COM1 force');
+        }
       } else {
         console.log('[TCN INTEGRATION] TCN hardware connected successfully');
       }

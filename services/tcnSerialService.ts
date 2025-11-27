@@ -75,7 +75,8 @@ try {
   }
   console.log('[TCN SERIAL] Using native serialport implementation');
 } catch (e) {
-  console.log('[TCN SERIAL] serialport not available, using MockSerialPort');
+  console.error('[TCN SERIAL] CRITICAL: serialport not available, using MockSerialPort');
+  console.error('[TCN SERIAL] Try: npm rebuild serialport or npx electron-rebuild');
 }
 
 // Indicate mode (mock vs native) for clearer startup logs
@@ -175,26 +176,55 @@ export class TCNSerialService {
 
   constructor() {
     this.initializeEventListeners();
+    
+    // Add COM1 priority for your vending PC
+    console.log('[TCN SERIAL] TCN Service initialized with COM1 priority');
   }
 
   /**
-   * Auto-detect and connect to TCN vending controller
+   * Auto-detect and connect to TCN vending controller - COM1 Priority Version
    */
   async autoConnect(): Promise<boolean> {
     try {
       console.log('=== TCN SERIAL AUTO-CONNECT ===');
       console.log(`[TCN SERIAL] MODE: ${IS_TCN_MOCK ? 'MOCK' : 'NATIVE'}`);
-      console.log('[TCN SERIAL] Starting auto-detection...');
+      console.log('[TCN SERIAL] Starting COM1 priority auto-detection...');
+      
+      // CRITICAL: Force native mode if possible
+      if (SerialPort === MockSerialPort) {
+        console.error('[TCN SERIAL] CRITICAL: Still in mock mode - serialport package not loading properly');
+        console.error('[TCN SERIAL] Try: npm rebuild serialport or npx electron-rebuild');
+        return false;
+      }
+      
+      console.log('[TCN SERIAL] Using native serialport implementation');
       
       // Get available serial ports
       const ports = await SerialPort.list();
       console.log(`[TCN SERIAL] Found ${ports.length} available ports:`, ports);
-      console.log(`[TCN SERIAL] Serial implementation: ${this.port instanceof MockSerialPort ? 'MOCK' : 'NATIVE'}`);
       
+      // PRIORITY 1: Try COM1 first (your working TCN controller)
+      const com1Port = ports.find(port =>
+        port.path.toLowerCase().includes('com1') ||
+        port.path.toLowerCase() === 'com1'
+      );
+      
+      if (com1Port) {
+        console.log('[TCN SERIAL] PRIORITY 1: Found COM1, attempting connection...');
+        console.log(`[TCN SERIAL] COM1 Details:`, com1Port);
+        const connected = await this.connect('COM1', 115200);
+        if (connected) {
+          console.log('[TCN SERIAL] ✓ Successfully connected to COM1 (TCN Controller)');
+          return true;
+        } else {
+          console.log('[TCN SERIAL] ✗ Failed to connect to COM1');
+        }
+      } else {
+        console.log('[TCN SERIAL] COM1 not found in port list');
+      }
+      
+      // PRIORITY 2: Look for TCN-compatible USB adapters
       console.log('[TCN SERIAL] Analyzing ports for TCN compatibility...');
-      
-      // Look for TCN-compatible adapters (Prolific, CH340, FTDI, Qinheng)
-      // and include common serial device path names on macOS (/dev/tty*, /dev/cu*)
       const tcnPorts = ports.filter(port => {
         const mfr = (port.manufacturer || '').toLowerCase();
         const path = (port.path || '').toLowerCase();
@@ -212,7 +242,7 @@ export class TCNSerialService {
           (port.pnpId && port.pnpId.toLowerCase().includes('usb'))
         );
         
-        const isCOMPort = path.includes('com');
+        const isCOMPort = path.includes('com') && !path.includes('com1'); // Exclude COM1 (already tried)
         const isUnixDevice = path.startsWith('/dev/tty') || path.startsWith('/dev/cu');
         
         const isTCNCompatible = isUSBAdapter || (isCOMPort && !mfr.includes('acpi')) || isUnixDevice;
@@ -222,22 +252,66 @@ export class TCNSerialService {
         return isTCNCompatible;
       });
 
-      // Try each likely port
-      const portsToTry = tcnPorts.length > 0 ? tcnPorts : ports.slice(0, 5);
-      
-      for (const portInfo of portsToTry) {
-        console.log(`[TCN SERIAL] Trying port: ${portInfo.path} (manufacturer=${portInfo.manufacturer || 'unknown'})`);
+      console.log(`[TCN SERIAL] Found ${tcnPorts.length} TCN-compatible ports:`, tcnPorts);
+
+      // Try each TCN-compatible port
+      for (const portInfo of tcnPorts) {
+        console.log(`[TCN SERIAL] PRIORITY 2: Trying port: ${portInfo.path} (manufacturer=${portInfo.manufacturer || 'unknown'})`);
         const connected = await this.connect(portInfo.path, 115200);
         if (connected) {
-          console.log(`[TCN SERIAL] Successfully connected to ${portInfo.path}`);
+          console.log(`[TCN SERIAL] ✓ Successfully connected to ${portInfo.path}`);
           return true;
         }
       }
       
-      console.error('[TCN SERIAL] Failed to connect to any TCN port');
+      // PRIORITY 3: Try any remaining serial ports
+      const remainingPorts = ports.filter(port =>
+        !port.path.toLowerCase().includes('com1') &&
+        !tcnPorts.some(tcnPort => tcnPort.path === port.path)
+      );
+      
+      for (const portInfo of remainingPorts.slice(0, 3)) { // Limit to first 3
+        console.log(`[TCN SERIAL] PRIORITY 3: Trying remaining port: ${portInfo.path}`);
+        const connected = await this.connect(portInfo.path, 115200);
+        if (connected) {
+          console.log(`[TCN SERIAL] ✓ Successfully connected to ${portInfo.path}`);
+          return true;
+        }
+      }
+      
+      console.error('[TCN SERIAL] ✗ Failed to connect to any serial port');
+      console.error('[TCN SERIAL] Available ports were:', ports.map(p => p.path));
       return false;
     } catch (error) {
       console.error('[TCN SERIAL] Auto-detection failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Force connection to COM1 (for your specific vending PC setup)
+   */
+  async forceConnectCOM1(): Promise<boolean> {
+    try {
+      console.log('[TCN SERIAL] FORCING COM1 CONNECTION...');
+      
+      if (SerialPort === MockSerialPort) {
+        console.error('[TCN SERIAL] Cannot force COM1 - still in mock mode');
+        return false;
+      }
+      
+      console.log('[TCN SERIAL] Attempting direct COM1 connection...');
+      const connected = await this.connect('COM1', 115200);
+      
+      if (connected) {
+        console.log('[TCN SERIAL] ✓ FORCE CONNECTED to COM1 successfully!');
+        return true;
+      } else {
+        console.log('[TCN SERIAL] ✗ Force connection to COM1 failed');
+        return false;
+      }
+    } catch (error) {
+      console.error('[TCN SERIAL] Force COM1 connection error:', error);
       return false;
     }
   }

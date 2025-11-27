@@ -61,3 +61,22 @@ PS C:\Users\Administrator> $tcnAdapters = Get-PnpDevice -Class Ports | Where-Obj
 >> }
 No TCN-compatible adapters found
 PS C:\Users\Administrator>
+
+>>     Write-Host "No TCN-compatible adapters found" -ForegroundColor Red
+>> }
+No TCN-compatible adapters found
+PS C:\Users\Administrator> Get-PnpDevice -Class Ports | Where-Object {$_.FriendlyName -match "(Prolific|CH340|FTDI)"} | Select-Object FriendlyName, Status
+PS C:\Users\Administrator> try {
+>>     $port = New-Object System.IO.Ports.SerialPort "COM1", 115200, 'None', 8, 1
+>>     $port.Open()
+>>     if ($port.IsOpen) {
+>>         Write-Host "COM1 is accessible and can be opened" -ForegroundColor Green
+>>         $port.Close()
+>>     } else {
+>>         Write-Host "COM1 cannot be opened" -ForegroundColor Red
+>>     }
+>> } catch {
+>>     Write-Host "Error accessing COM1: $($_.Exception.Message)" -ForegroundColor Red
+>> }
+COM1 is accessible and can be opened
+PS C:\Users\Administrator>
