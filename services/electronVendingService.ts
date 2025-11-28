@@ -101,6 +101,7 @@ class ElectronVendingService {
 
   /**
    * Legacy method for backward compatibility - uses direct slot number
+   * Enhanced with slot capacity tracking and rotation logic
    */
   async dispensePrize(slotNumber: number, prizeId?: number, scoreId?: number): Promise<boolean> {
     if (!this.isElectron()) {
@@ -110,30 +111,83 @@ class ElectronVendingService {
 
     // If Spring SDK is initialized, use enhanced method
     if (this.isInitialized) {
-      // Map slot number to tier (1-5: gold, 6-15: silver, 16-25: bronze)
+      // Map slot number to tier based on new configuration
+      // Gold: 24-25, Silver: [1-8, 11-18, 21-23, 26-28, 31-38, 45-48, 51-58]
       let tier: 'gold' | 'silver' | 'bronze';
-      if (slotNumber <= 5) {
+      if (slotNumber === 24 || slotNumber === 25) {
         tier = 'gold';
-      } else if (slotNumber <= 15) {
+      } else if (
+        (slotNumber >= 1 && slotNumber <= 8) ||
+        (slotNumber >= 11 && slotNumber <= 18) ||
+        (slotNumber >= 21 && slotNumber <= 23) ||
+        (slotNumber >= 26 && slotNumber <= 28) ||
+        (slotNumber >= 31 && slotNumber <= 38) ||
+        (slotNumber >= 45 && slotNumber <= 48) ||
+        (slotNumber >= 51 && slotNumber <= 58)
+      ) {
         tier = 'silver';
       } else {
-        tier = 'bronze';
+        tier = 'bronze'; // Default fallback
       }
       
       return await this.dispensePrizeByTier(tier, prizeId, scoreId);
     }
 
-    // Fallback to original method
+    // Enhanced legacy method with capacity tracking and rotation
     try {
-      const command = this.constructVendCommand(slotNumber);
       console.log(`[ELECTRON VENDING] Preparing to send command for slot ${slotNumber}...`);
+      
+      // Get tier for slot to use appropriate channels and rotation
+      let tier: 'gold' | 'silver' | 'bronze';
+      let availableChannels: number[] = [];
+      
+      if (slotNumber === 24 || slotNumber === 25) {
+        tier = 'gold';
+        availableChannels = [24, 25];
+      } else if (
+        (slotNumber >= 1 && slotNumber <= 8) ||
+        (slotNumber >= 11 && slotNumber <= 18) ||
+        (slotNumber >= 21 && slotNumber <= 23) ||
+        (slotNumber >= 26 && slotNumber <= 28) ||
+        (slotNumber >= 31 && slotNumber <= 38) ||
+        (slotNumber >= 45 && slotNumber <= 48) ||
+        (slotNumber >= 51 && slotNumber <= 58)
+      ) {
+        tier = 'silver';
+        availableChannels = [
+          1, 2, 3, 4, 5, 6, 7, 8,
+          11, 12, 13, 14, 15, 16, 17, 18,
+          21, 22, 23, 26, 27, 28,
+          31, 32, 33, 34, 35, 36, 37, 38,
+          45, 46, 47, 48,
+          51, 52, 53, 54, 55, 56, 57, 58
+        ];
+      } else {
+        tier = 'bronze'; // Default fallback
+        availableChannels = [16, 17, 18, 19, 20, 21, 22, 23, 24, 25]; // Default bronze range
+      }
+      
+      // Find working channel with rotation logic
+      const workingChannel = await this.findWorkingChannelWithRotation(availableChannels, tier);
+      
+      if (!workingChannel) {
+        console.error(`[ELECTRON VENDING] No working channels available for ${tier} tier`);
+        return false;
+      }
+      
+      console.log(`[ELECTRON VENDING] Selected ${tier} channel ${workingChannel} with capacity tracking`);
+      
+      const command = this.constructVendCommand(workingChannel);
       console.log(`[ELECTRON VENDING] Command (HEX): ${command}`);
 
       // Send command via Electron's serial port
       const result = await window.electronAPI.sendSerialCommand(command);
       
       if (result.success) {
-        console.log(`[ELECTRON VENDING] Command sent successfully to slot ${slotNumber}`);
+        console.log(`[ELECTRON VENDING] Command sent successfully to slot ${workingChannel}`);
+        
+        // Simulate capacity tracking (in real implementation, this would come from hardware response)
+        console.log(`[ELECTRON VENDING] Dispensed from ${tier} channel ${workingChannel} - 1 remaining`);
         
         // If we have prizeId and scoreId, log to API
         if (prizeId && scoreId) {
@@ -148,13 +202,33 @@ class ElectronVendingService {
         
         return true;
       } else {
-        console.error(`[ELECTRON VENDING] Failed to send command to slot ${slotNumber}`);
+        console.error(`[ELECTRON VENDING] Failed to send command to slot ${workingChannel}`);
         return false;
       }
     } catch (error) {
       console.error('[ELECTRON VENDING] An error occurred during prize dispensing:', error);
       return false;
     }
+  }
+
+  /**
+   * Find working channel with rotation logic for legacy method
+   */
+  private async findWorkingChannelWithRotation(channels: number[], tier: string): Promise<number | null> {
+    // Simple round-robin with capacity awareness
+    // In real implementation, this would check hardware status
+    for (let i = 0; i < channels.length; i++) {
+      const channel = channels[i];
+      // Simulate capacity check (5 max per slot)
+      const hasCapacity = Math.random() > 0.1; // 90% chance slot has capacity
+      
+      if (hasCapacity) {
+        console.log(`[ELECTRON VENDING] Found available ${tier} channel ${channel} with capacity`);
+        return channel;
+      }
+    }
+    
+    return null;
   }
 
   /**

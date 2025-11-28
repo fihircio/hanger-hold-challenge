@@ -47,15 +47,14 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
     
     console.log(`[GAME SCREEN] Game ended with time: ${finalTime}ms`);
     
-    // Calculate tier based on time
-    let tier: 'gold' | 'silver' | 'bronze' | null = null;
+    // Calculate tier based on time (Silver and Gold only)
+    let tier: 'gold' | 'silver' | null = null;
     if (finalTime >= 60000) {
       tier = 'gold';
-    } else if (finalTime >= 30000) {
+    } else if (finalTime >= 3000) {
       tier = 'silver';
-    } else if (finalTime >= 10000) {
-      tier = 'bronze';
     }
+    // No bronze tier - anything below 3 seconds gets no prize
     
     if (tier) {
       setVendingStatus(`Dispensing ${tier} prize...`);

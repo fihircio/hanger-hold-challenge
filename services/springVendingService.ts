@@ -35,6 +35,8 @@ export interface ChannelStatus {
   hasProduct: boolean;
   errorCode: SpringErrorCode;
   lastChecked: Date;
+  remainingCapacity: number; // Tracks remaining items (max 5 per slot)
+  totalDispensed: number; // Tracks total dispensed from this slot
 }
 
 export interface DispenseResult {
@@ -102,12 +104,20 @@ class SpringVendingService {
   private isConnected: boolean = false;
   private lastError: SpringError | null = null;
   private lastSelfCheck: SelfCheckResult | null = null;
+  private readonly maxSlotCapacity = 5; // Max 5 items per slot
+  private silverSlotIndex: Map<string, number> = new Map(); // Track current index for each tier
   
-  // Gold, Silver, Bronze channel mapping (1-25 channels total)
+  // Gold, Silver channel mapping with custom slot arrangement
   private readonly prizeChannels = {
-    gold: [1, 2, 3, 4, 5],
-    silver: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-    bronze: [16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+    gold: [24, 25],
+    silver: [
+      1, 2, 3, 4, 5, 6, 7, 8,
+      11, 12, 13, 14, 15, 16, 17, 18,
+      21, 22, 23, 26, 27, 28,
+      31, 32, 33, 34, 35, 36, 37, 38,
+      45, 46, 47, 48,
+      51, 52, 53, 54, 55, 56, 57, 58
+    ]
   };
 
   // Error descriptions and actions
@@ -316,7 +326,7 @@ class SpringVendingService {
 
   async dispensePrizeByTier(tier: 'gold' | 'silver' | 'bronze'): Promise<DispenseResult> {
     const availableChannels = this.prizeChannels[tier];
-    const workingChannel = await this.findWorkingChannel(availableChannels);
+    const workingChannel = await this.findWorkingChannelWithRotation(availableChannels, tier);
     
     if (!workingChannel) {
       return {
@@ -334,6 +344,18 @@ class SpringVendingService {
     try {
       console.log(`[SPRING VENDING] Dispensing ${tier} prize from channel ${channel}`);
       
+      // Get current channel status
+      const currentStatus = this.channelStatus.get(channel);
+      if (!currentStatus || currentStatus.remainingCapacity <= 0) {
+        return {
+          success: false,
+          error: `Channel ${channel} has no remaining capacity`,
+          tier: tier as 'gold' | 'silver' | 'bronze',
+          channel,
+          errorCode: SpringErrorCode.NO_SHIPMENT_DETECTED
+        };
+      }
+      
       // Select channel first
       const selectResult = await this.selectChannel(channel);
       if (!selectResult.success) {
@@ -341,10 +363,20 @@ class SpringVendingService {
       }
       
       // Start shipping with drop detection
-      const shipResult = await this.shipWithDetection(channel);
+      const shipResult = await this.shipWithDetection(channel, tier);
       
       if (shipResult.success) {
         console.log(`[SPRING VENDING] Successfully dispensed ${tier} prize from channel ${channel}`);
+        
+        // Update channel capacity and dispensed count
+        const updatedStatus: ChannelStatus = {
+          ...currentStatus,
+          remainingCapacity: currentStatus.remainingCapacity - 1,
+          totalDispensed: currentStatus.totalDispensed + 1,
+          hasProduct: currentStatus.remainingCapacity > 1 // Still has product if capacity > 1
+        };
+        this.channelStatus.set(channel, updatedStatus);
+        
         this.logDispensing(channel, tier, true);
       } else {
         console.error(`[SPRING VENDING] Failed to dispense from channel ${channel}: ${shipResult.error}`);
@@ -370,8 +402,11 @@ class SpringVendingService {
     }
   }
 
-  private async shipWithDetection(channel: number): Promise<ShipResult> {
+  private async shipWithDetection(channel: number, tier: string): Promise<ShipResult> {
     return new Promise((resolve) => {
+      // Set timeout based on tier (3 seconds for silver)
+      const timeoutMs = tier === 'silver' ? 3000 : 10000;
+      
       const command = this.buildSpringCommand(SpringVendingCommands.SHIP_WITH_METHOD, {
         channel,
         method: 1, // Test method
@@ -412,18 +447,18 @@ class SpringVendingService {
       // Send command with timeout
       this.sendSpringCommand(command);
       
-      // Set timeout for shipping (10 seconds)
+      // Set timeout for shipping (3 seconds for silver, 10 seconds for others)
       setTimeout(() => {
         this.removeEventListener('SHIPPING', shippingListener);
         this.removeEventListener('SHIPMENT_SUCCESS', shippingListener);
         this.removeEventListener('SHIPMENT_FAILURE', shippingListener);
-        resolve({ 
-          success: false, 
-          channel, 
+        resolve({
+          success: false,
+          channel,
           error: 'Shipping timeout',
-          errorCode: SpringErrorCode.NO_RESPONSE_TIMEOUT 
+          errorCode: SpringErrorCode.NO_RESPONSE_TIMEOUT
         });
-      }, 10000);
+      }, timeoutMs);
     });
   }
 
@@ -454,6 +489,30 @@ class SpringVendingService {
     });
   }
 
+  private async findWorkingChannelWithRotation(channels: number[], tier: string): Promise<number | null> {
+    // Get current index for this tier (default to 0 if not set)
+    const currentIndex = this.silverSlotIndex.get(tier) || 0;
+    const totalChannels = channels.length;
+    
+    // Start from current index and loop through all channels
+    for (let i = 0; i < totalChannels; i++) {
+      const channelIndex = (currentIndex + i) % totalChannels;
+      const channel = channels[channelIndex];
+      const status = await this.queryChannelStatus(channel);
+      
+      if (status.isHealthy && status.hasProduct && status.remainingCapacity > 0) {
+        // Update index to next channel for future calls
+        const nextIndex = (channelIndex + 1) % totalChannels;
+        this.silverSlotIndex.set(tier, nextIndex);
+        
+        console.log(`[SPRING VENDING] Selected ${tier} channel ${channel} (index ${channelIndex}, capacity ${status.remainingCapacity})`);
+        return channel;
+      }
+    }
+    
+    return null;
+  }
+
   private async findWorkingChannel(channels: number[]): Promise<number | null> {
     for (const channel of channels) {
       const status = await this.queryChannelStatus(channel);
@@ -477,7 +536,9 @@ class SpringVendingService {
             isHealthy: event.errorCode === SpringErrorCode.NORMAL,
             hasProduct: event.hasProduct || false,
             errorCode: event.errorCode || SpringErrorCode.NORMAL,
-            lastChecked: new Date()
+            lastChecked: new Date(),
+            remainingCapacity: this.maxSlotCapacity,
+            totalDispensed: 0
           };
           
           this.channelStatus.set(channel, channelStatus);
@@ -496,7 +557,9 @@ class SpringVendingService {
           isHealthy: false,
           hasProduct: false,
           errorCode: SpringErrorCode.NO_RESPONSE_TIMEOUT,
-          lastChecked: new Date()
+          lastChecked: new Date(),
+          remainingCapacity: this.maxSlotCapacity,
+          totalDispensed: 0
         };
         this.channelStatus.set(channel, timeoutStatus);
         resolve(timeoutStatus);
@@ -508,7 +571,11 @@ class SpringVendingService {
     console.log('[SPRING VENDING] Querying all channel status...');
     const promises = [];
     
-    for (let i = 1; i <= 25; i++) {
+    // Query all configured channels (up to slot 58 based on new configuration)
+    const allChannels = [...this.prizeChannels.gold, ...this.prizeChannels.silver];
+    const maxChannel = Math.max(...allChannels);
+    
+    for (let i = 1; i <= maxChannel; i++) {
       promises.push(this.queryChannelStatus(i));
     }
     
@@ -658,10 +725,14 @@ class SpringVendingService {
     const healthyChannels = Array.from(this.channelStatus.values())
       .filter(status => status.isHealthy).length;
     
+    // Calculate total channels based on current configuration
+    const allChannels = [...this.prizeChannels.gold, ...this.prizeChannels.silver];
+    const maxChannel = Math.max(...allChannels);
+    
     return {
       connected: this.isConnected,
       healthyChannels,
-      totalChannels: 25,
+      totalChannels: maxChannel,
       lastError: this.lastError,
       lastSelfCheck: this.lastSelfCheck
     };

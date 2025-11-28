@@ -71,11 +71,9 @@ try {
 function getTimeTier(int $timeMs): string {
     if ($timeMs >= 60000) {          // 60+ seconds = Gold
         return 'gold';
-    } elseif ($timeMs >= 30000) {     // 30-59.999 seconds = Silver
+    } elseif ($timeMs >= 3000) {      // 3-59.999 seconds = Silver
         return 'silver';
-    } elseif ($timeMs >= 10000) {     // 10-29.999 seconds = Bronze
-        return 'bronze';
-    } else {                           // <10 seconds = No prize
+    } else {                           // <3 seconds = No prize
         return 'none';
     }
 }

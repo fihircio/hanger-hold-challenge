@@ -77,18 +77,23 @@ export const dispensePrizeByTier = async (tier: 'gold' | 'silver' | 'bronze', pr
   } catch (error) {
     console.error('[VENDING SERVICE] TCN hardware error:', error);
     
-    // Fall back to Electron Spring SDK if available
+    // Try to use enhanced Spring SDK first
     if (typeof window !== 'undefined' && window.electronAPI) {
       try {
-        if (!electronVendingService.isSpringSDKInitialized()) {
-          const initialized = await electronVendingService.initializeVending();
-          if (!initialized) {
-            console.error('[VENDING SERVICE] Failed to initialize Spring SDK');
-            return false;
-          }
+        // Always try to initialize and use enhanced Spring SDK
+        const initialized = await electronVendingService.initializeVending();
+        if (initialized) {
+          console.log('[VENDING SERVICE] Using enhanced Spring SDK with capacity tracking');
+          return await electronVendingService.dispensePrizeByTier(tier, prizeId, scoreId);
+        } else {
+          console.error('[VENDING SERVICE] Failed to initialize enhanced Spring SDK, falling back to legacy method');
+          // Only use legacy as last resort
+          return await electronVendingService.dispensePrize(
+            // Get a silver slot for legacy fallback
+            tier === 'silver' ? 1 : tier === 'gold' ? 24 : 16,
+            prizeId, scoreId
+          );
         }
-        
-        return await electronVendingService.dispensePrizeByTier(tier, prizeId, scoreId);
       } catch (electronError) {
         console.error('[VENDING SERVICE] Electron Spring SDK failed:', electronError);
         // Fall back to simulation

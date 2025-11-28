@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `vending_logs` (
   `spring_channel` INT NULL COMMENT 'Channel used by Spring SDK',
   `spring_error_code` INT NULL COMMENT 'Spring SDK error code',
   `spring_error_message` VARCHAR(255) NULL COMMENT 'Spring SDK error description',
-  `spring_tier` VARCHAR(20) NULL COMMENT 'Prize tier (gold/silver/bronze)',
+  `spring_tier` VARCHAR(20) NULL COMMENT 'Prize tier (gold/silver)',
   `spring_success` BOOLEAN DEFAULT FALSE COMMENT 'Spring SDK dispensing success status',
   `source` VARCHAR(20) DEFAULT 'legacy' COMMENT 'Dispensing source (legacy/spring_sdk)',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -110,7 +110,6 @@ CREATE INDEX `idx_spring_vending_logs_success` ON `spring_vending_logs` (`succes
 INSERT INTO `prizes` (`name`, `message`, `slot`, `time_threshold`) VALUES
 ('Gold Prize', 'Incredible! You won the Gold Prize!', 1, 60000),
 ('Silver Prize', 'Amazing! You won the Silver Prize!', 2, 30000),
-('Bronze Prize', 'Great job! You won the Bronze Prize!', 3, 10000);
 
 -- =============================================
 -- 7. Create Users Table for Authentication
