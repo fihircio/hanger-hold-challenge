@@ -502,7 +502,7 @@ function handlePostRequest($conn, $path) {
         // Handle 'none' tier from getTimeTier function
         if ($tier === 'none') {
             http_response_code(400);
-            echo json_encode(['error' => true, 'message' => 'Score time too low for prize eligibility. Minimum 10 seconds required.']);
+            echo json_encode(['error' => true, 'message' => 'Score time too low for prize eligibility. Minimum 3 seconds required.']);
             return;
         }
         
@@ -516,25 +516,23 @@ function handlePostRequest($conn, $path) {
         ];
         file_put_contents('spring_vending.log', json_encode($logEntry) . "\n", FILE_APPEND);
         
-        // Determine channel based on tier
+        // Determine channel based on tier - updated to match frontend configuration
         $channel = 0;
         $prize_id = 0;
         switch ($tier) {
             case 'gold':
-                $channel = rand(1, 5); // Gold channels 1-5
+                $gold_channels = [24, 25];
+                $channel = $gold_channels[array_rand($gold_channels)];
                 $prize_id = 1;
                 break;
             case 'silver':
-                $channel = rand(6, 15); // Silver channels 6-15
+                $silver_channels = [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38, 45, 46, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58];
+                $channel = $silver_channels[array_rand($silver_channels)];
                 $prize_id = 2;
-                break;
-            case 'bronze':
-                $channel = rand(16, 25); // Bronze channels 16-25
-                $prize_id = 3;
                 break;
             default:
                 http_response_code(400);
-                echo json_encode(['error' => true, 'message' => 'Invalid tier. Must be gold, silver, or bronze']);
+                echo json_encode(['error' => true, 'message' => 'Invalid tier. Must be gold or silver']);
                 return;
         }
         
