@@ -302,6 +302,27 @@ class ElectronVendingService {
       // Convert scoreId to number if provided
       const scoreIdNum = scoreId ? parseInt(scoreId) : undefined;
 
+      // Get prize ID from API based on tier for logging (move outside if block)
+      let prizeIdForApi: number | undefined;
+      if (typeof scoreIdNum !== 'undefined') {
+        try {
+          const apiService = await import('./apiService');
+          const prizesResponse = await apiService.apiService.getAllPrizes();
+          const prizeForTier = prizesResponse.prizes.find((p: any) =>
+            (tier === 'gold' && p.time_threshold >= 60000) ||
+            (tier === 'silver' && p.time_threshold >= 30000 && p.time_threshold < 60000)
+          );
+          prizeIdForApi = prizeForTier?.id;
+          
+          if (prizeIdForApi) {
+            await apiService.apiService.dispensePrize(prizeIdForApi, scoreIdNum);
+            console.log('[ELECTRON VENDING] Prize dispensing logged to API');
+          }
+        } catch (apiError) {
+          console.error('[ELECTRON VENDING] Failed to log to API:', apiError);
+        }
+      }
+
       // Use Spring SDK if initialized, otherwise fall back to legacy method
       if (this.isInitialized) {
         console.log(`[ELECTRON VENDING] Using Spring SDK for ${tier} prize dispensing`);
@@ -313,27 +334,6 @@ class ElectronVendingService {
           
           // Increment slot count after successful dispensing
           await this.incrementSlotCount(selectedSlot, tier);
-          
-          // Get prize ID from API based on tier for logging
-          let prizeIdForApi: number | undefined;
-          if (typeof scoreIdNum !== 'undefined') {
-            try {
-              const apiService = await import('./apiService');
-              const prizesResponse = await apiService.apiService.getAllPrizes();
-              const prizeForTier = prizesResponse.prizes.find((p: any) =>
-                (tier === 'gold' && p.time_threshold >= 60000) ||
-                (tier === 'silver' && p.time_threshold >= 30000 && p.time_threshold < 60000)
-              );
-              prizeIdForApi = prizeForTier?.id;
-              
-              if (prizeIdForApi) {
-                await apiService.apiService.dispensePrize(prizeIdForApi, scoreIdNum);
-                console.log('[ELECTRON VENDING] Prize dispensing logged to API');
-              }
-            } catch (apiError) {
-              console.error('[ELECTRON VENDING] Failed to log to API:', apiError);
-            }
-          }
           
           // Log dispensing to server with inventory sync
           await this.logDispensingToServer(selectedSlot, tier, true, prizeIdForApi, scoreIdNum);
