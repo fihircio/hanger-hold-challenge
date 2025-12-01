@@ -14,6 +14,7 @@ import * as dataService from './services/dataService';
 import * as prizeService from './services/prizeService';
 import { arduinoSensorService } from './services/arduinoSensorService';
 import { tcnIntegrationService } from './services/tcnIntegrationService';
+import { electronVendingService } from './services/electronVendingService';
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(GameState.VIDEO);
@@ -32,7 +33,14 @@ const App: React.FC = () => {
     if (window.electronAPI) {
       arduinoSensorService.initialize();
       
-      // Initialize TCN integration service
+      // Initialize Electron Vending Service as primary trigger chain
+      electronVendingService.initializeVending().then(success => {
+        console.log(`[APP] Electron Vending Service initialization: ${success ? 'SUCCESS' : 'FAILED'}`);
+      }).catch(error => {
+        console.error('[APP] Electron Vending Service initialization error:', error);
+      });
+      
+      // Initialize TCN integration service as fallback
       tcnIntegrationService.initialize().then(success => {
         console.log(`[APP] TCN Integration initialization: ${success ? 'SUCCESS' : 'FAILED'}`);
       }).catch(error => {
@@ -85,9 +93,10 @@ const App: React.FC = () => {
 
     setFinalTime(duration);
 
-    console.log(`[APP] Game completed with duration: ${duration}ms`);
+    console.log(`[APP] Game completed with duration: ${duration}ms - using new Electron Vending Service trigger chain`);
     
-    const awardedPrize = await prizeService.checkAndDispensePrize(duration);
+    // Prize Service now uses Electron Vending Service as primary trigger
+    const awardedPrize = await prizeService.checkAndDispensePrize(duration, currentPlayerId || undefined);
     setPrize(awardedPrize);
 
     const newScore: Score = {
@@ -100,7 +109,7 @@ const App: React.FC = () => {
     setCurrentPlayerId(newScore.id);
 
     setGameState(GameState.GAME_OVER);
-  }, [playerDetails]);
+  }, [playerDetails, currentPlayerId]);
   
   const handlePlayAgain = useCallback(() => {
     resetGame();
