@@ -732,7 +732,200 @@ function handleGetRequest($conn, $path) {
             ]
         ]);
     }
-    
+
+    // Electron Vending Service Logs endpoints
+    elseif ($path === '/api/electron-vending/logs' || $path === '/api/electron-vending/logs/') {
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 50;
+        $action = $_GET['action'] ?? null;
+        $tier = $_GET['tier'] ?? null;
+        $success = $_GET['success'] ?? null;
+        
+        $query = "SELECT id, action, game_time_ms, tier, selected_slot, channel_used, score_id, prize_id, success, error_code, error_message, dispense_method, inventory_before, inventory_after, response_time_ms, source, created_at FROM electron_vending_logs";
+        $params = [];
+        $whereConditions = [];
+        
+        if ($action) {
+            $whereConditions[] = "action = ?";
+            $params[] = $action;
+        }
+        
+        if ($tier) {
+            $whereConditions[] = "tier = ?";
+            $params[] = $tier;
+        }
+        
+        if ($success !== null) {
+            $whereConditions[] = "success = ?";
+            $params[] = $success;
+        }
+        
+        if (!empty($whereConditions)) {
+            $query .= " WHERE " . implode(" AND ", $whereConditions);
+        }
+        
+        $query .= " ORDER BY created_at DESC LIMIT ?";
+        $params[] = $limit;
+        
+        $stmt = $conn->prepare($query);
+        if ($params) {
+            $types = str_repeat('s', count($params) - 1) . 'i';
+            $stmt->bind_param($types, ...$params);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $logs = [];
+        while ($row = $result->fetch_assoc()) {
+            $logs[] = [
+                'id' => (int)$row['id'],
+                'action' => $row['action'],
+                'game_time_ms' => $row['game_time_ms'] ? (int)$row['game_time_ms'] : null,
+                'tier' => $row['tier'],
+                'selected_slot' => $row['selected_slot'] ? (int)$row['selected_slot'] : null,
+                'channel_used' => $row['channel_used'] ? (int)$row['channel_used'] : null,
+                'score_id' => $row['score_id'] ? (int)$row['score_id'] : null,
+                'prize_id' => $row['prize_id'] ? (int)$row['prize_id'] : null,
+                'success' => (bool)$row['success'],
+                'error_code' => $row['error_code'] ? (int)$row['error_code'] : null,
+                'error_message' => $row['error_message'],
+                'dispense_method' => $row['dispense_method'],
+                'inventory_before' => $row['inventory_before'] ? (int)$row['inventory_before'] : null,
+                'inventory_after' => $row['inventory_after'] ? (int)$row['inventory_after'] : null,
+                'response_time_ms' => $row['response_time_ms'] ? (int)$row['response_time_ms'] : null,
+                'source' => $row['source'],
+                'created_at' => $row['created_at']
+            ];
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'data' => $logs,
+            'total_logs' => count($logs),
+            'limit' => $limit,
+            'filters' => [
+                'action' => $action,
+                'tier' => $tier,
+                'success' => $success
+            ]
+        ]);
+    }
+
+    elseif ($path === '/api/electron-vending/stats' || $path === '/api/electron-vending/stats/') {
+        // Get Electron Vending Service statistics
+        $totalOpsResult = $conn->query("SELECT COUNT(*) as total FROM electron_vending_logs");
+        $totalOps = (int)($totalOpsResult->fetch_assoc()['total']);
+        
+        $successOpsResult = $conn->query("SELECT COUNT(*) as successful FROM electron_vending_logs WHERE success = 1");
+        $successOps = (int)($successOpsResult->fetch_assoc()['successful']);
+        
+        $failureOpsResult = $conn->query("SELECT COUNT(*) as failed FROM electron_vending_logs WHERE success = 0");
+        $failureOps = (int)($failureOpsResult->fetch_assoc()['failed']);
+        
+        $avgResponseTimeResult = $conn->query("SELECT AVG(response_time_ms) as avg_time FROM electron_vending_logs WHERE response_time_ms IS NOT NULL");
+        $avgResponseTime = $avgResponseTimeResult->fetch_assoc()['avg_time'] ? round($avgResponseTimeResult->fetch_assoc()['avg_time'], 2) : null;
+        
+        // Stats by tier
+        $tierStatsResult = $conn->query("SELECT tier, COUNT(*) as count, SUM(success) as successful FROM electron_vending_logs WHERE tier IS NOT NULL GROUP BY tier");
+        $tierStats = [];
+        while ($row = $tierStatsResult->fetch_assoc()) {
+            $tierStats[$row['tier']] = [
+                'total' => (int)$row['count'],
+                'successful' => (int)$row['successful'],
+                'success_rate' => round(((int)$row['successful'] / (int)$row['count']) * 100, 2)
+            ];
+        }
+        
+        // Stats by method
+        $methodStatsResult = $conn->query("SELECT dispense_method, COUNT(*) as count, SUM(success) as successful FROM electron_vending_logs GROUP BY dispense_method");
+        $methodStats = [];
+        while ($row = $methodStatsResult->fetch_assoc()) {
+            $methodStats[$row['dispense_method']] = [
+                'total' => (int)$row['count'],
+                'successful' => (int)$row['successful'],
+                'success_rate' => round(((int)$row['successful'] / (int)$row['count']) * 100, 2)
+            ];
+        }
+        
+        // Recent activity (last 24 hours)
+        $recentResult = $conn->query("SELECT COUNT(*) as recent FROM electron_vending_logs WHERE created_at > DATE_SUB(NOW(), INTERVAL 24 HOUR)");
+        $recentActivity = (int)($recentResult->fetch_assoc()['recent']);
+        
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'total_operations' => $totalOps,
+                'successful_operations' => $successOps,
+                'failed_operations' => $failureOps,
+                'overall_success_rate' => $totalOps > 0 ? round(($successOps / $totalOps) * 100, 2) : 0,
+                'average_response_time_ms' => $avgResponseTime,
+                'recent_24h_activity' => $recentActivity,
+                'stats_by_tier' => $tierStats,
+                'stats_by_method' => $methodStats,
+                'timestamp' => date('Y-m-d H:i:s')
+            ]
+        ]);
+    }
+
+    elseif ($path === '/api/electron-vending/log' || $path === '/api/electron-vending/log/') {
+        $input = getRequestBody();
+        
+        $requiredFields = ['action', 'success', 'source'];
+        foreach ($requiredFields as $field) {
+            if (empty($input[$field]) && $input[$field] !== false && $input[$field] !== 0) {
+                http_response_code(400);
+                echo json_encode(['error' => true, 'message' => "Missing required field: {$field}"]);
+                return;
+            }
+        }
+
+        $stmt = $conn->prepare("INSERT INTO electron_vending_logs (action, game_time_ms, tier, selected_slot, channel_used, score_id, prize_id, success, error_code, error_message, dispense_method, inventory_before, inventory_after, response_time_ms, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        
+        $gameTimeMs = $input['game_time_ms'] ?? null;
+        $tier = $input['tier'] ?? null;
+        $selectedSlot = $input['selected_slot'] ?? null;
+        $channelUsed = $input['channel_used'] ?? null;
+        $scoreId = $input['score_id'] ?? null;
+        $prizeId = $input['prize_id'] ?? null;
+        $errorCode = $input['error_code'] ?? null;
+        $errorMessage = $input['error_message'] ?? null;
+        $dispenseMethod = $input['dispense_method'] ?? 'spring_sdk';
+        $inventoryBefore = $input['inventory_before'] ?? null;
+        $inventoryAfter = $input['inventory_after'] ?? null;
+        $responseTimeMs = $input['response_time_ms'] ?? null;
+        
+        $stmt->bind_param("iisiiiiissssiiis",
+            $input['action'],
+            $gameTimeMs,
+            $tier,
+            $selectedSlot,
+            $channelUsed,
+            $scoreId,
+            $prizeId,
+            $input['success'],
+            $errorCode,
+            $errorMessage,
+            $dispenseMethod,
+            $inventoryBefore,
+            $inventoryAfter,
+            $responseTimeMs,
+            $input['source']
+        );
+        $stmt->execute();
+
+        $logId = $conn->insert_id;
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Electron Vending Service log recorded successfully',
+            'data' => [
+                'log_id' => $logId,
+                'action' => $input['action'],
+                'success' => $input['success'],
+                'source' => $input['source']
+            ]
+        ]);
+    }
+
     else {
         http_response_code(404);
         echo json_encode(['error' => true, 'message' => 'Endpoint not found']);

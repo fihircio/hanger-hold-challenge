@@ -186,7 +186,38 @@ CREATE TABLE IF NOT EXISTS `out_of_stock_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =============================================
--- 12. Seed Slot Inventory Data
+-- 12. Create Electron Vending Service Logs Table
+-- =============================================
+CREATE TABLE IF NOT EXISTS `electron_vending_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `action` varchar(50) NOT NULL COMMENT 'Action type (prize_dispensing, slot_selection, inventory_sync, etc.)',
+  `game_time_ms` int(11) DEFAULT NULL COMMENT 'Game time in milliseconds',
+  `tier` enum('gold', 'silver', 'bronze') DEFAULT NULL COMMENT 'Prize tier determined',
+  `selected_slot` int(11) DEFAULT NULL COMMENT 'Slot selected for dispensing',
+  `channel_used` int(11) DEFAULT NULL COMMENT 'Channel used by Spring SDK',
+  `score_id` int(11) DEFAULT NULL COMMENT 'Related score ID',
+  `prize_id` int(11) DEFAULT NULL COMMENT 'Related prize ID',
+  `success` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Action success status',
+  `error_code` int(11) DEFAULT NULL COMMENT 'Error code if failed',
+  `error_message` text DEFAULT NULL COMMENT 'Detailed error message',
+  `dispense_method` varchar(20) DEFAULT 'spring_sdk' COMMENT 'Method used (spring_sdk/legacy/fallback)',
+  `inventory_before` int(11) DEFAULT NULL COMMENT 'Slot count before operation',
+  `inventory_after` int(11) DEFAULT NULL COMMENT 'Slot count after operation',
+  `response_time_ms` int(11) DEFAULT NULL COMMENT 'Operation response time in milliseconds',
+  `source` varchar(50) NOT NULL DEFAULT 'electron_vending_service' COMMENT 'Log source',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_action` (`action`),
+  KEY `idx_tier` (`tier`),
+  KEY `idx_selected_slot` (`selected_slot`),
+  KEY `idx_success` (`success`),
+  KEY `idx_score_id` (`score_id`),
+  KEY `idx_created_at` (`created_at`),
+  KEY `idx_source` (`source`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- 13. Seed Slot Inventory Data
 -- =============================================
 -- Gold slots (24-25)
 INSERT INTO `slot_inventory` (`slot`, `tier`) VALUES
@@ -210,13 +241,15 @@ INSERT INTO `slot_inventory` (`slot`, `tier`) VALUES
 (51, 'silver'), (52, 'silver'), (53, 'silver'), (54, 'silver'),
 (55, 'silver'), (56, 'silver'), (57, 'silver'), (58, 'silver');
 
--- Your database is now set up for the Hanger Challenge application with Spring SDK and Inventory Management support!
+-- Your database is now set up for the Hanger Challenge application with Spring SDK, Inventory Management, and Electron Vending Service support!
 
 -- To verify everything is working:
 -- 1. Check that all tables were created: SHOW TABLES;
 -- 2. Verify prizes were inserted: SELECT * FROM prizes;
 -- 3. Verify slot inventory was created: SELECT * FROM slot_inventory;
--- 4. Test your application endpoints
--- 5. Default admin user created: username=admin, password=admin123
--- 6. Spring SDK logging tables are ready for enhanced vending operations
--- 7. Inventory management system is ready with 46 slots (2 gold, 44 silver)
+-- 4. Verify Electron Vending Service logs table was created: DESCRIBE electron_vending_logs;
+-- 5. Test your application endpoints
+-- 6. Default admin user created: username=admin, password=admin123
+-- 7. Spring SDK logging tables are ready for enhanced vending operations
+-- 8. Inventory management system is ready with 46 slots (2 gold, 44 silver)
+-- 9. Electron Vending Service logging is ready for detailed operation tracking and analytics

@@ -183,7 +183,13 @@ class ElectronVendingService {
     success: boolean,
     prizeId?: number,
     scoreId?: number,
-    error?: string
+    error?: string,
+    gameTimeMs?: number,
+    channelUsed?: number,
+    dispenseMethod?: string,
+    inventoryBefore?: number,
+    inventoryAfter?: number,
+    responseTimeMs?: number
   ): Promise<void> {
     try {
       // Log to inventory storage
@@ -196,10 +202,28 @@ class ElectronVendingService {
         source: 'electron_vending'
       });
 
-      // Log to backend API
+      // Log to backend API - Electron Vending Service dedicated table
       const API_BASE_URL = (window as any).process?.env?.REACT_APP_API_URL || 'https://vendinghanger.eeelab.xyz/apiendpoints.php';
       
-      const logEntry = {
+      const electronVendingLogEntry = {
+        action: 'prize_dispensing',
+        game_time_ms: gameTimeMs,
+        tier,
+        selected_slot: slot,
+        channel_used: channelUsed,
+        score_id: scoreId,
+        prize_id: prizeId,
+        success,
+        error_message: error,
+        dispense_method: dispenseMethod || 'spring_sdk',
+        inventory_before: inventoryBefore,
+        inventory_after: inventoryAfter,
+        response_time_ms: responseTimeMs,
+        source: 'electron_vending_service'
+      };
+
+      // Also log to inventory API for compatibility
+      const inventoryLogEntry = {
         slot,
         tier,
         success,
@@ -208,18 +232,29 @@ class ElectronVendingService {
         source: 'electron_vending'
       };
 
-      // Try to send to server, but don't wait for it (non-blocking)
+      // Try to send to Electron Vending Service logs table (non-blocking)
+      fetch(`${API_BASE_URL}/api/electron-vending/log`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(electronVendingLogEntry)
+      }).catch(err => {
+        console.warn('[ELECTRON VENDING] Failed to log to Electron Vending Service table (will queue for later):', err);
+      });
+
+      // Also log to inventory API for backward compatibility (non-blocking)
       fetch(`${API_BASE_URL}/api/inventory/log-dispensing`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(logEntry)
+        body: JSON.stringify(inventoryLogEntry)
       }).catch(err => {
-        console.warn('[ELECTRON VENDING] Failed to log dispensing to server (will queue for later):', err);
+        console.warn('[ELECTRON VENDING] Failed to log dispensing to inventory API (will queue for later):', err);
       });
 
-      console.log(`[ELECTRON VENDING] Dispensing logged: slot=${slot}, tier=${tier}, success=${success}`);
+      console.log(`[ELECTRON VENDING] Dispensing logged to both tables: slot=${slot}, tier=${tier}, success=${success}`);
     } catch (error) {
       console.error('[ELECTRON VENDING] Failed to log dispensing:', error);
     }
@@ -232,24 +267,44 @@ class ElectronVendingService {
     try {
       const API_BASE_URL = (window as any).process?.env?.REACT_APP_API_URL || 'https://vendinghanger.eeelab.xyz/apiendpoints.php';
       
-      const logEntry = {
+      // Log to Electron Vending Service table
+      const electronVendingLogEntry = {
+        action: 'out_of_stock',
+        tier,
+        success: false,
+        source: 'electron_vending_service'
+      };
+      
+      // Also log to inventory API for compatibility
+      const inventoryLogEntry = {
         tier,
         timestamp: new Date().toISOString(),
         source: 'electron_vending'
       };
       
-      // Try to send to server
+      // Try to send to Electron Vending Service logs table (non-blocking)
+      fetch(`${API_BASE_URL}/api/electron-vending/log`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(electronVendingLogEntry)
+      }).catch(err => {
+        console.warn('[ELECTRON VENDING] Failed to log out of stock to Electron Vending Service table:', err);
+      });
+      
+      // Also log to inventory API for backward compatibility (non-blocking)
       fetch(`${API_BASE_URL}/api/inventory/log-out-of-stock`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(logEntry)
+        body: JSON.stringify(inventoryLogEntry)
       }).catch(err => {
-        console.warn('[ELECTRON VENDING] Failed to log out of stock to server:', err);
+        console.warn('[ELECTRON VENDING] Failed to log out of stock to inventory API:', err);
       });
       
-      console.log(`[ELECTRON VENDING] Out of stock logged for ${tier} tier`);
+      console.log(`[ELECTRON VENDING] Out of stock logged for ${tier} tier to both tables`);
     } catch (error) {
       console.error('[ELECTRON VENDING] Failed to log out of stock:', error);
     }
@@ -260,6 +315,10 @@ class ElectronVendingService {
    * This replaces tcnIntegrationService.handlePrizeDispensing as primary trigger
    */
   async handlePrizeDispensing(time: number, scoreId?: string): Promise<PrizeDispenseResult> {
+    const startTime = Date.now();
+    let inventoryBefore: number | undefined;
+    let inventoryAfter: number | undefined;
+    
     try {
       console.log(`[ELECTRON VENDING] Handling prize dispensing for game time: ${time}ms, scoreId: ${scoreId}`);
       
@@ -268,6 +327,23 @@ class ElectronVendingService {
       
       if (!tier) {
         console.log('[ELECTRON VENDING] No prize awarded - game time too short');
+        
+        // Log no prize awarded
+        await this.logDispensingToServer(
+          0,
+          'bronze',
+          false,
+          undefined,
+          undefined,
+          'Game time too short for prize eligibility',
+          time,
+          undefined,
+          'no_prize',
+          undefined,
+          undefined,
+          Date.now() - startTime
+        );
+        
         return {
           success: false,
           tier: 'bronze',
@@ -288,6 +364,22 @@ class ElectronVendingService {
         // Log out of stock situation
         await this.logOutOfStockToServer(tier);
         
+        // Log out of stock to Electron Vending Service table
+        await this.logDispensingToServer(
+          0,
+          tier,
+          false,
+          undefined,
+          undefined,
+          `No available slots for ${tier} tier`,
+          time,
+          undefined,
+          'out_of_stock',
+          undefined,
+          undefined,
+          Date.now() - startTime
+        );
+        
         return {
           success: false,
           tier,
@@ -298,6 +390,14 @@ class ElectronVendingService {
       }
 
       console.log(`[ELECTRON VENDING] Selected slot ${selectedSlot} for ${tier} prize`);
+
+      // Get inventory count before operation
+      try {
+        const slotData = await inventoryStorageService.getSlotInventory(selectedSlot);
+        inventoryBefore = slotData?.dispenseCount;
+      } catch (err) {
+        console.warn('[ELECTRON VENDING] Failed to get inventory before count:', err);
+      }
 
       // Convert scoreId to number if provided
       const scoreIdNum = scoreId ? parseInt(scoreId) : undefined;
@@ -335,8 +435,29 @@ class ElectronVendingService {
           // Increment slot count after successful dispensing
           await this.incrementSlotCount(selectedSlot, tier);
           
+          // Get inventory count after operation
+          try {
+            const slotData = await inventoryStorageService.getSlotInventory(selectedSlot);
+            inventoryAfter = slotData?.dispenseCount;
+          } catch (err) {
+            console.warn('[ELECTRON VENDING] Failed to get inventory after count:', err);
+          }
+          
           // Log dispensing to server with inventory sync
-          await this.logDispensingToServer(selectedSlot, tier, true, prizeIdForApi, scoreIdNum);
+          await this.logDispensingToServer(
+            selectedSlot,
+            tier,
+            true,
+            prizeIdForApi,
+            scoreIdNum,
+            undefined,
+            time,
+            result.channel,
+            'spring_sdk',
+            inventoryBefore,
+            inventoryAfter,
+            Date.now() - startTime
+          );
           
           return {
             success: true,
@@ -350,7 +471,20 @@ class ElectronVendingService {
           console.error(`[ELECTRON VENDING] Failed to dispense ${tier} prize via Spring SDK: ${result.error}`);
           
           // Log failed attempt
-          await this.logDispensingToServer(selectedSlot, tier, false, prizeIdForApi, scoreIdNum, result.error);
+          await this.logDispensingToServer(
+            selectedSlot,
+            tier,
+            false,
+            prizeIdForApi,
+            scoreIdNum,
+            result.error,
+            time,
+            result.channel,
+            'spring_sdk',
+            inventoryBefore,
+            inventoryAfter,
+            Date.now() - startTime
+          );
           
           return {
             success: false,
@@ -365,10 +499,27 @@ class ElectronVendingService {
       } else {
         // Fallback to legacy method
         console.warn('[ELECTRON VENDING] Spring SDK not initialized, falling back to legacy method');
-        return await this.dispensePrizeLegacy(selectedSlot, tier, prizeIdForApi, scoreIdNum);
+        return await this.dispensePrizeLegacy(selectedSlot, tier, prizeIdForApi, scoreIdNum, time, inventoryBefore, startTime);
       }
     } catch (error) {
       console.error('[ELECTRON VENDING] Error handling prize dispensing:', error);
+      
+      // Log error to Electron Vending Service table
+      await this.logDispensingToServer(
+        0,
+        'bronze',
+        false,
+        undefined,
+        undefined,
+        error.message,
+        time,
+        undefined,
+        'error',
+        inventoryBefore,
+        inventoryAfter,
+        Date.now() - startTime
+      );
+      
       return {
         success: false,
         tier: 'bronze',
@@ -386,8 +537,14 @@ class ElectronVendingService {
     slot: number,
     tier: 'gold' | 'silver',
     prizeId?: number,
-    scoreId?: number
+    scoreId?: number,
+    gameTimeMs?: number,
+    inventoryBefore?: number,
+    startTime?: number
   ): Promise<PrizeDispenseResult> {
+    const legacyStartTime = startTime || Date.now();
+    let inventoryAfter: number | undefined;
+    
     try {
       console.log(`[ELECTRON VENDING] Using legacy dispensing for slot ${slot}`);
       
@@ -404,6 +561,14 @@ class ElectronVendingService {
         // Increment slot count after successful dispensing
         await this.incrementSlotCount(slot, tier);
         
+        // Get inventory count after operation
+        try {
+          const slotData = await inventoryStorageService.getSlotInventory(slot);
+          inventoryAfter = slotData?.dispenseCount;
+        } catch (err) {
+          console.warn('[ELECTRON VENDING] Failed to get inventory after count:', err);
+        }
+        
         // Log to backend if we have prizeId and scoreId
         if (prizeId && scoreId) {
           try {
@@ -416,7 +581,20 @@ class ElectronVendingService {
         }
         
         // Log dispensing to server with inventory sync
-        await this.logDispensingToServer(slot, tier, true, prizeId, scoreId);
+        await this.logDispensingToServer(
+          slot,
+          tier,
+          true,
+          prizeId,
+          scoreId,
+          undefined,
+          gameTimeMs,
+          slot,
+          'legacy',
+          inventoryBefore,
+          inventoryAfter,
+          Date.now() - legacyStartTime
+        );
         
         return {
           success: true,
@@ -430,7 +608,20 @@ class ElectronVendingService {
         console.error(`[ELECTRON VENDING] Failed to send command to slot ${slot}`);
         
         // Log failed attempt
-        await this.logDispensingToServer(slot, tier, false, prizeId, scoreId, 'Failed to send serial command');
+        await this.logDispensingToServer(
+          slot,
+          tier,
+          false,
+          prizeId,
+          scoreId,
+          'Failed to send serial command',
+          gameTimeMs,
+          slot,
+          'legacy',
+          inventoryBefore,
+          inventoryAfter,
+          Date.now() - legacyStartTime
+        );
         
         return {
           success: false,
@@ -444,6 +635,23 @@ class ElectronVendingService {
       }
     } catch (error) {
       console.error('[ELECTRON VENDING] Legacy dispensing error:', error);
+      
+      // Log error to Electron Vending Service table
+      await this.logDispensingToServer(
+        slot,
+        tier,
+        false,
+        prizeId,
+        scoreId,
+        error.message,
+        gameTimeMs,
+        slot,
+        'legacy_error',
+        inventoryBefore,
+        inventoryAfter,
+        Date.now() - legacyStartTime
+      );
+      
       return {
         success: false,
         tier,
