@@ -936,6 +936,66 @@ function handlePostRequest($conn, $path) {
     // Get POST data
     $input = json_decode(file_get_contents('php://input'), true);
     
+    // Electron Vending Service POST endpoint - Log Electron Vending Service operations
+    if ($path === '/api/electron-vending/log' || $path === '/api/electron-vending/log/') {
+        $requiredFields = ['action', 'success', 'source'];
+        foreach ($requiredFields as $field) {
+            if (empty($input[$field]) && $input[$field] !== false && $input[$field] !== 0) {
+                http_response_code(400);
+                echo json_encode(['error' => true, 'message' => "Missing required field: {$field}"]);
+                return;
+            }
+        }
+
+        $stmt = $conn->prepare("INSERT INTO electron_vending_logs (action, game_time_ms, tier, selected_slot, channel_used, score_id, prize_id, success, error_code, error_message, dispense_method, inventory_before, inventory_after, response_time_ms, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        
+        $gameTimeMs = $input['game_time_ms'] ?? null;
+        $tier = $input['tier'] ?? null;
+        $selectedSlot = $input['selected_slot'] ?? null;
+        $channelUsed = $input['channel_used'] ?? null;
+        $scoreId = $input['score_id'] ?? null;
+        $prizeId = $input['prize_id'] ?? null;
+        $errorCode = $input['error_code'] ?? null;
+        $errorMessage = $input['error_message'] ?? null;
+        $dispenseMethod = $input['dispense_method'] ?? 'spring_sdk';
+        $inventoryBefore = $input['inventory_before'] ?? null;
+        $inventoryAfter = $input['inventory_after'] ?? null;
+        $responseTimeMs = $input['response_time_ms'] ?? null;
+        
+        $stmt->bind_param("iisiiiiissssiiis",
+            $input['action'],
+            $gameTimeMs,
+            $tier,
+            $selectedSlot,
+            $channelUsed,
+            $scoreId,
+            $prizeId,
+            $input['success'],
+            $errorCode,
+            $errorMessage,
+            $dispenseMethod,
+            $inventoryBefore,
+            $inventoryAfter,
+            $responseTimeMs,
+            $input['source']
+        );
+        $stmt->execute();
+
+        $logId = $conn->insert_id;
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Electron Vending Service log recorded successfully',
+            'data' => [
+                'log_id' => $logId,
+                'action' => $input['action'],
+                'success' => $input['success'],
+                'source' => $input['source']
+            ]
+        ]);
+        return;
+    }
+    
     // Inventory POST endpoint - Log dispensing (was implemented under GET accidentally)
     if ($path === '/api/inventory/log-dispensing' || $path === '/api/inventory/log-dispensing/') {
         $requiredFields = ['slot', 'tier', 'success', 'timestamp', 'source'];

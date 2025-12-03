@@ -93,23 +93,25 @@ const App: React.FC = () => {
 
     setFinalTime(duration);
 
+    // Create score ID first to ensure it's available for prize service
+    const newScoreId = `score_${Date.now()}`;
     console.log(`[APP] Game completed with duration: ${duration}ms - using new Electron Vending Service trigger chain`);
     
-    // Prize Service now uses Electron Vending Service as primary trigger
-    const awardedPrize = await prizeService.checkAndDispensePrize(duration, currentPlayerId || undefined);
+    // Prize Service now uses Electron Vending Service as primary trigger with proper scoreId
+    const awardedPrize = await prizeService.checkAndDispensePrize(duration, newScoreId);
     setPrize(awardedPrize);
 
     const newScore: Score = {
-      id: `score_${Date.now()}`,
+      id: newScoreId,
       ...playerDetails,
       time: duration,
     };
     const updatedLeaderboard = await dataService.addScore(newScore);
     setLeaderboard(updatedLeaderboard);
-    setCurrentPlayerId(newScore.id);
+    setCurrentPlayerId(newScoreId);
 
     setGameState(GameState.GAME_OVER);
-  }, [playerDetails, currentPlayerId]);
+  }, [playerDetails]);
   
   const handlePlayAgain = useCallback(() => {
     resetGame();
