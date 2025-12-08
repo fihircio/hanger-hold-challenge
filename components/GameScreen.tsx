@@ -59,47 +59,84 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
     console.log(`[GAME SCREEN] Game ended with time: ${finalTime}ms`);
   };
 
-  // Set up Arduino sensor service
+  // Set up Arduino sensor service with enhanced initialization
   useEffect(() => {
     // Check if we're in Electron environment
     if (window.electronAPI) {
-      console.log('Setting up Arduino sensor service...');
+      console.log('[GameScreen] Setting up Arduino sensor service...');
       
-      // Initialize the sensor service
+      // Initialize the sensor service with enhanced error handling
       arduinoSensorService.initialize().then(() => {
-        // Set up event handlers
+        console.log('[GameScreen] Arduino sensor service initialized, setting up handlers...');
+        
+        // Set up event handlers with enhanced logging
         arduinoSensorService.setEventHandlers({
           onSensorStart: (ts?: number) => {
-            console.log('Arduino sensor START - triggering hold start @', ts || Date.now());
+            console.log('[GameScreen] Arduino sensor START detected - triggering hold start @', ts || Date.now());
             // Allow parent to accept an explicit timestamp if provided
-            try { onHoldStart(ts as any); } catch (e) { onHoldStart(); }
+            try { onHoldStart(ts as any); } catch (e) {
+              console.error('[GameScreen] Error in onHoldStart handler:', e);
+              onHoldStart();
+            }
           },
           onSensorEnd: (ts?: number) => {
-            console.log('Arduino sensor END - triggering hold end @', ts || Date.now());
+            console.log('[GameScreen] Arduino sensor END detected - triggering hold end @', ts || Date.now());
             // Small safety wait to allow UI to stabilize (helps with very short pulses)
             const WAIT_MS = 50;
             setTimeout(() => {
               // Pass the end timestamp and mark it as a timestamp via second parameter
-              try { onHoldEnd(ts as any, true); } catch (e) { onHoldEnd(undefined, true); }
+              try { onHoldEnd(ts as any, true); } catch (e) {
+                console.error('[GameScreen] Error in onHoldEnd handler:', e);
+                onHoldEnd(undefined, true);
+              }
             }, WAIT_MS);
           },
           onSensorChange: (state: number, ts?: number) => {
             setArduinoState(state);
-            console.log('Arduino sensor state update:', state, 'ts=', ts || Date.now());
+            console.log('[GameScreen] Arduino sensor state change:', state, 'ts=', ts || Date.now());
+            
+            // Enhanced status reporting
+            if (state === 1) {
+              console.log('[GameScreen] Arduino: DETECTION - Object detected by sensor');
+            } else {
+              console.log('[GameScreen] Arduino: NO DETECTION - Object removed from sensor');
+            }
           }
         });
 
-        // Enable the sensor
-        arduinoSensorService.setEnabled(true);
+        // Enable the sensor with error handling
+        try {
+          arduinoSensorService.setEnabled(true);
+          console.log('[GameScreen] Arduino sensor service enabled');
+        } catch (error) {
+          console.error('[GameScreen] Failed to enable Arduino sensor:', error);
+        }
         
         // Reset sensor state when component mounts
-        arduinoSensorService.reset();
+        try {
+          arduinoSensorService.reset();
+          console.log('[GameScreen] Arduino sensor state reset');
+        } catch (error) {
+          console.error('[GameScreen] Failed to reset Arduino sensor:', error);
+        }
+      }).catch((error) => {
+        console.error('[GameScreen] Failed to initialize Arduino sensor service:', error);
+        // Set a fallback state to show sensor is not available
+        setArduinoState(0);
       });
       
       return () => {
-        // Disable sensor when component unmounts
-        arduinoSensorService.setEnabled(false);
+        // Disable sensor when component unmounts with error handling
+        try {
+          console.log('[GameScreen] Cleaning up Arduino sensor service...');
+          arduinoSensorService.setEnabled(false);
+        } catch (error) {
+          console.error('[GameScreen] Error disabling Arduino sensor:', error);
+        }
       };
+    } else {
+      console.log('[GameScreen] Not in Electron environment - Arduino sensor unavailable');
+      setArduinoState(0);
     }
   }, [onHoldStart, onHoldEnd]);
 

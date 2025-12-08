@@ -80,32 +80,13 @@ export class TCNIntegrationService {
         console.log('[TCN INTEGRATION] TCN hardware connected successfully');
       }
 
-      // Step 2: Initialize Arduino sensor service
+      // Step 2: Initialize Arduino sensor service (but don't enable - GameScreen will manage it)
       console.log('[TCN INTEGRATION] Step 2: Initializing Arduino sensors...');
       
       if (typeof window !== 'undefined' && window.electronAPI) {
+        // Only initialize the service - GameScreen will handle enabling and event handlers
         await arduinoSensorService.initialize();
-        
-        // Set up Arduino event handlers
-        arduinoSensorService.setEventHandlers({
-          onSensorStart: () => {
-            console.log('[TCN INTEGRATION] Arduino: Game started');
-            this.gameInProgress = true;
-          },
-          onSensorEnd: () => {
-            console.log('[TCN INTEGRATION] Arduino: Game ended - processing prize...');
-            this.handleGameEnd();
-          },
-          onSensorChange: (state: number) => {
-            console.log(`[TCN INTEGRATION] Arduino sensor state: ${state}`);
-          }
-        });
-
-        // Enable Arduino sensors
-        arduinoSensorService.setEnabled(true);
-        arduinoSensorService.reset();
-        
-        console.log('[TCN INTEGRATION] Arduino sensors initialized');
+        console.log('[TCN INTEGRATION] Arduino sensor service initialized (GameScreen will manage activation)');
       } else {
         console.warn('[TCN INTEGRATION] Not in Electron environment - Arduino sensors unavailable');
       }
@@ -476,7 +457,7 @@ export class TCNIntegrationService {
     
     return {
       tcnConnected: tcnStatus.connected,
-      arduinoConnected: arduinoSensorService.isSensorEnabled(),
+      arduinoConnected: false, // TCN Integration doesn't need to track Arduino status
       gameInProgress: this.gameInProgress,
       lastDispenseResult: this.lastDispenseResult,
       systemHealth: this.calculateSystemHealth(tcnStatus)
@@ -507,10 +488,6 @@ export class TCNIntegrationService {
       const tcnConnected = tcnSerialService.isConnectedToTCN();
       console.log(`[TCN INTEGRATION] TCN Connection: ${tcnConnected ? 'OK' : 'FAILED'}`);
       
-      // Test Arduino sensors
-      const arduinoEnabled = arduinoSensorService.isSensorEnabled();
-      console.log(`[TCN INTEGRATION] Arduino Sensors: ${arduinoEnabled ? 'OK' : 'DISABLED'}`);
-      
       // Test dispensing (if TCN is connected)
       if (tcnConnected) {
         console.log('[TCN INTEGRATION] Testing TCN dispensing...');
@@ -540,8 +517,8 @@ export class TCNIntegrationService {
       // Disconnect TCN
       await tcnSerialService.disconnect();
       
-      // Disable Arduino sensors
-      arduinoSensorService.setEnabled(false);
+      // Note: Arduino sensor is managed by GameScreen, don't disable here
+      // arduinoSensorService.setEnabled(false);
       arduinoSensorService.cleanup();
       
       // Reset state

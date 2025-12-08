@@ -19,7 +19,7 @@
     "build:win-simple": "electron-builder --win portable --x64 --publish=never",
     "build:win-manual": "node scripts/manual-build.js",
     "dist": "npm run build && electron-builder",
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "electron-builder install-app-deps && npm run rebuild-native",
     "rebuild-native": "electron-rebuild -f -w win32 -a x64",
     "rebuild-native-arm": "electron-rebuild -f -w win32 -a arm64"
   },

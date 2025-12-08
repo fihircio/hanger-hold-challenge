@@ -122,7 +122,7 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-// Serial port initialization
+// Serial port initialization with Arduino/Spring Vending coordination
 async function initializeSerialPort(): Promise<void> {
   // Skip serial port initialization if module failed to load
   if (serialPortError) {
@@ -142,12 +142,16 @@ async function initializeSerialPort(): Promise<void> {
     console.log('Available serial ports:', ports);
     console.log('Platform:', process.platform);
 
-    // Platform-specific default port
+    // ENHANCED PORT ALLOCATION STRATEGY
+    // Arduino sensor: HIGH COM ports (COM6+)
+    // Spring Vending: LOW COM ports (COM1-5)
+    // This prevents conflicts between services
+    
     const isWindows = process.platform === 'win32';
     let portPath = isWindows ? 'COM1' : '/dev/ttyUSB0'; // default fallback
     
-    // First try to find Arduino by manufacturer
-    const arduinoPort = ports.find((port: any) =>
+    // Separate Arduino and Spring Vending ports
+    const arduinoPorts = ports.filter((port: any) =>
       port.manufacturer && (
         port.manufacturer.toLowerCase().includes('arduino') ||
         port.manufacturer.toLowerCase().includes('ftdi') ||
@@ -155,53 +159,50 @@ async function initializeSerialPort(): Promise<void> {
       )
     );
     
-    if (arduinoPort) {
-      portPath = arduinoPort.path;
-      console.log(`Found Arduino by manufacturer: ${portPath}`);
+    // Sort COM ports by number
+    const sortedComPorts = ports
+      .filter((port: any) => port.path.startsWith('COM'))
+      .sort((a: any, b: any) => {
+        const numA = parseInt(a.path.replace('COM', ''));
+        const numB = parseInt(b.path.replace('COM', ''));
+        return numA - numB;
+      });
+
+    // PRIORITY: Use LOW COM ports for main serial communication (Spring Vending/TCN)
+    // HIGH COM ports (COM6+) will be reserved for Arduino sensor service
+    const lowComPorts = sortedComPorts.filter((port: any) => {
+      const comNum = parseInt(port.path.replace('COM', ''));
+      return comNum <= 5; // COM1-5 for main serial
+    });
+
+    const highComPorts = sortedComPorts.filter((port: any) => {
+      const comNum = parseInt(port.path.replace('COM', ''));
+      return comNum >= 6; // COM6+ for Arduino sensor
+    });
+
+    console.log('Port allocation strategy:');
+    console.log('- Low COM ports (COM1-5) for main serial:', lowComPorts.map((p: any) => p.path));
+    console.log('- High COM ports (COM6+) for Arduino sensor:', highComPorts.map((p: any) => p.path));
+    console.log('- Arduino-specific ports:', arduinoPorts.map((p: any) => `${p.path} (${p.manufacturer})`));
+
+    // Select port for main serial communication (Spring Vending/TCN)
+    // Priority 1: Low COM ports (COM1-5)
+    // Priority 2: Arduino ports if no low COM ports available
+    // Priority 3: Any available port
+    
+    if (lowComPorts.length > 0) {
+      portPath = lowComPorts[0].path;
+      console.log(`Selected low COM port for main serial: ${portPath}`);
+    } else if (arduinoPorts.length > 0) {
+      // Use Arduino port if no low COM ports (but this might cause conflicts)
+      portPath = arduinoPorts[0].path;
+      console.log(`Using Arduino port for main serial (potential conflict): ${portPath}`);
+    } else if (ports.length > 0) {
+      portPath = ports[0].path;
+      console.log(`Using first available port for main serial: ${portPath}`);
     } else {
-      // Platform-specific port detection
-      if (isWindows) {
-        // On Windows, look for COM ports
-        const comPort = ports.find((port: any) =>
-          port.path.startsWith('COM') && 
-          !port.path.includes('Bluetooth')
-        );
-        
-        if (comPort) {
-          portPath = comPort.path;
-          console.log(`Found COM port: ${portPath}`);
-        } else if (ports.length > 0) {
-          portPath = ports[0].path;
-          console.log(`Using first available port: ${portPath}`);
-        }
-      } else {
-        // On macOS/Linux, look for USB modem ports (common for Arduino)
-        const usbModemPort = ports.find((port: any) =>
-          port.path.includes('usbmodem') || 
-          port.path.includes('tty.usbmodem') ||
-          port.path.includes('ttyACM') ||
-          port.path.includes('ttyUSB')
-        );
-        
-        if (usbModemPort) {
-          portPath = usbModemPort.path;
-          console.log(`Found USB modem port (likely Arduino): ${portPath}`);
-        } else if (ports.length > 0) {
-          // Avoid Bluetooth ports on macOS/Linux
-          const nonBluetoothPort = ports.find((port: any) =>
-            !port.path.includes('Bluetooth') && 
-            !port.path.includes('Baud')
-          );
-          
-          if (nonBluetoothPort) {
-            portPath = nonBluetoothPort.path;
-            console.log(`Using first non-Bluetooth port: ${portPath}`);
-          } else {
-            portPath = ports[0].path;
-            console.log(`Using first available port: ${portPath}`);
-          }
-        }
-      }
+      console.warn('No serial ports available for main serial communication');
+      return;
     }
     
     // Try common baud rates (prefer 115200 for modern devices like TCN/Arduino) and fall back to 9600
@@ -234,26 +235,37 @@ async function initializeSerialPort(): Promise<void> {
 
     if (!opened) {
       // Last resort: try default 9600 in case constructor didn't throw but port not open
-      serialPort = new SerialPort({ path: portPath, baudRate: 9600, dataBits: 8, parity: 'none', stopBits: 1 });
+      try {
+        serialPort = new SerialPort({ path: portPath, baudRate: 9600, dataBits: 8, parity: 'none', stopBits: 1 });
+        console.log(`[SERIAL] Created fallback serial port for ${portPath} at 9600 baud`);
+      } catch (fallbackError) {
+        console.error(`[SERIAL] Failed to create fallback serial port:`, fallbackError);
+        serialPort = null;
+        serialPortError = true;
+        return;
+      }
     }
 
     serialPort.on('open', () => {
-      console.log(`Serial port ${portPath} opened`);
+      console.log(`[SERIAL] Serial port ${portPath} opened successfully at ${serialPort.baudRate} baud`);
+    });
+
+    serialPort.on('error', (err: any) => {
+      console.error(`[SERIAL] Serial port error:`, err);
+      if (mainWindow) {
+        mainWindow.webContents.send('serial-error', err.message);
+      }
     });
 
     serialPort.on('data', (data: any) => {
       const dataString = Buffer.from(data).toString('utf8').trim();
-      console.log('Received data from serial port:', dataString);
+      console.log(`[SERIAL] Received data from ${portPath}:`, dataString);
+      console.log(`[SERIAL] Forwarding to renderer: ${dataString}`);
       // Forward data to renderer process as plain text (Arduino sends 0 or 1)
       if (mainWindow) {
         mainWindow.webContents.send('serial-data', dataString);
-      }
-    });
-
-    serialPort.on('error', (err: any) => {
-      console.error('Serial port error:', err);
-      if (mainWindow) {
-        mainWindow.webContents.send('serial-error', err.message);
+      } else {
+        console.error('[SERIAL] CRITICAL: mainWindow is null, cannot forward data');
       }
     });
 
@@ -285,11 +297,18 @@ ipcMain.handle('is-fullscreen', async () => {
 // IPC handlers for serial communication
 ipcMain.handle('send-serial-command', async (event, command: string) => {
   if (serialPortError) {
+    console.warn('[SERIAL] Command blocked - Serial Port module not available');
     throw new Error('Serial Port module is not available. Please reinstall the application.');
   }
   
-  if (!serialPort || !serialPort.isOpen) {
-    throw new Error('Serial port is not open');
+  if (!serialPort) {
+    console.warn('[SERIAL] Command blocked - No serial port initialized');
+    throw new Error('Serial port is not initialized. Please connect to a port first.');
+  }
+  
+  if (!serialPort.isOpen) {
+    console.warn('[SERIAL] Command blocked - Serial port is not open');
+    throw new Error('Serial port is not open. Please connect to a port first.');
   }
 
   try {
@@ -300,10 +319,10 @@ ipcMain.handle('send-serial-command', async (event, command: string) => {
     // Send to serial port
     serialPort.write(buffer);
     
-    console.log('Sent command to serial port:', command);
+    console.log('[SERIAL] Sent command to serial port:', command);
     return { success: true };
   } catch (error) {
-    console.error('Failed to send serial command:', error);
+    console.error('[SERIAL] Failed to send serial command:', error);
     throw error;
   }
 });
@@ -350,7 +369,32 @@ ipcMain.handle('connect-serial-port', async (event, portPath: string, baudRate?:
       stopBits: 1,
     });
 
-    console.log(`Attempting to connect to serial port ${portPath} at baud ${br}`);
+    console.log(`[SERIAL] Connecting to ${portPath} at baud ${br}`);
+
+    // CRITICAL FIX: Set up data listeners for the NEW serial port instance
+    // This ensures Arduino data is actually received and forwarded
+    serialPort.on('open', () => {
+      console.log(`[SERIAL] Port ${portPath} opened successfully at ${br} baud`);
+    });
+
+    serialPort.on('error', (err: any) => {
+      console.error(`[SERIAL] Port ${portPath} error:`, err);
+      if (mainWindow) {
+        mainWindow.webContents.send('serial-error', err.message);
+      }
+    });
+
+    serialPort.on('data', (data: any) => {
+      const dataString = Buffer.from(data).toString('utf8').trim();
+      console.log(`[SERIAL] Received data from ${portPath}:`, dataString);
+      console.log(`[SERIAL] Forwarding to renderer: ${dataString}`);
+      // Forward data to renderer process as plain text (Arduino sends 0 or 1)
+      if (mainWindow) {
+        mainWindow.webContents.send('serial-data', dataString);
+      } else {
+        console.error('[SERIAL] CRITICAL: mainWindow is null, cannot forward data');
+      }
+    });
 
     return { success: true };
   } catch (error) {

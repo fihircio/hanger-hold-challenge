@@ -194,6 +194,7 @@ export class TCNSerialService {
       if (SerialPort === MockSerialPort) {
         console.error('[TCN SERIAL] CRITICAL: Still in mock mode - serialport package not loading properly');
         console.error('[TCN SERIAL] Try: npm rebuild serialport or npx electron-rebuild');
+        console.log('[TCN SERIAL] PRODUCTION NOTE: In production, ensure serialport package is properly built');
         return false;
       }
       
@@ -202,6 +203,7 @@ export class TCNSerialService {
       // Get available serial ports
       const ports = await SerialPort.list();
       console.log(`[TCN SERIAL] Found ${ports.length} available ports:`, ports);
+      console.log('[TCN SERIAL] PRODUCTION NOTE: System will auto-detect TCN controller on any available COM port');
       
       // PRIORITY 1: Try COM1 first (your working TCN controller)
       const com1Port = ports.find(port =>

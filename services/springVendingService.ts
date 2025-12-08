@@ -263,25 +263,87 @@ class SpringVendingService {
         }
       };
 
-      // Build candidate port list -- platform-agnostic heuristics
+      // Check if port is likely already in use by Arduino sensor
+      const isPortLikelyInUse = (portPath: string): boolean => {
+        const path = portPath.toLowerCase();
+        const mfr = (ports.find((p: any) => p.path === portPath)?.manufacturer || '').toLowerCase();
+        
+        // Arduino ports are likely in use by Arduino sensor
+        if (mfr.includes('arduino')) {
+          console.log(`[SPRING VENDING] Excluding ${path} - Arduino manufacturer detected: ${mfr}`);
+          return true;
+        }
+        
+        // Check for high COM numbers typically used by Arduino
+        const comMatch = path.match(/com(\d+)/i);
+        if (comMatch) {
+          const comNumber = parseInt(comMatch[1]);
+          if (comNumber >= 6) {
+            console.log(`[SPRING VENDING] Excluding ${path} - High COM number (${comNumber}) reserved for Arduino`);
+            return true;
+          }
+        }
+        
+        return false;
+      };
+
+      // Build candidate port list with COM priority strategy
+      // Spring Vending should use lower COM ports (COM1-5), Arduino gets higher ports (COM6+)
+      console.log('[SPRING VENDING] COM priority strategy: Using lower COM ports (COM1-5) for Spring Vending');
+      
       const likelyCandidates = ports.filter((p: any) => {
         const path = (p.path || '').toLowerCase();
         const mfr = (p.manufacturer || '').toLowerCase();
-
+        
+        // EXCLUDE Arduino ports explicitly - Arduino gets COM6+
+        if (mfr.includes('arduino')) return false;
+        if (path.includes('com6') || path.includes('com7') || path.includes('com8') || path.includes('com9')) return false;
+        
         // Common USB-to-serial patterns across macOS/Linux/Windows
         if (mfr.includes('prolific') || mfr.includes('ftdi') || mfr.includes('ch340') || mfr.includes('cp210') || mfr.includes('qinheng')) return true;
         if (path.includes('usb') || path.includes('tty') || path.includes('cu.') || path.includes('cu-') || path.includes('com')) return true;
         return false;
       });
 
+      // Log available ports for debugging different PC configurations
+      console.log('[SPRING VENDING] All available ports:', ports.map((p: any) => `${p.path} (${p.manufacturer || 'Unknown'})`));
+      console.log('[SPRING VENDING] Filtered likely candidates:', likelyCandidates.map((p: any) => p.path));
+      // Sort ports by COM number (lower numbers first for Spring Vending)
+      const sortedPorts = ports.sort((a: any, b: any) => {
+        const aMatch = a.path.match(/COM(\d+)/i);
+        const bMatch = b.path.match(/COM(\d+)/i);
+        if (aMatch && bMatch) {
+          return parseInt(aMatch[1]) - parseInt(bMatch[1]);
+        }
+        return 0;
+      });
+
+      // Filter out Arduino ports (COM6+) and use lower COM ports only
+      const springPorts = sortedPorts.filter((p: any) => {
+        const path = (p.path || '').toLowerCase();
+        const comMatch = path.match(/com(\d+)/i);
+        if (comMatch) {
+          const comNumber = parseInt(comMatch[1]);
+          return comNumber <= 5; // Only use COM1-5 for Spring Vending
+        }
+        return true; // Non-COM ports are OK
+      });
+
       // If we have likely candidates, probe them first; otherwise fall back to the first few ports
-      const portsToTry = likelyCandidates.length > 0 ? likelyCandidates : ports.slice(0, Math.min(ports.length, 5));
+      const portsToTry = likelyCandidates.length > 0 ? likelyCandidates : springPorts;
 
       let vendingPort: any | undefined;
 
       // Try each candidate with a handshake probe
       for (const p of portsToTry) {
         console.log(`[SPRING VENDING] Probing port ${p.path}...`);
+        
+        // Skip ports likely in use by Arduino sensor
+        if (isPortLikelyInUse(p.path)) {
+          console.log(`[SPRING VENDING] Skipping ${p.path} - likely Arduino port (COM6+)`);
+          continue;
+        }
+        
         // attempt to probe
         const ok = await probePort(p, 1800);
         if (ok) {
@@ -292,23 +354,57 @@ class SpringVendingService {
         console.log(`[SPRING VENDING] Port ${p.path} did not respond to probe`);
       }
 
-      // Last resort: attempt to connect to the first available port
+      // Last resort: attempt to connect to the first available NON-ARDUINO port
       if (!vendingPort && ports.length > 0) {
-        console.warn('[SPRING VENDING] No probed port responded. Falling back to first available port.');
-        const first = ports[0];
-        const connectResult = await window.electronAPI.connectSerialPort(first.path);
-        if (connectResult.success) vendingPort = first;
+        console.warn('[SPRING VENDING] No probed port responded. Falling back to first available NON-ARDUINO port.');
+        
+        // Filter out Arduino ports (COM6+) from fallback
+        const nonArduinoPorts = ports.filter((p: any) => {
+          const path = (p.path || '').toLowerCase();
+          const comMatch = path.match(/com(\d+)/i);
+          if (comMatch) {
+            const comNumber = parseInt(comMatch[1]);
+            return comNumber <= 5; // Only use COM1-5 for Spring Vending
+          }
+          return true; // Non-COM ports are OK
+        });
+        
+        // Check if Arduino is connected and only COM6 is available
+        const arduinoPort = ports.find((p: any) => {
+          const path = (p.path || '').toLowerCase();
+          const mfr = (p.manufacturer || '').toLowerCase();
+          return mfr.includes('arduino') || (path.includes('com6') || path.includes('com7') || path.includes('com8') || path.includes('com9'));
+        });
+
+        if (arduinoPort && nonArduinoPorts.length === 0) {
+          console.warn('[SPRING VENDING] Arduino detected on COM6, no other ports available. Spring Vending falling back to MOCK mode.');
+          vendingPort = null; // No port available - will use mock mode
+        } else if (nonArduinoPorts.length > 0) {
+          // Only use non-Arduino ports for Spring Vending
+          const first = nonArduinoPorts[0];
+          vendingPort = first;
+          console.log(`[SPRING VENDING] Selected fallback port: ${first?.path || 'MOCK MODE'}`);
+        } else {
+          // No non-Arduino ports available - stay in mock mode
+          console.warn('[SPRING VENDING] No non-Arduino ports available. Spring Vending staying in MOCK mode.');
+          vendingPort = null;
+        }
       }
 
       if (!vendingPort) {
-        throw new Error('No suitable serial port found');
+        console.warn('[SPRING VENDING] No suitable serial port found. Spring Vending will operate in MOCK mode.');
+        // Set mock mode flag for the rest of the system
+        this.isConnected = false;
+        this.serialPort = null;
+        return; // Exit gracefully without throwing
       }
 
       // If probe left the port open (probePort succeeded) the connection is already established.
       // If we fell back to first port we have already connected above; otherwise ensure connected
+      let connectResult: any;
       if (!this.isConnected) {
         // connect explicitly if not already connected
-        const connectResult = await window.electronAPI.connectSerialPort(vendingPort.path);
+        connectResult = await window.electronAPI.connectSerialPort(vendingPort.path);
         if (!connectResult.success) {
           throw new Error(`Failed to connect to ${vendingPort.path}`);
         }
@@ -320,14 +416,15 @@ class SpringVendingService {
       // Set up data listener
       this.setupDataListener();
       
-      if (connectResult.success) {
+      // Only check connectResult if we actually made a connection attempt
+      if (connectResult && connectResult.success) {
         this.isConnected = true;
         this.serialPort = vendingPort.path;
         console.log(`[SPRING VENDING] Connected to ${vendingPort.path}`);
         
         // Set up data listener
         this.setupDataListener();
-      } else {
+      } else if (connectResult) {
         throw new Error(`Failed to connect to ${vendingPort.path}`);
       }
     } catch (error) {
