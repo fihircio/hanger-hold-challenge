@@ -30,14 +30,7 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalTime, prize, onNex
   return (
     <BackgroundWrapper imagePath="./UI/04.gamescreen.png">
       <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8">
-        <div className="relative w-full max-w-4xl">
-          <img
-            src="./UI/04.gamescreen_bg.png"
-            alt="Panel Background"
-            className="w-full h-auto"
-            style={{ maxHeight: '70vh' }}
-          />
-          <div className="absolute inset-0 flex flex-col p-12 justify-center items-center">
+        <div className="w-full max-w-4xl flex flex-col p-12 justify-center items-center" style={{ maxHeight: '70vh' }}>
             <div className="mb-6 flex justify-center">
               <img
                 src="./UI/RB_zero_UI_slice_text_08.png"
@@ -78,7 +71,6 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalTime, prize, onNex
             </button>
 
             <MaintenancePanel visible={showMaintenance} onClose={() => setShowMaintenance(false)} />
-          </div>
         </div>
       </div>
     </BackgroundWrapper>

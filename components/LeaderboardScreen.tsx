@@ -14,17 +14,10 @@ const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ scores, currentPl
   return (
     <BackgroundWrapper imagePath="./UI/04.gamescreen.png">
       <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8">
-        <div className="relative w-full max-w-5xl">
-          <img
-            src="./UI/04.gamescreen_bg.png"
-            alt="Panel Background"
-            className="w-full h-auto"
-            style={{ maxHeight: '70vh' }}
-          />
-          <div className="absolute inset-0 flex flex-col p-8" style={{maxHeight: '70vh'}}>
+        <div className="w-full max-w-5xl flex flex-col p-8" style={{maxHeight: '70vh'}}>
             <div className="mb-6 flex justify-center">
               <img
-                src="./UI/RB_zero_UI_slice_text_10.jpg"
+                src="./UI/RB_zero_UI_slice_text_10.png"
                 alt="LEADERBOARD"
                 className="h-auto"
                 style={{ maxHeight: '80px' }}
@@ -55,7 +48,6 @@ const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ scores, currentPl
                 </p>
               )}
             </div>
-          </div>
         </div>
 
         <div className="flex justify-center mt-8">
@@ -64,7 +56,7 @@ const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ scores, currentPl
             className="transform hover:scale-105 transition-transform duration-200"
           >
             <img
-              src="./UI/RB_zero_UI_slice_button_07.jpg"
+              src="./UI/RB_zero_UI_slice_button_07.png"
               alt="PLAY AGAIN"
               className="h-auto"
               style={{ maxHeight: '80px' }}

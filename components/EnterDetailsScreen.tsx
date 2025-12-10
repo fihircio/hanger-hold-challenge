@@ -50,14 +50,7 @@ const EnterDetailsScreen: React.FC<EnterDetailsScreenProps> = ({ onSubmit }) => 
   return (
     <BackgroundWrapper imagePath="./UI/04.gamescreen.png">
       <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8">
-        <div className="relative w-full max-w-4xl">
-          <img
-            src="./UI/04.gamescreen_bg.png"
-            alt="Panel Background"
-            className="w-full h-auto"
-            style={{ maxHeight: '850px' }}
-          />
-          <div className="absolute inset-0 flex flex-col px-6 py-4 justify-center items-center">
+        <div className="w-full max-w-4xl flex flex-col px-6 py-4 justify-center items-center" style={{ maxHeight: '850px' }}>
             <div className="mb-1">
               <img
                 src="./UI/RB_zero_UI_slice_text_03.png"
@@ -116,7 +109,6 @@ const EnterDetailsScreen: React.FC<EnterDetailsScreenProps> = ({ onSubmit }) => 
                 />
               </div>
             </form>
-          </div>
         </div>
       </div>
     </BackgroundWrapper>

@@ -169,14 +169,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
   return (
     <BackgroundWrapper imagePath="./UI/04.gamescreen.png">
       <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8">
-        <div className="relative w-full max-w-4xl">
-          <img
-            src="./UI/04.gamescreen_bg.png"
-            alt="Panel Background"
-            className="w-full h-auto"
-            style={{ maxHeight: '70vh' }}
-          />
-          <div className="absolute inset-0 flex flex-col p-12 justify-between">
+        <div className="w-full max-w-4xl flex flex-col p-12 justify-between" style={{ maxHeight: '70vh' }}>
             <div className="text-center">
               <div className="mb-4 flex justify-center">
                 <img
@@ -237,7 +230,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
             </button>
             
             {/* Maintenance activator moved to GameOverScreen */}
-          </div>
         </div>
       </div>
     </BackgroundWrapper>
