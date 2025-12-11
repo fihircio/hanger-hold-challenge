@@ -29,14 +29,14 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalTime, prize, onNex
   }, []);
   return (
     <BackgroundWrapper imagePath="./UI/04.gamescreen.png">
-      <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8">
+      <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8 scale-40 origin-center">
         <div className="w-full max-w-4xl flex flex-col p-12 justify-center items-center" style={{ maxHeight: '70vh' }}>
             <div className="mb-6 flex justify-center">
               <img
                 src="./UI/RB_zero_UI_slice_text_08.png"
                 alt="MANTAP !"
                 className="h-auto"
-                style={{ maxHeight: '80px' }}
+                style={{ maxHeight: '88px' }}
               />
             </div>
             
@@ -45,11 +45,13 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalTime, prize, onNex
                 src="./UI/RB_zero_UI_slice_text_09.png"
                 alt="Your final time is:"
                 className="h-auto"
-                style={{ maxHeight: '60px' }}
+                style={{ maxHeight: '25px' }}
               />
             </div>
             
-            <TimerDisplay time={finalTime} className="text-7xl text-cyan-400 mb-12" />
+            <div className="scale-200">
+              <TimerDisplay time={finalTime} className="text-7xl text-cyan-400 mb-12" />
+            </div>
 
             {prize && (
               <div className="bg-yellow-400 text-gray-900 p-6 rounded-lg mb-12 text-center animate-bounce">
@@ -60,13 +62,13 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalTime, prize, onNex
 
             <button
               onClick={onNext}
-              className="transform hover:scale-105 transition-transform duration-200"
+              className="transform hover:scale-105 transition-transform duration-200 scale-80"
             >
               <img
                 src="./UI/RB_zero_UI_slice_button_05.png"
                 alt="VIEW LEADERBOARD"
                 className="h-auto"
-                style={{ maxHeight: '80px' }}
+                style={{ maxHeight: '64px' }}
               />
             </button>
 

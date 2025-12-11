@@ -168,7 +168,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
 
   return (
     <BackgroundWrapper imagePath="./UI/04.gamescreen.png">
-      <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8">
+      <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8 scale-40 origin-center">
         <div className="w-full max-w-4xl flex flex-col p-12 justify-between" style={{ maxHeight: '70vh' }}>
             <div className="text-center">
               <div className="mb-4 flex justify-center">
@@ -200,34 +200,29 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
               <h3 className="text-3xl font-semibold text-gray-300">
                 {!isHolding ? "" : ""}
               </h3>
-              {/* Show a brief sensor status; full maintenance moved to panel */}
-              <div className="text-lg mt-2 text-gray-400 space-y-2">
-                <p>Arduino Sensor: {arduinoState === 1 ? "DETECTED" : "NO DETECTION"}</p>
-              </div>
+              
             </div>
 
-            <div className="flex-grow flex items-center justify-center">
-              <TimerDisplay time={time} className="text-9xl w-full" />
+            <div className="flex-grow flex items-center justify-center mb-8">
+              <TimerDisplay time={time} className="text-9xl w-full scale-125" />
             </div>
-
-            <button
-              onMouseDown={onHoldStart}
-              onMouseUp={handleGameEnd}
-              onTouchStart={onHoldStart}
-              onTouchEnd={handleGameEnd}
-              className={`w-3/4 max-w-2xl transform hover:scale-105 transition-all duration-300 focus:outline-none ${
-                isHolding
-                  ? 'bg-red-600 shadow-[0_0_80px_rgba(220,38,38,0.8)]'
-                  : 'bg-green-500 shadow-[0_0_80px_rgba(34,197,94,0.6)] animate-pulse'
-              }`}
-            >
-              <img
-                src={isHolding ? "./UI/RB_zero_UI_slice_button_04.png" : "./UI/RB_zero_UI_slice_button_03.png"}
-                alt={isHolding ? "RELEASE TO STOP" : "PRESS AND HOLD"}
-                className="h-auto"
-                style={{ maxHeight: '80px' }}
-              />
-            </button>
+                
+            <div className="flex justify-center">
+              <button
+                onMouseDown={onHoldStart}
+                onMouseUp={handleGameEnd}
+                onTouchStart={onHoldStart}
+                onTouchEnd={handleGameEnd}
+                className="w-3/4 max-w-2xl transform focus:outline-none scale-75"
+              >
+                <img
+                  src={isHolding ? "./UI/RB_zero_UI_slice_button_04.png" : "./UI/RB_zero_UI_slice_button_03.png"}
+                  alt={isHolding ? "RELEASE TO STOP" : "PRESS AND HOLD"}
+                  className="h-auto"
+                  style={{ maxHeight: '80px' }}
+                />
+              </button>
+            </div>
             
             {/* Maintenance activator moved to GameOverScreen */}
         </div>
