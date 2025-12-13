@@ -17,11 +17,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onSerialData: (callback: (data: string) => void) => {
     ipcRenderer.on('serial-data', (event, data) => callback(data));
   },
+  onArduinoData: (callback: (data: string) => void) => {
+    ipcRenderer.on('arduino-data', (event, data) => callback(data));
+  },
   onSerialError: (callback: (error: string) => void) => {
     ipcRenderer.on('serial-error', (event, error) => callback(error));
   },
   removeAllSerialListeners: () => {
     ipcRenderer.removeAllListeners('serial-data');
+    ipcRenderer.removeAllListeners('arduino-data');
     ipcRenderer.removeAllListeners('serial-error');
   },
   
@@ -36,7 +40,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 export interface ElectronAPI {
   toggleFullscreen: () => Promise<{ success: boolean; isFullScreen: boolean }>;
   isFullscreen: () => Promise<boolean>;
-  sendSerialCommand: (command: string) => Promise<{ success: boolean }>;
+  sendSerialCommand: (command: string) => Promise<{ success: boolean; port?: string; type?: string; simulated?: boolean; message?: string; error?: string }>;
   getSerialPorts: () => Promise<Array<{
     path: string;
     manufacturer?: string;
@@ -48,6 +52,7 @@ export interface ElectronAPI {
   connectSerialPort: (portPath: string, baud?: number) => Promise<{ success: boolean }>;
   disconnectSerialPort: () => Promise<{ success: boolean; message?: string }>;
   onSerialData: (callback: (data: string) => void) => void;
+  onArduinoData: (callback: (data: string) => void) => void;
   onSerialError: (callback: (error: string) => void) => void;
   removeAllSerialListeners: () => void;
   platform: string;

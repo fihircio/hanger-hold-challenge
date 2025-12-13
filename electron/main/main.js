@@ -9,6 +9,9 @@ let serialPortError = false;
 let SerialPortModule = null;
 let SerialPort = null;
 let SerialPortParser = null;
+// ENHANCED: Support multiple serial ports for Arduino + Spring Vending
+let activeSerialPorts = new Map(); // Track all active serial ports
+let arduinoPortPath = null; // Track Arduino port separately
 // Try to load SerialPort with error handling
 try {
     SerialPortModule = require('serialport');
@@ -154,10 +157,19 @@ async function initializeSerialPort() {
         console.log('- High COM ports (COM6+) for Arduino sensor:', highComPorts.map((p) => p.path));
         console.log('- Arduino-specific ports:', arduinoPorts.map((p) => `${p.path} (${p.manufacturer})`));
         // Select port for main serial communication (Spring Vending/TCN)
-        // Priority 1: Low COM ports (COM1-5)
-        // Priority 2: Arduino ports if no low COM ports available
-        // Priority 3: Any available port
-        if (lowComPorts.length > 0) {
+        // ENHANCED: Force COM1 for vending machine regardless of other ports
+        // Priority 1: COM1 (forced for vending machine)
+        // Priority 2: Other low COM ports if COM1 not available
+        // Priority 3: Arduino ports if no low COM ports available
+        // Priority 4: Any available port as last resort
+        const com1Port = lowComPorts.find((port) => port.path === 'COM1');
+        if (com1Port) {
+            // Force COM1 for vending machine
+            portPath = 'COM1';
+            console.log(`[SERIAL] FORCING COM1 for main serial (vending machine) - ${com1Port.manufacturer || 'Unknown manufacturer'}`);
+        }
+        else if (lowComPorts.length > 0) {
+            // Use first available low COM port
             portPath = lowComPorts[0].path;
             console.log(`Selected low COM port for main serial: ${portPath}`);
         }
@@ -167,6 +179,7 @@ async function initializeSerialPort() {
             console.log(`Using Arduino port for main serial (potential conflict): ${portPath}`);
         }
         else if (ports.length > 0) {
+            // Use first available port as last resort
             portPath = ports[0].path;
             console.log(`Using first available port for main serial: ${portPath}`);
         }
@@ -209,7 +222,9 @@ async function initializeSerialPort() {
             catch (fallbackError) {
                 console.error(`[SERIAL] Failed to create fallback serial port:`, fallbackError);
                 serialPort = null;
-                serialPortError = true;
+                // CRITICAL FIX: DON'T set serialPortError = true - this triggers mock mode
+                // serialPortError = true; // <-- REMOVED: Prevents all serial commands
+                console.log('[SERIAL] Port initialization failed, but will allow emergency connection attempts');
                 return;
             }
         }
@@ -239,6 +254,30 @@ async function initializeSerialPort() {
         console.error('Failed to initialize serial port:', error);
     }
 }
+// Add serial port reset function
+async function resetSerialPorts() {
+    console.log('[SERIAL] Resetting all serial ports...');
+    // Close all active ports
+    for (const [portPath, port] of activeSerialPorts.entries()) {
+        try {
+            if (port.isOpen) {
+                await port.close();
+                console.log(`[SERIAL] Closed port: ${portPath}`);
+            }
+        }
+        catch (error) {
+            console.error(`[SERIAL] Error closing port ${portPath}:`, error);
+        }
+    }
+    // Clear all references
+    activeSerialPorts.clear();
+    arduinoPortPath = null;
+    serialPort = null;
+    // Wait for ports to fully release
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Reinitialize
+    await initializeSerialPort();
+}
 // IPC handlers for window control
 electron_1.ipcMain.handle('toggle-fullscreen', async () => {
     if (!mainWindow) {
@@ -254,32 +293,63 @@ electron_1.ipcMain.handle('is-fullscreen', async () => {
     }
     return mainWindow.isFullScreen();
 });
-// IPC handlers for serial communication
+// IPC handlers for serial communication - VERSION 1.0.3 COMPATIBLE
 electron_1.ipcMain.handle('send-serial-command', async (event, command) => {
-    if (serialPortError) {
+    // Only block if SerialPort module is truly unavailable
+    if (serialPortError && !SerialPortModule) {
         console.warn('[SERIAL] Command blocked - Serial Port module not available');
-        throw new Error('Serial Port module is not available. Please reinstall the application.');
+        throw new Error('Serial Port module not available');
     }
-    if (!serialPort) {
-        console.warn('[SERIAL] Command blocked - No serial port initialized');
-        throw new Error('Serial port is not initialized. Please connect to a port first.');
-    }
-    if (!serialPort.isOpen) {
-        console.warn('[SERIAL] Command blocked - Serial port is not open');
-        throw new Error('Serial port is not open. Please connect to a port first.');
+    // VERSION 1.0.3 COMPATIBLE: Force real connection - NO SIMULATION
+    if (!serialPort || !serialPort.isOpen) {
+        console.log('[SERIAL] No port available - attempting emergency connection to COM1');
+        // EMERGENCY CONNECTION: Try to connect to COM1 immediately (like version 1.0.3)
+        try {
+            const ports = await SerialPortModule.SerialPort.list();
+            const com1Port = ports.find((port) => port.path === 'COM1');
+            if (com1Port) {
+                console.log('[SERIAL] Found COM1, attempting emergency connection...');
+                serialPort = new SerialPort({
+                    path: 'COM1',
+                    baudRate: 9600,
+                    dataBits: 8,
+                    parity: 'none',
+                    stopBits: 1,
+                });
+                // Wait for connection
+                await new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => reject(new Error('Connection timeout')), 5000);
+                    serialPort.on('open', () => {
+                        clearTimeout(timeout);
+                        console.log('[SERIAL] Emergency COM1 connection successful');
+                        resolve();
+                    });
+                    serialPort.on('error', (err) => {
+                        clearTimeout(timeout);
+                        reject(err);
+                    });
+                });
+            }
+            else {
+                throw new Error('COM1 not available for emergency connection');
+            }
+        }
+        catch (error) {
+            console.error('[SERIAL] Emergency connection failed:', error);
+            throw new Error(`No serial port available and emergency connection failed: ${error.message}`);
+        }
     }
     try {
-        // Convert hex string to bytes
+        // Convert hex string to bytes and send
         const bytes = command.split(' ').map(byte => parseInt(byte, 16));
         const buffer = Buffer.from(bytes);
-        // Send to serial port
         serialPort.write(buffer);
-        console.log('[SERIAL] Sent command to serial port:', command);
-        return { success: true };
+        console.log(`[SERIAL] Sent command to ${serialPort.path}:`, command);
+        return { success: true, port: serialPort.path };
     }
     catch (error) {
         console.error('[SERIAL] Failed to send serial command:', error);
-        throw error;
+        throw error; // VERSION 1.0.3: Throw error instead of returning failure object
     }
 });
 electron_1.ipcMain.handle('get-serial-ports', async () => {
@@ -308,12 +378,23 @@ electron_1.ipcMain.handle('connect-serial-port', async (event, portPath, baudRat
         throw new Error('Serial Port module is not available. Please reinstall the application.');
     }
     try {
-        if (serialPort && serialPort.isOpen) {
+        // ENHANCED: Check if this is an Arduino port (COM6+)
+        const comNum = parseInt(portPath.replace('COM', ''));
+        const isArduinoPort = !isNaN(comNum) && comNum >= 6;
+        if (isArduinoPort) {
+            console.log(`[SERIAL] Detected Arduino port connection: ${portPath}`);
+            arduinoPortPath = portPath;
+        }
+        else {
+            console.log(`[SERIAL] Detected main serial port connection: ${portPath}`);
+        }
+        // Close existing port if it's the same path
+        if (serialPort && serialPort.isOpen && serialPort.path === portPath) {
             await serialPort.close();
         }
         // Accept an optional baud rate parameter from the renderer
         const br = baudRate || 9600;
-        serialPort = new SerialPort({
+        const newSerialPort = new SerialPort({
             path: portPath,
             baudRate: br,
             dataBits: 8,
@@ -323,22 +404,40 @@ electron_1.ipcMain.handle('connect-serial-port', async (event, portPath, baudRat
         console.log(`[SERIAL] Connecting to ${portPath} at baud ${br}`);
         // CRITICAL FIX: Set up data listeners for the NEW serial port instance
         // This ensures Arduino data is actually received and forwarded
-        serialPort.on('open', () => {
+        newSerialPort.on('open', () => {
             console.log(`[SERIAL] Port ${portPath} opened successfully at ${br} baud`);
+            // Track the active port
+            activeSerialPorts.set(portPath, newSerialPort);
+            // Update main serial port reference if this is the main serial port
+            if (!isArduinoPort) {
+                serialPort = newSerialPort;
+            }
         });
-        serialPort.on('error', (err) => {
+        newSerialPort.on('error', (err) => {
             console.error(`[SERIAL] Port ${portPath} error:`, err);
             if (mainWindow) {
                 mainWindow.webContents.send('serial-error', err.message);
             }
+            // Remove from active ports on error
+            activeSerialPorts.delete(portPath);
+            if (isArduinoPort && arduinoPortPath === portPath) {
+                arduinoPortPath = null;
+            }
         });
-        serialPort.on('data', (data) => {
+        newSerialPort.on('data', (data) => {
             const dataString = Buffer.from(data).toString('utf8').trim();
             console.log(`[SERIAL] Received data from ${portPath}:`, dataString);
-            console.log(`[SERIAL] Forwarding to renderer: ${dataString}`);
-            // Forward data to renderer process as plain text (Arduino sends 0 or 1)
+            // Forward data to renderer process with SEPARATE channels to prevent conflicts
             if (mainWindow) {
-                mainWindow.webContents.send('serial-data', dataString);
+                // Use separate channels for Arduino vs other devices
+                if (isArduinoPort) {
+                    console.log(`[SERIAL] Forwarding Arduino data to dedicated channel: ${dataString}`);
+                    mainWindow.webContents.send('arduino-data', dataString);
+                }
+                else {
+                    console.log(`[SERIAL] Forwarding serial data to general channel: ${dataString}`);
+                    mainWindow.webContents.send('serial-data', dataString);
+                }
             }
             else {
                 console.error('[SERIAL] CRITICAL: mainWindow is null, cannot forward data');

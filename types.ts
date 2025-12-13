@@ -17,6 +17,7 @@ export interface ElectronAPI {
   onSerialData: (callback: (data: string) => void) => void;
   onSerialError: (callback: (error: string) => void) => void;
   removeAllSerialListeners: () => void;
+  resetSerialPorts: () => Promise<{ success: boolean; message?: string; error?: string }>;
   platform: string;
   version: string;
 }

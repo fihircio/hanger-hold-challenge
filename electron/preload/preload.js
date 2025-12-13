@@ -16,11 +16,15 @@ electron_1.contextBridge.exposeInMainWorld('electronAPI', {
     onSerialData: (callback) => {
         electron_1.ipcRenderer.on('serial-data', (event, data) => callback(data));
     },
+    onArduinoData: (callback) => {
+        electron_1.ipcRenderer.on('arduino-data', (event, data) => callback(data));
+    },
     onSerialError: (callback) => {
         electron_1.ipcRenderer.on('serial-error', (event, error) => callback(error));
     },
     removeAllSerialListeners: () => {
         electron_1.ipcRenderer.removeAllListeners('serial-data');
+        electron_1.ipcRenderer.removeAllListeners('arduino-data');
         electron_1.ipcRenderer.removeAllListeners('serial-error');
     },
     // App information

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { tcnIntegrationService } from '../services/tcnIntegrationService';
+import { electronVendingService } from '../services/electronVendingService';
 
 interface MaintenancePanelProps {
   visible: boolean;

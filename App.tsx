@@ -33,14 +33,20 @@ const App: React.FC = () => {
     if (window.electronAPI) {
       arduinoSensorService.initialize();
       
-      // Initialize Electron Vending Service as primary trigger chain
+      // DISABLED: Spring Vending Service causing IPC channel conflicts with Arduino sensor
+      // Arduino sensor data was being intercepted by Spring Vending instead of Arduino Sensor Service
+      // Legacy Electron Vending will handle prize dispensing instead
+      console.log('[APP] Spring Vending Service DISABLED to prevent IPC channel conflicts with Arduino sensor');
+      console.log('[APP] Using Legacy Electron Vending only for prize dispensing');
+      
+      // Initialize ONLY Legacy Electron Vending (Spring Vending disabled)
       electronVendingService.initializeVending().then(success => {
-        console.log(`[APP] Electron Vending Service initialization: ${success ? 'SUCCESS' : 'FAILED'}`);
+        console.log(`[APP] Legacy Electron Vending initialization: ${success ? 'SUCCESS' : 'FAILED'}`);
       }).catch(error => {
-        console.error('[APP] Electron Vending Service initialization error:', error);
+        console.error('[APP] Legacy Electron Vending initialization error:', error);
       });
       
-      // Initialize TCN integration service as fallback
+      // Also initialize TCN integration service as backup
       tcnIntegrationService.initialize().then(success => {
         console.log(`[APP] TCN Integration initialization: ${success ? 'SUCCESS' : 'FAILED'}`);
       }).catch(error => {
@@ -178,12 +184,19 @@ const App: React.FC = () => {
 
           // Diagnostics: log measured vs computed duration and startTimeRef
           try {
-            console.log('[HOLD TIMER] end called:', { value, isTimestamp, computedFromRef: duration, startTimeRef: startTimeRef.current, timestamp: Date.now() });
+            console.log('[HOLD TIMER] end called:', { value, isTimestamp, typeof: typeof value });
           } catch (e) {
             // ignore
           }
 
-          // Fire the completion handler with the resolved duration
+          // ADD THIS VALIDATION
+          if (isNaN(duration) || duration < 0) {
+            console.error('[HOLD TIMER] Invalid duration calculated:', duration);
+            duration = 0;
+          }
+
+          console.log('[HOLD TIMER] Final duration:', duration);
+  
           handleHoldComplete(duration);
 
           setIsHolding(false);
