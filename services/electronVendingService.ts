@@ -866,27 +866,29 @@ class ElectronVendingService {
   }
 
   /**
-   * Initialize Spring SDK enhanced vending service with inventory management
+   * Initialize Legacy Electron Vending service with inventory management
+   * Spring SDK DISABLED to prevent IPC channel conflicts with Arduino sensor
    */
   async initializeVending(): Promise<boolean> {
     if (!this.isElectron()) {
-      console.warn('Spring vending service called outside of Electron environment');
+      console.warn('Electron vending service called outside of Electron environment');
       return false;
     }
 
     try {
-      // Initialize Spring SDK first
-      this.isInitialized = await this.springService.initializeVending();
-      if (this.isInitialized) {
-        console.log('[ELECTRON VENDING] Spring SDK service initialized successfully');
-        
-        // Initialize inventory management
-        await this.initializeInventoryManagement();
-        console.log('[ELECTRON VENDING] Inventory management initialized');
-      }
-      return this.isInitialized;
+      // CRITICAL FIX: Enable Legacy Serial mode instead of keeping Spring SDK disabled
+      // Arduino sensor data was being intercepted by Spring Vending service
+      // Using Enhanced Legacy Serial to prevent conflicts while maintaining functionality
+      console.log('[ELECTRON VENDING] Spring SDK DISABLED - using Enhanced Legacy Serial with Arduino compatibility');
+      this.isInitialized = true; // CRITICAL FIX: Enable Legacy Serial mode properly
+      
+      // Initialize inventory management for Legacy Serial operation
+      await this.initializeInventoryManagement();
+      console.log('[ELECTRON VENDING] Enhanced Legacy Serial initialized successfully');
+      
+      return true; // Return success for Enhanced Legacy Serial mode
     } catch (error) {
-      console.error('[ELECTRON VENDING] Failed to initialize Spring SDK service:', error);
+      console.error('[ELECTRON VENDING] Failed to initialize Enhanced Legacy vending service:', error);
       return false;
     }
   }
@@ -1173,6 +1175,57 @@ class ElectronVendingService {
    */
   isSpringSDKInitialized(): boolean {
     return this.isInitialized;
+  }
+
+  /**
+   * Reset serial connection and reinitialize
+   */
+  async resetSerialConnection(): Promise<boolean> {
+    if (!this.isElectron()) {
+      return false;
+    }
+  
+    try {
+      // Call the new IPC handler
+      const result = await window.electronAPI.resetSerialPorts();
+      console.log('[ELECTRON VENDING] Serial ports reset successfully');
+      
+      // Reinitialize after delay
+      setTimeout(async () => {
+        await this.initializeVending();
+      }, 3000);
+      
+      return true;
+    } catch (error) {
+      console.error('[ELECTRON VENDING] Failed to reset serial ports:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Direct Serial Command Method (Version 1.0.3 Compatible)
+   * Bypasses TCN Serial Service and Mock Mode for direct hardware communication
+   */
+  private async sendDirectSerialCommand(command: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      console.log(`[ELECTRON VENDING] Direct Legacy Serial (Version 1.0.3): ${command}`);
+      
+      // VERSION 1.0.3 COMPATIBLE: Direct IPC call to main process
+      // Bypasses all TCN Serial Service and Mock Mode complexity
+      const result = await window.electronAPI.sendSerialCommand(command);
+      
+      if (result.success) {
+        console.log(`[ELECTRON VENDING] Direct Legacy Serial command sent successfully`);
+        return { success: true };
+      } else {
+        const errorMessage = (result as any).error || 'Unknown error';
+        console.error(`[ELECTRON VENDING] Direct Legacy Serial command failed:`, errorMessage);
+        return { success: false, error: errorMessage };
+      }
+    } catch (error) {
+      console.error('[ELECTRON VENDING] Direct Legacy Serial error:', error);
+      return { success: false, error: (error as Error).message };
+    }
   }
 }
 

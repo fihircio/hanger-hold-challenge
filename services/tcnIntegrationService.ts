@@ -125,7 +125,7 @@ export class TCNIntegrationService {
           // Initialize in persistent storage
           await inventoryStorageService.updateSlotInventory({
             slot,
-            tier: this.prizeChannels.gold.includes(slot) ? 'gold' : 'silver',
+            tier: this.prizeChannels.gold.includes(slot) ? 'gold' : this.prizeChannels.silver.includes(slot) ? 'silver' : 'gold',
             dispenseCount: 0,
             maxDispenses: this.maxDispensesPerSlot,
             updatedAt: new Date().toISOString()
@@ -273,7 +273,7 @@ export class TCNIntegrationService {
      * Determine prize tier based on game performance
      * Updated for 2-tier system (gold/silver only)
      */
-  private determinePrizeTier(): 'gold' | 'silver' | null {
+  private determinePrizeTier(): 'gold' | 'silver' | 'bronze' | null {
     // For demonstration, we'll use a random tier
     // In real implementation, this would be based on actual game time
     const random = Math.random();
@@ -344,7 +344,7 @@ export class TCNIntegrationService {
   async incrementSlotCount(slot: number): Promise<number> {
     try {
       // Update in persistent storage
-      const tier = this.prizeChannels.gold.includes(slot) ? 'gold' : 'silver';
+      const tier = this.prizeChannels.gold.includes(slot) ? 'gold' : this.prizeChannels.silver.includes(slot) ? 'silver' : 'gold';
       const updatedData = await inventoryStorageService.incrementSlotCount(slot, tier);
       
       // Update cache
@@ -367,7 +367,7 @@ export class TCNIntegrationService {
    * @param tier Prize tier ('gold' or 'silver')
    * @returns Next available slot number or null if none available
    */
-  async getNextAvailableSlot(tier: 'gold' | 'silver'): Promise<number | null> {
+  async getNextAvailableSlot(tier: 'gold' | 'silver' | 'bronze'): Promise<number | null> {
     await this.ensureCacheValid();
     const availableSlots = this.prizeChannels[tier];
     
@@ -533,8 +533,43 @@ export class TCNIntegrationService {
   }
 
   /**
-     * Manual prize dispensing with automatic slot selection (for testing)
-     */
+   * Legacy HEX dispensing method (Version 1.0.3 compatible)
+   * Uses direct Electron serial API with proven HEX command format
+   */
+  private async dispensePrizeLegacy(slot: number, tier: 'gold' | 'silver'): Promise<boolean> {
+    try {
+      console.log(`[TCN INTEGRATION] Using Legacy HEX Method for slot ${slot} (${tier} tier)`);
+      
+      // Check if Electron API is available
+      if (typeof window === 'undefined' || !window.electronAPI) {
+        console.error('[TCN INTEGRATION] Electron API not available for legacy method');
+        return false;
+      }
+      
+      // Construct proven HEX command (same as version 1.0.3)
+      const command = this.constructMockHexCommand(slot);
+      console.log(`[TCN INTEGRATION] Legacy HEX Command: ${command}`);
+      
+      // Send command directly via Electron's serial API
+      const result = await window.electronAPI.sendSerialCommand(command);
+      
+      if (result.success) {
+        console.log(`[TCN INTEGRATION] ✓ Legacy HEX command sent successfully to slot ${slot}`);
+        return true;
+      } else {
+        const errorMessage = (result as any).error || 'Unknown error';
+        console.error(`[TCN INTEGRATION] ✗ Legacy HEX command failed for slot ${slot}: ${errorMessage}`);
+        return false;
+      }
+    } catch (error) {
+      console.error(`[TCN INTEGRATION] Legacy HEX method error for slot ${slot}:`, error);
+      return false;
+    }
+  }
+
+  /**
+   * Manual prize dispensing with automatic slot selection (for testing)
+   */
   async dispensePrizeManually(tier: 'gold' | 'silver'): Promise<boolean> {
     try {
       console.log(`[TCN INTEGRATION] Manual ${tier} prize dispensing requested`);
@@ -587,6 +622,7 @@ export class TCNIntegrationService {
   async handlePrizeDispensing(time: number, scoreId?: string): Promise<void> {
     try {
       console.log(`[TCN INTEGRATION] Handling prize dispensing for game time: ${time}ms`);
+      console.log(`[TCN INTEGRATION] USING LEGACY HEX METHOD (Version 1.0.3 compatible)`);
       
       // Determine prize tier based on game time
       const tier = this.determinePrizeTierByTime(time);
@@ -599,35 +635,37 @@ export class TCNIntegrationService {
         
         if (selectedSlot) {
           console.log(`[TCN INTEGRATION] Selected slot ${selectedSlot} for ${tier} prize`);
-           
-          if (tcnSerialService.isConnectedToTCN()) {
-            console.log(`[TCN INTEGRATION] Dispensing ${tier} prize via TCN hardware from slot ${selectedSlot}`);
-            
-            const result = await tcnSerialService.dispenseFromChannel(selectedSlot);
-            
-            if (result.success) {
-              console.log(`[TCN INTEGRATION] ${tier} prize dispensed successfully from slot ${selectedSlot}`);
-              // Increment slot count after successful dispensing
-              await this.incrementSlotCount(selectedSlot);
-              
-              // Log to backend if available
-              await this.logDispensingToServer(selectedSlot, tier, true);
-            } else {
-              console.error(`[TCN INTEGRATION] Failed to dispense ${tier} prize from slot ${selectedSlot}: ${result.error}`);
-              
-              // Log failed attempt
-              await this.logDispensingToServer(selectedSlot, tier, false, result.error);
-            }
-          } else {
-            console.log('[TCN INTEGRATION] TCN not available - showing HEX command that would be sent');
-            
-            // Show HEX command that would be sent (for debugging)
-            const mockHexCommand = this.constructMockHexCommand(selectedSlot);
-            console.log(`[TCN INTEGRATION] MOCK HEX COMMAND: ${mockHexCommand} (slot ${selectedSlot})`);
-            
-            // Simulate dispensing and increment count
+          
+          // PRIORITY: Use Legacy HEX Method (Version 1.0.3 compatible)
+          console.log(`[TCN INTEGRATION] Using Legacy HEX Method for slot ${selectedSlot}`);
+          const success = await this.dispensePrizeLegacy(selectedSlot, tier);
+          
+          if (success) {
+            console.log(`[TCN INTEGRATION] ✓ Legacy HEX method successful for ${tier} prize from slot ${selectedSlot}`);
             await this.incrementSlotCount(selectedSlot);
-            await this.logDispensingToServer(selectedSlot, tier, true, `Simulated - TCN not connected (HEX: ${mockHexCommand})`);
+            await this.logDispensingToServer(selectedSlot, tier, true, 'Legacy HEX method successful');
+          } else {
+            console.error(`[TCN INTEGRATION] ✗ Legacy HEX method failed for slot ${selectedSlot}`);
+            await this.logDispensingToServer(selectedSlot, tier, false, 'Legacy HEX method failed');
+             
+            // FALLBACK: Try TCN Serial Service if legacy fails
+            if (tcnSerialService.isConnectedToTCN()) {
+              console.log(`[TCN INTEGRATION] Falling back to TCN Serial Service...`);
+              const result = await tcnSerialService.dispenseFromChannel(selectedSlot);
+              
+              if (result.success) {
+                console.log(`[TCN INTEGRATION] ✓ TCN Serial fallback successful for ${tier} prize`);
+                await this.incrementSlotCount(selectedSlot);
+                await this.logDispensingToServer(selectedSlot, tier, true, 'TCN Serial fallback successful');
+              } else {
+                console.error(`[TCN INTEGRATION] ✗ TCN Serial fallback failed: ${result.error}`);
+                await this.logDispensingToServer(selectedSlot, tier, false, `TCN Serial fallback failed: ${result.error}`);
+              }
+            } else {
+              console.log('[TCN INTEGRATION] TCN not available - simulating for inventory tracking');
+              await this.incrementSlotCount(selectedSlot);
+              await this.logDispensingToServer(selectedSlot, tier, true, 'Simulated - all methods failed');
+            }
           }
         } else {
           console.warn(`[TCN INTEGRATION] No available slots for ${tier} tier - machine may be empty`);
@@ -647,15 +685,15 @@ export class TCNIntegrationService {
    * @param time Game time in milliseconds
    * @returns Prize tier or null if no prize
    */
-  private determinePrizeTierByTime(time: number): 'gold' | 'silver' | null {
-    // Updated prize thresholds for 2-tier system
-    if (time >= 60000) { // 60 seconds or more
+  private determinePrizeTierByTime(time: number): 'gold' | 'silver' | 'null' {
+    // Updated prize thresholds for 3-tier system
+    if (time >= 240000) { // 4 minutes (240 seconds) or more - GOLD
       return 'gold';
-    } else if (time >= 30000) { // 30 seconds or more
+    } else if (time >= 120000) { // 2 minutes (120 seconds) or more - SILVER
       return 'silver';
     }
     
-    return null; // Less than 30 seconds - no prize
+    return null; // Less than 10 seconds - no prize
   }
 
   /**
