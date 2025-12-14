@@ -8,26 +8,13 @@ interface HowToScreenProps {
 const HowToScreen: React.FC<HowToScreenProps> = ({ onNext }) => {
   return (
     <BackgroundWrapper imagePath="./UI/02.howto.png">
-      <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8">
-        <div className="mt-32 space-y-4">
-          <div className="flex justify-center">
-            <img
-              src="./UI/RB_zero_UI_slice_text_01.png"
-              alt="Challenge Text"
-              className="h-auto"
-              style={{ maxHeight: '60px' }}
-            />
-          </div>
-          
-          <div className="flex justify-center">
-            <img
-              src="./UI/RB_zero_UI_slice_text_02.png"
-              alt="How To Text"
-              className="h-auto"
-              style={{ maxHeight: '60px' }}
-            />
-          </div>
-          
+      <div className="relative h-screen w-screen text-center p-8">
+        <div className="flex flex-col items-center justify-center h-full">
+         
+        </div>
+
+        {/* absolutely position 'GOT IT!' button near the lower third, centered */}
+        <div className="absolute left-1/2 transform -translate-x-1/2 bottom-20 sm:bottom-16 md:bottom-20">
           <button
             onClick={onNext}
             className="transform hover:scale-105 transition-transform duration-200 drop-shadow-lg"
