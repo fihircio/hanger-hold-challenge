@@ -1,0 +1,905 @@
+(index):64 cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+(anonymous) @ (index):64
+index-BghxC0SF.js:50 [TCN SERIAL] Using MockSerialPort (like old working system)
+index-BghxC0SF.js:50 [TCN SERIAL] TCN Service initialized with COM1 priority
+index-BghxC0SF.js:53 [TCN INTEGRATION] Initialized with 2 gold, 42 silver slots
+index-BghxC0SF.js:53 [INVENTORY STORAGE] Database not initialized, attempting to initialize...
+getAllSlotInventory @ index-BghxC0SF.js:53
+index-BghxC0SF.js:53 [INVENTORY STORAGE] Initializing database...
+index-BghxC0SF.js:55 [APP] Spring Vending Service DISABLED to prevent IPC channel conflicts with Arduino sensor
+index-BghxC0SF.js:55 [APP] Using Legacy Electron Vending only for prize dispensing
+index-BghxC0SF.js:55 [ELECTRON VENDING] Spring SDK DISABLED - using Enhanced Legacy Serial with Arduino compatibility
+index-BghxC0SF.js:54 [ELECTRON VENDING] Initializing inventory management...
+index-BghxC0SF.js:53 [INVENTORY STORAGE] Initializing database...
+index-BghxC0SF.js:53 [TCN INTEGRATION] Initializing complete vending system...
+index-BghxC0SF.js:53 [INVENTORY STORAGE] Initializing database...
+index-BghxC0SF.js:49 [Arduino Sensor] Already DISABLED - skipping
+index-BghxC0SF.js:49 [Arduino Sensor] Available ports: Array(2)
+index-BghxC0SF.js:49 [Arduino Sensor] Found serial ports, setting up listeners
+index-BghxC0SF.js:49 [Arduino Sensor] IPC listeners will be set up when serial port connects
+index-BghxC0SF.js:49 Arduino sensor service initialized
+index-BghxC0SF.js:53 [INVENTORY STORAGE] Database initialized successfully
+index-BghxC0SF.js:53 [INVENTORY STORAGE] Database initialized successfully
+index-BghxC0SF.js:53 [INVENTORY STORAGE] Database initialized successfully
+index-BghxC0SF.js:53 [TCN INTEGRATION] Loaded 44 slot records from storage
+index-BghxC0SF.js:53 [TCN INTEGRATION] Loaded 44 slot records from storage
+index-BghxC0SF.js:53 [TCN INTEGRATION] Step 1: Connecting to TCN hardware...
+index-BghxC0SF.js:50 === TCN SERIAL AUTO-CONNECT ===
+index-BghxC0SF.js:50 [TCN SERIAL] Starting simple port detection (like old working system)...
+index-BghxC0SF.js:50 [TCN SERIAL] Found 3 available ports: Array(3)
+index-BghxC0SF.js:50 [TCN SERIAL] PRIORITY 1: Found COM3, attempting connection...
+index-BghxC0SF.js:50 [TCN SERIAL] COM3 Details: Object
+index-BghxC0SF.js:50 [TCN SERIAL] Connecting to COM3 at 115200 baud...
+index-BghxC0SF.js:49 [TCN SERIAL MOCK] Mock serial port created: Object
+index-BghxC0SF.js:49 [TCN SERIAL MOCK] Mock parser created: Object
+index-BghxC0SF.js:54 [ELECTRON VENDING] Inventory management initialized
+index-BghxC0SF.js:55 [ELECTRON VENDING] Enhanced Legacy Serial initialized successfully
+index-BghxC0SF.js:55 [APP] Legacy Electron Vending initialization: SUCCESS
+index-BghxC0SF.js:51 [TCN SERIAL] Connected to COM3
+index-BghxC0SF.js:51 [TCN SERIAL] Port details: path=undefined, baudRate=undefined
+index-BghxC0SF.js:49 [TCN SERIAL MOCK] Event listener added: error
+index-BghxC0SF.js:49 [TCN SERIAL MOCK] Event listener added: close
+index-BghxC0SF.js:51 [TCN SERIAL] Testing connection...
+index-BghxC0SF.js:49 [TCN SERIAL MOCK] Writing: STATUS
+
+index-BghxC0SF.js:53 [TCN SERIAL] Sent: STATUS
+index-BghxC0SF.js:52 [TCN SERIAL] Connection test successful
+index-BghxC0SF.js:50 [TCN SERIAL] ✓ Successfully connected to COM3 (TCN Controller)
+index-BghxC0SF.js:53 [TCN INTEGRATION] TCN hardware connected successfully
+index-BghxC0SF.js:53 [TCN INTEGRATION] Step 2: Initializing Arduino sensors...
+index-BghxC0SF.js:53 [TCN INTEGRATION] Arduino sensor service initialized (GameScreen will manage activation)
+index-BghxC0SF.js:53 [TCN INTEGRATION] Integration complete
+index-BghxC0SF.js:55 [APP] TCN Integration initialization: SUCCESS
+vendinghanger.eeelab.xyz/apiendpoints.php/leaderboard:1 
+        
+        
+       Failed to load resource: the server responded with a status of 404 ()
+index-BghxC0SF.js:53 API request failed: Error: Endpoint not found
+    at sS.request (index-BghxC0SF.js:53:43698)
+    at async ns (index-BghxC0SF.js:53:44782)
+request @ index-BghxC0SF.js:53
+index-BghxC0SF.js:53 Failed to get leaderboard from API, falling back to cache: Error: Endpoint not found
+    at sS.request (index-BghxC0SF.js:53:43698)
+    at async ns (index-BghxC0SF.js:53:44782)
+ns @ index-BghxC0SF.js:53
+index-BghxC0SF.js:51 [TCN SERIAL] Received: STATUS: OK
+index-BghxC0SF.js:53 Sync queue is empty.
+index-BghxC0SF.js:49 [Arduino Sensor] Already DISABLED - skipping
+index-BghxC0SF.js:49 [Arduino Sensor] Already DISABLED - skipping
+index-BghxC0SF.js:49 [Arduino Sensor] Already DISABLED - skipping
+index-BghxC0SF.js:53 [GameScreen] Setting up Arduino sensor service...
+index-BghxC0SF.js:49 [Arduino Sensor] Proactive COM port initialization starting...
+index-BghxC0SF.js:49 [Arduino Sensor] Starting proactive COM port state management...
+index-BghxC0SF.js:49 [Arduino Sensor] State reset - ready for new game
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor service initialized, setting up handlers...
+index-BghxC0SF.js:49 [Arduino Sensor] Already ENABLED - skipping
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor service enabled
+index-BghxC0SF.js:49 [Arduino Sensor] State reset - ready for new game
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor state reset
+index-BghxC0SF.js:49 [Arduino Sensor] Fresh port scan after initialization: (2) [{…}, {…}]
+index-BghxC0SF.js:49 [Arduino Sensor] Pre-testing port COM1 to clear state...
+index-BghxC0SF.js:49 [Arduino Sensor] ✓ Port COM1 state cleared successfully
+index-BghxC0SF.js:49 [Arduino Sensor] Pre-testing port COM8 to clear state...
+index-BghxC0SF.js:49 [Arduino Sensor] ✓ Port COM8 state cleared successfully
+index-BghxC0SF.js:49 [Arduino Sensor] Proactive initialization completed
+index-BghxC0SF.js:49 [Arduino Sensor] Available ports: (2) [{…}, {…}]
+index-BghxC0SF.js:49 [Arduino Sensor] Selected high COM port: COM8 (non-Arduino manufacturer, COM6+)
+index-BghxC0SF.js:49 [Arduino Sensor] Port selection details:
+index-BghxC0SF.js:49   - Available ports: (2) ['COM1 ((Standard port types))', 'COM8 (Microsoft)']
+index-BghxC0SF.js:49   - Arduino manufacturer ports: []
+index-BghxC0SF.js:49   - Selected port: COM8
+index-BghxC0SF.js:49   - Port manufacturer: Microsoft
+index-BghxC0SF.js:49 [Arduino Sensor] Attempting to connect to COM8
+index-BghxC0SF.js:49 [Arduino Sensor] Trying Standard connection strategy...
+index-BghxC0SF.js:49 [Arduino Sensor] ✓ Standard strategy successful
+index-BghxC0SF.js:49 [Arduino Sensor] ✓ Successfully connected to COM8 at 9600 baud
+index-BghxC0SF.js:49 [Arduino Sensor] Dedicated Arduino data channel listener set up
+index-BghxC0SF.js:49 [Arduino Sensor] IPC listeners set up after serial connection (data will only be processed when enabled)
+index-BghxC0SF.js:49 Arduino sensor ENABLED and ready for data (REAL HARDWARE MODE)
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (1): 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (10): 
+index-BghxC0SF.js:49 Invalid sensor value received: 
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (20): 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (30): 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (40): 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 [Arduino Sensor] Stable state: 0 -> 1 @ 1765688905532
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor state change: 1 ts= 1765688905532
+index-BghxC0SF.js:53 [GameScreen] Arduino: DETECTION - Object detected by sensor
+index-BghxC0SF.js:49 [Arduino Sensor] START detected - object detected
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor START detected - triggering hold start @ 1765688905532
+index-BghxC0SF.js:49 [Arduino Sensor] Already ENABLED - skipping
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (50): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (60): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (70): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (80): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (90): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (100): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (110): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (120): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (130): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (140): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Invalid sensor value received: 
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (150): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (160): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Stable state: 1 -> 0 @ 1765688917037
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor state change: 0 ts= 1765688917037
+index-BghxC0SF.js:53 [GameScreen] Arduino: NO DETECTION - Object removed from sensor
+index-BghxC0SF.js:49 [Arduino Sensor] END detected - object removed
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor END detected - triggering hold end @ 1765688917037
+index-BghxC0SF.js:55 [HOLD TIMER] end called: {value: 1765688917037, isTimestamp: true, typeof: 'number'}
+index-BghxC0SF.js:55 [HOLD TIMER] Final duration: 11505
+index-BghxC0SF.js:55 [APP] Game completed with duration: 11505ms - using new Electron Vending Service trigger chain
+index-BghxC0SF.js:55 [PRIZE SERVICE] Using Electron Vending Service as primary trigger for time: 11505ms
+index-BghxC0SF.js:54 [ELECTRON VENDING] Handling prize dispensing for game time: 11505ms, scoreId: score_1765688917109
+index-BghxC0SF.js:54 [ELECTRON VENDING] Game time 11505ms qualifies for silver prize
+index-BghxC0SF.js:54 [ELECTRON VENDING] Selected silver slot 1 (rotation index: 0)
+index-BghxC0SF.js:54 [ELECTRON VENDING] Selected slot 1 for silver prize
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:53 
+        
+        
+       POST https://vendinghanger.eeelab.xyz/apiendpoints.php/prizes 404 (Not Found)
+request @ index-BghxC0SF.js:53
+getAllPrizes @ index-BghxC0SF.js:53
+handlePrizeDispensing @ index-BghxC0SF.js:54
+await in handlePrizeDispensing (async)
+yS @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:53 API request failed: Error: Endpoint not found
+    at sS.request (index-BghxC0SF.js:53:43698)
+    at async hS.handlePrizeDispensing (index-BghxC0SF.js:54:17312)
+    at async yS (index-BghxC0SF.js:55:15040)
+    at async index-BghxC0SF.js:55:18643
+request @ index-BghxC0SF.js:53
+await in request (async)
+getAllPrizes @ index-BghxC0SF.js:53
+handlePrizeDispensing @ index-BghxC0SF.js:54
+await in handlePrizeDispensing (async)
+yS @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:54 [ELECTRON VENDING] Failed to log to API: Error: Endpoint not found
+    at sS.request (index-BghxC0SF.js:53:43698)
+    at async hS.handlePrizeDispensing (index-BghxC0SF.js:54:17312)
+    at async yS (index-BghxC0SF.js:55:15040)
+    at async index-BghxC0SF.js:55:18643
+handlePrizeDispensing @ index-BghxC0SF.js:54
+await in handlePrizeDispensing (async)
+yS @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:54 [ELECTRON VENDING] Using Dual Command Approach (COM3 TCN + Electron HEX) for silver prize dispensing
+index-BghxC0SF.js:55 [ELECTRON VENDING] TCN Command (text): DISPENSE 1
+index-BghxC0SF.js:55 [ELECTRON VENDING] Electron Command (HEX): 00 FF 01 FE AA 55
+index-BghxC0SF.js:55 [ELECTRON VENDING] Sending TCN text command to COM3...
+index-BghxC0SF.js:55 [ELECTRON VENDING] TCN Text Command (COM3): DISPENSE 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:55 [ELECTRON VENDING] TCN text command sent successfully
+index-BghxC0SF.js:55 [ELECTRON VENDING] Sending Electron HEX command...
+index-BghxC0SF.js:55 [ELECTRON VENDING] Direct Legacy Serial (Version 1.0.3): 00 FF 01 FE AA 55
+index-BghxC0SF.js:55 [ELECTRON VENDING] Direct Legacy Serial command sent successfully
+index-BghxC0SF.js:55 [ELECTRON VENDING] Both commands sent successfully to slot 1
+index-BghxC0SF.js:53 [INVENTORY STORAGE] Updated slot 1: 3/5
+index-BghxC0SF.js:54 [ELECTRON VENDING] Slot 1 count incremented for silver tier
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:53 [INVENTORY STORAGE] Dispensing log synced successfully
+index-BghxC0SF.js:54 [ELECTRON VENDING] Dispensing logged to both tables: slot=1, tier=silver, success=true
+index-BghxC0SF.js:55 [ELECTRON VENDING] ✓ Dual Command (COM3 TCN + Electron HEX) successful for silver prize
+index-BghxC0SF.js:55 [PRIZE SERVICE] Electron Vending Service successfully dispensed Silver Prize from slot 1.
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (170): 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:54 
+        
+        
+       POST https://vendinghanger.eeelab.xyz/apiendpoints.php/api/electron-vending/log net::ERR_ABORTED 500 (Internal Server Error)
+logDispensingToServer @ index-BghxC0SF.js:54
+await in logDispensingToServer (async)
+try @ index-BghxC0SF.js:55
+await in try (async)
+handlePrizeDispensing @ index-BghxC0SF.js:55
+await in handlePrizeDispensing (async)
+yS @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:53 Submitting score to API: {player_id: 7, time: 11505}
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (180): 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:53 
+        
+        
+       POST https://vendinghanger.eeelab.xyz/apiendpoints.php/leaderboard 404 (Not Found)
+request @ index-BghxC0SF.js:53
+getLeaderboard @ index-BghxC0SF.js:53
+ns @ index-BghxC0SF.js:53
+cS @ index-BghxC0SF.js:53
+await in cS (async)
+(anonymous) @ index-BghxC0SF.js:55
+await in (anonymous) (async)
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:53 API request failed: Error: Endpoint not found
+    at sS.request (index-BghxC0SF.js:53:43698)
+    at async ns (index-BghxC0SF.js:53:44782)
+    at async cS (index-BghxC0SF.js:53:45897)
+    at async index-BghxC0SF.js:55:18696
+request @ index-BghxC0SF.js:53
+await in request (async)
+getLeaderboard @ index-BghxC0SF.js:53
+ns @ index-BghxC0SF.js:53
+cS @ index-BghxC0SF.js:53
+await in cS (async)
+(anonymous) @ index-BghxC0SF.js:55
+await in (anonymous) (async)
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:53 Failed to get leaderboard from API, falling back to cache: Error: Endpoint not found
+    at sS.request (index-BghxC0SF.js:53:43698)
+    at async ns (index-BghxC0SF.js:53:44782)
+    at async cS (index-BghxC0SF.js:53:45897)
+    at async index-BghxC0SF.js:55:18696
+ns @ index-BghxC0SF.js:53
+await in ns (async)
+cS @ index-BghxC0SF.js:53
+await in cS (async)
+(anonymous) @ index-BghxC0SF.js:55
+await in (anonymous) (async)
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:53 [GameScreen] Cleaning up Arduino sensor service...
+index-BghxC0SF.js:49 Arduino sensor DISABLED
+index-BghxC0SF.js:49 [Arduino Sensor] Already DISABLED - skipping
+index-BghxC0SF.js:49 [Arduino Sensor] Already DISABLED - skipping
+index-BghxC0SF.js:49 [Arduino Sensor] Already DISABLED - skipping
+index-BghxC0SF.js:49 [Arduino Sensor] Already DISABLED - skipping
+index-BghxC0SF.js:49 [Arduino Sensor] Already DISABLED - skipping
+index-BghxC0SF.js:49 [Arduino Sensor] Already DISABLED - skipping
+index-BghxC0SF.js:53 [GameScreen] Setting up Arduino sensor service...
+index-BghxC0SF.js:49 [Arduino Sensor] Already connected to serial port, skipping reconnection
+index-BghxC0SF.js:49 [Arduino Sensor] State reset - ready for new game
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor service initialized, setting up handlers...
+index-BghxC0SF.js:49 [Arduino Sensor] Already ENABLED - skipping
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor service enabled
+index-BghxC0SF.js:49 [Arduino Sensor] State reset - ready for new game
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor state reset
+index-BghxC0SF.js:49 Arduino sensor ENABLED and ready for data (REAL HARDWARE MODE)
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (190): 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (200): 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (210): 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (220): 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 [Arduino Sensor] Stable state: 0 -> 1 @ 1765688959552
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor state change: 1 ts= 1765688959552
+index-BghxC0SF.js:53 [GameScreen] Arduino: DETECTION - Object detected by sensor
+index-BghxC0SF.js:49 [Arduino Sensor] START detected - object detected
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor START detected - triggering hold start @ 1765688959552
+index-BghxC0SF.js:49 [Arduino Sensor] Already ENABLED - skipping
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (230): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (240): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (250): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (260): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (270): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (280): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (290): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (300): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (310): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Invalid sensor value received: 
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (320): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (330): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (340): 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 Arduino sensor state change: 1 -> 0
+index-BghxC0SF.js:49 [Arduino Sensor] Stable state: 1 -> 0 @ 1765688971556
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor state change: 0 ts= 1765688971556
+index-BghxC0SF.js:53 [GameScreen] Arduino: NO DETECTION - Object removed from sensor
+index-BghxC0SF.js:49 [Arduino Sensor] END detected - object removed
+index-BghxC0SF.js:53 [GameScreen] Arduino sensor END detected - triggering hold end @ 1765688971556
+index-BghxC0SF.js:55 [HOLD TIMER] end called: {value: 1765688971556, isTimestamp: true, typeof: 'number'}
+index-BghxC0SF.js:55 [HOLD TIMER] Final duration: 12004
+index-BghxC0SF.js:55 [APP] Game completed with duration: 12004ms - using new Electron Vending Service trigger chain
+index-BghxC0SF.js:55 [PRIZE SERVICE] Using Electron Vending Service as primary trigger for time: 12004ms
+index-BghxC0SF.js:54 [ELECTRON VENDING] Handling prize dispensing for game time: 12004ms, scoreId: score_1765688971629
+index-BghxC0SF.js:54 [ELECTRON VENDING] Game time 12004ms qualifies for silver prize
+index-BghxC0SF.js:54 [ELECTRON VENDING] Selected silver slot 2 (rotation index: 1)
+index-BghxC0SF.js:54 [ELECTRON VENDING] Selected slot 2 for silver prize
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:53 
+        
+        
+       POST https://vendinghanger.eeelab.xyz/apiendpoints.php/prizes 404 (Not Found)
+request @ index-BghxC0SF.js:53
+getAllPrizes @ index-BghxC0SF.js:53
+handlePrizeDispensing @ index-BghxC0SF.js:54
+await in handlePrizeDispensing (async)
+yS @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:53 API request failed: Error: Endpoint not found
+    at sS.request (index-BghxC0SF.js:53:43698)
+    at async hS.handlePrizeDispensing (index-BghxC0SF.js:54:17312)
+    at async yS (index-BghxC0SF.js:55:15040)
+    at async index-BghxC0SF.js:55:18643
+request @ index-BghxC0SF.js:53
+await in request (async)
+getAllPrizes @ index-BghxC0SF.js:53
+handlePrizeDispensing @ index-BghxC0SF.js:54
+await in handlePrizeDispensing (async)
+yS @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:54 [ELECTRON VENDING] Failed to log to API: Error: Endpoint not found
+    at sS.request (index-BghxC0SF.js:53:43698)
+    at async hS.handlePrizeDispensing (index-BghxC0SF.js:54:17312)
+    at async yS (index-BghxC0SF.js:55:15040)
+    at async index-BghxC0SF.js:55:18643
+handlePrizeDispensing @ index-BghxC0SF.js:54
+await in handlePrizeDispensing (async)
+yS @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:54 [ELECTRON VENDING] Using Dual Command Approach (COM3 TCN + Electron HEX) for silver prize dispensing
+index-BghxC0SF.js:55 [ELECTRON VENDING] TCN Command (text): DISPENSE 2
+index-BghxC0SF.js:55 [ELECTRON VENDING] Electron Command (HEX): 00 FF 02 FD AA 55
+index-BghxC0SF.js:55 [ELECTRON VENDING] Sending TCN text command to COM3...
+index-BghxC0SF.js:55 [ELECTRON VENDING] TCN Text Command (COM3): DISPENSE 2
+index-BghxC0SF.js:55 [ELECTRON VENDING] TCN text command sent successfully
+index-BghxC0SF.js:55 [ELECTRON VENDING] Sending Electron HEX command...
+index-BghxC0SF.js:55 [ELECTRON VENDING] Direct Legacy Serial (Version 1.0.3): 00 FF 02 FD AA 55
+index-BghxC0SF.js:55 [ELECTRON VENDING] Direct Legacy Serial command sent successfully
+index-BghxC0SF.js:55 [ELECTRON VENDING] Both commands sent successfully to slot 2
+index-BghxC0SF.js:53 [INVENTORY STORAGE] Updated slot 2: 3/5
+index-BghxC0SF.js:54 [ELECTRON VENDING] Slot 2 count incremented for silver tier
+index-BghxC0SF.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (350): 1
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:53 [INVENTORY STORAGE] Dispensing log synced successfully
+index-BghxC0SF.js:54 [ELECTRON VENDING] Dispensing logged to both tables: slot=2, tier=silver, success=true
+index-BghxC0SF.js:55 [ELECTRON VENDING] ✓ Dual Command (COM3 TCN + Electron HEX) successful for silver prize
+index-BghxC0SF.js:55 [PRIZE SERVICE] Electron Vending Service successfully dispensed Silver Prize from slot 2.
+index-BghxC0SF.js:54 
+        
+        
+       POST https://vendinghanger.eeelab.xyz/apiendpoints.php/api/electron-vending/log net::ERR_ABORTED 500 (Internal Server Error)
+logDispensingToServer @ index-BghxC0SF.js:54
+await in logDispensingToServer (async)
+try @ index-BghxC0SF.js:55
+await in try (async)
+handlePrizeDispensing @ index-BghxC0SF.js:55
+await in handlePrizeDispensing (async)
+yS @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:53 Submitting score to API: {player_id: 7, time: 12004}
+index-BghxC0SF.js:49 Arduino sensor state change: 0 -> 1
+index-BghxC0SF.js:53 
+        
+        
+       POST https://vendinghanger.eeelab.xyz/apiendpoints.php/leaderboard 404 (Not Found)
+request @ index-BghxC0SF.js:53
+getLeaderboard @ index-BghxC0SF.js:53
+ns @ index-BghxC0SF.js:53
+cS @ index-BghxC0SF.js:53
+await in cS (async)
+(anonymous) @ index-BghxC0SF.js:55
+await in (anonymous) (async)
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:53 API request failed: Error: Endpoint not found
+    at sS.request (index-BghxC0SF.js:53:43698)
+    at async ns (index-BghxC0SF.js:53:44782)
+    at async cS (index-BghxC0SF.js:53:45897)
+    at async index-BghxC0SF.js:55:18696
+request @ index-BghxC0SF.js:53
+await in request (async)
+getLeaderboard @ index-BghxC0SF.js:53
+ns @ index-BghxC0SF.js:53
+cS @ index-BghxC0SF.js:53
+await in cS (async)
+(anonymous) @ index-BghxC0SF.js:55
+await in (anonymous) (async)
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:53 Failed to get leaderboard from API, falling back to cache: Error: Endpoint not found
+    at sS.request (index-BghxC0SF.js:53:43698)
+    at async ns (index-BghxC0SF.js:53:44782)
+    at async cS (index-BghxC0SF.js:53:45897)
+    at async index-BghxC0SF.js:55:18696
+ns @ index-BghxC0SF.js:53
+await in ns (async)
+cS @ index-BghxC0SF.js:53
+await in cS (async)
+(anonymous) @ index-BghxC0SF.js:55
+await in (anonymous) (async)
+(anonymous) @ index-BghxC0SF.js:55
+(anonymous) @ index-BghxC0SF.js:53
+setTimeout (async)
+onSensorEnd @ index-BghxC0SF.js:53
+processStableStateChange @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+setTimeout (async)
+handleSerialData @ index-BghxC0SF.js:49
+(anonymous) @ index-BghxC0SF.js:49
+(anonymous) @ VM5:21
+emit @ VM4 sandbox_bundle:2
+onMessage @ VM4 sandbox_bundle:2
+index-BghxC0SF.js:53 [GameScreen] Cleaning up Arduino sensor service...
+index-BghxC0SF.js:49 Arduino sensor DISABLED
+index-BghxC0SF.js:49 [Arduino Sensor] Already DISABLED - skipping
