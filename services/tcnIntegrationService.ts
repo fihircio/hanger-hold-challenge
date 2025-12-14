@@ -226,9 +226,9 @@ export class TCNIntegrationService {
           
           if (tcnSerialService.isConnectedToTCN()) {
             console.log(`[TCN INTEGRATION] Dispensing ${tier} prize via TCN hardware from slot ${selectedSlot}`);
-             
+            
             const result = await tcnSerialService.dispenseFromChannel(selectedSlot);
-             
+            
             if (result.success) {
               console.log(`[TCN INTEGRATION] ${tier} prize dispensed successfully from slot ${selectedSlot}`);
               // Increment slot count after successful dispensing
@@ -244,11 +244,11 @@ export class TCNIntegrationService {
             }
           } else {
             console.log('[TCN INTEGRATION] TCN not available - showing HEX command that would be sent');
-             
-            // Show HEX command that would be sent (for debugging)
+            
+            // Show the HEX command that would be sent (for debugging)
             const mockHexCommand = this.constructMockHexCommand(selectedSlot);
             console.log(`[TCN INTEGRATION] MOCK HEX COMMAND: ${mockHexCommand} (slot ${selectedSlot})`);
-             
+            
             // Simulate dispensing and increment count
             await this.incrementSlotCount(selectedSlot);
             await this.logDispensingToServer(selectedSlot, tier, true, `Simulated - TCN not connected (HEX: ${mockHexCommand})`);
@@ -533,47 +533,11 @@ export class TCNIntegrationService {
   }
 
   /**
-   * Legacy HEX dispensing method (Version 1.0.3 compatible)
-   * Uses direct Electron serial API with proven HEX command format
-   */
-  private async disensePrizeLegacy(slot: number, tier: 'gold' | 'silver'): Promise<boolean> {
-    try {
-      console.log(`[TCN INTEGRATION] Using Legacy HEX Method for slot ${slot} (${tier} tier)`);
-      
-      // Check if Electron API is available
-      if (typeof window === 'undefined' || !window.electronAPI) {
-        console.error('[TCN INTEGRATION] Electron API not available for legacy method');
-        return false;
-      }
-      
-      // Construct proven HEX command (same as version 1.0.3)
-      const command = this.constructMockHexCommand(slot);
-      console.log(`[TCN INTEGRATION] Legacy HEX Command: ${command}`);
-      
-      // Send command directly via Electron's serial API
-      const result = await window.electronAPI.sendSerialCommand(command);
-      
-      if (result.success) {
-        console.log(`[TCN INTEGRATION] ✓ Legacy HEX command sent successfully to slot ${slot}`);
-        return true;
-      } else {
-        const errorMessage = (result as any).error || 'Unknown error';
-        console.error(`[TCN INTEGRATION] ✗ Legacy HEX command failed for slot ${slot}: ${errorMessage}`);
-        return false;
-      }
-    } catch (error) {
-      console.error(`[TCN INTEGRATION] Legacy HEX method error for slot ${slot}:`, error);
-      return false;
-    }
-  }
-
-  /**
-   * Manual prize dispensing with automatic slot selection (for testing)
-   */
+     * Manual prize dispensing with automatic slot selection (for testing)
+     */
   async dispensePrizeManually(tier: 'gold' | 'silver'): Promise<boolean> {
     try {
       console.log(`[TCN INTEGRATION] Manual ${tier} prize dispensing requested`);
-      console.log(`[TCN INTEGRATION] USING LEGACY HEX METHOD (Version 1.0.3 compatible)`);
       
       // Get next available slot for this tier
       const selectedSlot = await this.getNextAvailableSlot(tier);
@@ -585,45 +549,29 @@ export class TCNIntegrationService {
       
       console.log(`[TCN INTEGRATION] Manual dispensing from slot ${selectedSlot} for ${tier} tier`);
       
-      // PRIORITY: Use Legacy HEX Method (Version 1.0.3 compatible)
-      console.log(`[TCN INTEGRATION] Using Legacy HEX Method for manual dispensing`);
-      const success = await this.disensePrizeLegacy(selectedSlot, tier);
-      
-      if (success) {
-        console.log(`[TCN INTEGRATION] ✓ Manual Legacy HEX method successful for ${tier} prize from slot ${selectedSlot}`);
-        await this.incrementSlotCount(selectedSlot);
-        await this.logDispensingToServer(selectedSlot, tier, true, 'Manual Legacy HEX method successful');
-        return true;
-      } else {
-        console.error(`[TCN INTEGRATION] ✗ Manual Legacy HEX method failed for slot ${selectedSlot}`);
-        await this.logDispensingToServer(selectedSlot, tier, false, 'Manual Legacy HEX method failed');
+      if (tcnSerialService.isConnectedToTCN()) {
+        const result = await tcnSerialService.dispenseFromChannel(selectedSlot);
         
-        // FALLBACK: Try TCN Serial Service if legacy fails
-        if (tcnSerialService.isConnectedToTCN()) {
-          console.log(`[TCN INTEGRATION] Falling back to TCN Serial Service...`);
-          const result = await tcnSerialService.dispenseFromChannel(selectedSlot);
-          
-          if (result.success) {
-            console.log(`[TCN INTEGRATION] Manual ${tier} prize dispensed successfully from slot ${selectedSlot}`);
-            await this.incrementSlotCount(selectedSlot);
-            await this.logDispensingToServer(selectedSlot, tier, true, 'Manual dispensing');
-            return true;
-          } else {
-            console.error(`[TCN INTEGRATION] Manual ${tier} dispensing failed from slot ${selectedSlot}: ${result.error}`);
-            await this.logDispensingToServer(selectedSlot, tier, false, result.error);
-            return false;
-          }
-        } else {
-          console.warn('[TCN INTEGRATION] TCN not connected for manual dispensing - showing HEX command that would be sent');
-          
-          // Show HEX command that would be sent (for debugging)
-          const mockHexCommand = this.constructMockHexCommand(selectedSlot);
-          console.log(`[TCN INTEGRATION] MOCK HEX COMMAND: ${mockHexCommand} (slot ${selectedSlot})`);
-          
+        if (result.success) {
+          console.log(`[TCN INTEGRATION] Manual ${tier} prize dispensed successfully from slot ${selectedSlot}`);
           await this.incrementSlotCount(selectedSlot);
-          await this.logDispensingToServer(selectedSlot, tier, true, `Manual dispensing - Simulated (HEX: ${mockHexCommand})`);
+          await this.logDispensingToServer(selectedSlot, tier, true, 'Manual dispensing');
           return true;
+        } else {
+          console.error(`[TCN INTEGRATION] Manual ${tier} dispensing failed from slot ${selectedSlot}: ${result.error}`);
+          await this.logDispensingToServer(selectedSlot, tier, false, result.error);
+          return false;
         }
+      } else {
+        console.warn('[TCN INTEGRATION] TCN not connected for manual dispensing - showing HEX command that would be sent');
+        
+        // Show the HEX command that would be sent (for debugging)
+        const mockHexCommand = this.constructMockHexCommand(selectedSlot);
+        console.log(`[TCN INTEGRATION] MOCK HEX COMMAND: ${mockHexCommand} (slot ${selectedSlot})`);
+        
+        await this.incrementSlotCount(selectedSlot);
+        await this.logDispensingToServer(selectedSlot, tier, true, `Manual dispensing - Simulated (HEX: ${mockHexCommand})`);
+        return true;
       }
     } catch (error) {
       console.error('[TCN INTEGRATION] Manual dispensing error:', error);
@@ -639,7 +587,6 @@ export class TCNIntegrationService {
   async handlePrizeDispensing(time: number, scoreId?: string): Promise<void> {
     try {
       console.log(`[TCN INTEGRATION] Handling prize dispensing for game time: ${time}ms`);
-      console.log(`[TCN INTEGRATION] USING LEGACY HEX METHOD (Version 1.0.3 compatible)`);
       
       // Determine prize tier based on game time
       const tier = this.determinePrizeTierByTime(time);
@@ -652,37 +599,35 @@ export class TCNIntegrationService {
         
         if (selectedSlot) {
           console.log(`[TCN INTEGRATION] Selected slot ${selectedSlot} for ${tier} prize`);
-          
-          // PRIORITY: Use Legacy HEX Method (Version 1.0.3 compatible)
-          console.log(`[TCN INTEGRATION] Using Legacy HEX Method for slot ${selectedSlot}`);
-          const success = await this.disensePrizeLegacy(selectedSlot, tier);
-          
-          if (success) {
-            console.log(`[TCN INTEGRATION] ✓ Legacy HEX method successful for ${tier} prize from slot ${selectedSlot}`);
-            await this.incrementSlotCount(selectedSlot);
-            await this.logDispensingToServer(selectedSlot, tier, true, 'Legacy HEX method successful');
-          } else {
-            console.error(`[TCN INTEGRATION] ✗ Legacy HEX method failed for slot ${selectedSlot}`);
-            await this.logDispensingToServer(selectedSlot, tier, false, 'Legacy HEX method failed');
-             
-            // FALLBACK: Try TCN Serial Service if legacy fails
-            if (tcnSerialService.isConnectedToTCN()) {
-              console.log(`[TCN INTEGRATION] Falling back to TCN Serial Service...`);
-              const result = await tcnSerialService.dispenseFromChannel(selectedSlot);
-              
-              if (result.success) {
-                console.log(`[TCN INTEGRATION] ✓ TCN Serial fallback successful for ${tier} prize`);
-                await this.incrementSlotCount(selectedSlot);
-                await this.logDispensingToServer(selectedSlot, tier, true, 'TCN Serial fallback successful');
-              } else {
-                console.error(`[TCN INTEGRATION] ✗ TCN Serial fallback failed: ${result.error}`);
-                await this.logDispensingToServer(selectedSlot, tier, false, `TCN Serial fallback failed: ${result.error}`);
-              }
-            } else {
-              console.log('[TCN INTEGRATION] TCN not available - simulating for inventory tracking');
+           
+          if (tcnSerialService.isConnectedToTCN()) {
+            console.log(`[TCN INTEGRATION] Dispensing ${tier} prize via TCN hardware from slot ${selectedSlot}`);
+            
+            const result = await tcnSerialService.dispenseFromChannel(selectedSlot);
+            
+            if (result.success) {
+              console.log(`[TCN INTEGRATION] ${tier} prize dispensed successfully from slot ${selectedSlot}`);
+              // Increment slot count after successful dispensing
               await this.incrementSlotCount(selectedSlot);
-              await this.logDispensingToServer(selectedSlot, tier, true, 'Simulated - all methods failed');
+              
+              // Log to backend if available
+              await this.logDispensingToServer(selectedSlot, tier, true);
+            } else {
+              console.error(`[TCN INTEGRATION] Failed to dispense ${tier} prize from slot ${selectedSlot}: ${result.error}`);
+              
+              // Log failed attempt
+              await this.logDispensingToServer(selectedSlot, tier, false, result.error);
             }
+          } else {
+            console.log('[TCN INTEGRATION] TCN not available - showing HEX command that would be sent');
+            
+            // Show HEX command that would be sent (for debugging)
+            const mockHexCommand = this.constructMockHexCommand(selectedSlot);
+            console.log(`[TCN INTEGRATION] MOCK HEX COMMAND: ${mockHexCommand} (slot ${selectedSlot})`);
+            
+            // Simulate dispensing and increment count
+            await this.incrementSlotCount(selectedSlot);
+            await this.logDispensingToServer(selectedSlot, tier, true, `Simulated - TCN not connected (HEX: ${mockHexCommand})`);
           }
         } else {
           console.warn(`[TCN INTEGRATION] No available slots for ${tier} tier - machine may be empty`);

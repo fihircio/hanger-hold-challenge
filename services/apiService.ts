@@ -45,19 +45,13 @@ export interface VendingResult {
 
 class ApiService {
   private async request(endpoint: string, options: RequestInit = {}): Promise<any> {
-    const url = API_BASE_URL; // Don't append endpoint to URL
-    const payload = {
-      endpoint: endpoint.replace('/', ''), // Remove leading slash
-      ...JSON.parse(options.body as string || '{}') // Merge with existing data
-    };
-
+    const url = `${API_BASE_URL}${endpoint}`;
     const config = {
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
       },
-      method: options.method || 'POST',
-      body: JSON.stringify(payload),
+      ...options,
     };
 
     try {
