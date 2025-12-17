@@ -12,6 +12,7 @@ const EnterDetailsScreen: React.FC<EnterDetailsScreenProps> = ({ onSubmit }) => 
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [activeInput, setActiveInput] = useState<'name' | 'email' | 'phone'>('name');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const setters = {
     name: setName,
@@ -37,8 +38,10 @@ const EnterDetailsScreen: React.FC<EnterDetailsScreenProps> = ({ onSubmit }) => 
       e.preventDefault();
     }
     
-    if (name && (email || phone)) {
+    if (name && (email || phone) && agreedToTerms) {
       onSubmit({ name, email, phone });
+    } else if (!agreedToTerms) {
+      alert("Sila setuju dengan syarat dan ketentuan.");
     } else {
       alert("Please enter your name and at least one contact method (email or phone).");
     }
@@ -91,12 +94,24 @@ const EnterDetailsScreen: React.FC<EnterDetailsScreenProps> = ({ onSubmit }) => 
                     className={`${inputClasses} ${activeInput === 'phone' ? activeInputClasses : 'border-gray-600'}`}
                   />
                 </div>
-                <button type="submit" className="w-full transform hover:scale-105 transition-transform duration-200 drop-shadow-lg">
+                <div className="flex items-center justify-start mb-4">
+                  <input
+                    type="checkbox"
+                    id="terms"
+                    checked={agreedToTerms}
+                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    className="w-6 h-6 mr-3"
+                  />
+                  <label htmlFor="terms" className="text-xl text-white">
+                    saya setuju dengan syarat dan ketentuan
+                  </label>
+                </div>
+                <button type="submit" className="w-full transform hover:scale-105 transition-transform duration-200 drop-shadow-lg mb-8" style={{ transform: 'scale(1.3)' }}>
                   <img
                     src="./UI/RB_zero_UI_slice_button_06.png"
                     alt="SUBMIT"
-                    className="h-auto mx-auto"
-                    style={{ maxHeight: '80px' }}
+                    className="h-auto w-full"
+                    style={{ maxHeight: '80px', objectFit: 'contain' }}
                   />
                 </button>
               </div>

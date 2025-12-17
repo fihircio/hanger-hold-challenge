@@ -76,7 +76,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress, onBackspa
   );
   
   return (
-    <div className="w-full bg-white p-2 rounded-lg shadow-lg">
+    <div className="w-full bg-white p-2 rounded-lg shadow-lg mt-8">
       {layout === 'alpha' ? renderAlphaLayout() : renderNumericLayout()}
       <div className="grid grid-cols-10 gap-2 mt-2">
         <Key value="caps" display={capsLock ? 'CAPS' : 'caps'} onClick={handleCapsLock} className="col-span-2 bg-white hover:bg-gray-200 border border-gray-300"/>

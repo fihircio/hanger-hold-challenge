@@ -54,9 +54,23 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalTime, prize, onNex
             </div>
 
             {prize && (
-              <div className="bg-yellow-400 text-gray-900 p-6 rounded-lg mb-12 text-center animate-bounce">
-                <h2 className="text-4xl font-bold">{prize.name} Won!</h2>
-                <p className="text-2xl mt-2">{prize.message}</p>
+              <div className="mb-12 text-center animate-bounce">
+                {(prize.tier === 'gold' || prize.name.toLowerCase().includes('gold')) && (
+                  <img
+                    src="./UI/gold.png"
+                    alt="Gold Prize"
+                    className="h-auto mx-auto"
+                    style={{ maxHeight: '200px' }}
+                  />
+                )}
+                {(prize.tier === 'silver' || prize.name.toLowerCase().includes('silver')) && (
+                  <img
+                    src="./UI/silver.png"
+                    alt="Silver Prize"
+                    className="h-auto mx-auto"
+                    style={{ maxHeight: '200px' }}
+                  />
+                )}
               </div>
             )}
 

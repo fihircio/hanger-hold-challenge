@@ -8,12 +8,13 @@ export interface Prize {
   name: string;
   message: string;
   slot: number;
+  tier?: 'gold' | 'silver';
 }
 
-// Fallback prize tiers for offline mode (updated for 2-tier system)
+// Fallback prize tiers for offline mode (updated for new slot configuration)
 const FALLBACK_PRIZE_TIERS: { time: number; prize: Prize }[] = [
-  { time: 60000, prize: { name: 'Gold Prize', message: 'Incredible! You won the Gold Prize!', slot: 24 } }, // 60s - Gold slot 24
-  { time: 30000, prize: { name: 'Silver Prize', message: 'Amazing! You won the Silver Prize!', slot: 1 } }, // 30s - Silver slot 1
+  { time: 120000, prize: { name: 'Gold Prize', message: 'Incredible! You won the Gold Prize!', slot: 25, tier: 'gold' } }, // 4+ minutes - Gold slot 25
+  { time: 10000, prize: { name: 'Silver Prize', message: 'Amazing! You won the Silver Prize!', slot: 1, tier: 'silver' } }, // 2+ minutes - Silver slot 1
 ];
 
 /**
@@ -34,8 +35,11 @@ export const checkAndDispensePrize = async (time: number, scoreId?: string): Pro
       const prize: Prize = {
         id: result.prizeId,
         name: `${result.tier.charAt(0).toUpperCase() + result.tier.slice(1)} Prize`,
-        message: result.tier === 'gold' ? 'Incredible! You won the Gold Prize!' : 'Amazing! You won the Silver Prize!',
+        message: result.tier === 'gold' ? 'Incredible! You won the Gold Prize!' :
+                  result.tier === 'silver' ? 'Amazing! You won the Silver Prize!' :
+                  'No prize won',
         slot: result.slot,
+        tier: result.tier,
       };
       
       console.log(`[PRIZE SERVICE] Electron Vending Service successfully dispensed ${prize.name} from slot ${prize.slot}.`);
@@ -53,12 +57,15 @@ export const checkAndDispensePrize = async (time: number, scoreId?: string): Pro
             name: response.prize.name,
             message: response.prize.message,
             slot: response.prize.slot,
+            tier: response.prize.name.toLowerCase().includes('gold') ? 'gold' :
+                   response.prize.name.toLowerCase().includes('silver') ? 'silver' : undefined,
           };
           
           console.log(`[PRIZE SERVICE] API fallback - Time of ${time}ms qualifies for ${prize.name}.`);
           
           // Use TCN integration as secondary fallback
-          const prizeTier = prize.name.toLowerCase().includes('gold') ? 'gold' : 'silver';
+          const prizeTier = prize.name.toLowerCase().includes('gold') ? 'gold' :
+                          prize.name.toLowerCase().includes('silver') ? 'silver' : 'silver';
           
           tcnIntegrationService.handlePrizeDispensing(time, scoreId).then(() => {
             console.log(`[PRIZE SERVICE] TCN Integration fallback for ${prize.name} completed.`);

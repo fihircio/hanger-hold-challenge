@@ -11,10 +11,10 @@ const TimerDisplay: React.FC<TimerDisplayProps> = ({ time, className = '' }) => 
   const milliseconds = Math.floor((time % 1000) / 10);
 
   return (
-    <div className={`digital-font tracking-tighter w-full flex items-center justify-center ${className}`}>
-      <span className="flex-shrink-0">{seconds.toString().padStart(2, '0')}</span>
-      <span className="text-gray-500 text-7xl align-top mx-1 flex-shrink-0">:</span>
-      <span className="flex-shrink-0">{milliseconds.toString().padStart(2, '0')}</span>
+    <div className={`digital-font tracking-wide w-full flex items-center justify-center ${className}`}>
+      <span className="inline-block text-center" style={{ minWidth: '1.2em', marginRight: '0.1em' }}>{seconds.toString().padStart(2, '0')}</span>
+      <span className="text-gray-500 text-7xl align-top mx-2 flex-shrink-0">:</span>
+      <span className="inline-block text-center" style={{ minWidth: '1.2em', marginLeft: '0.1em' }}>{milliseconds.toString().padStart(2, '0')}</span>
     </div>
   );
 };

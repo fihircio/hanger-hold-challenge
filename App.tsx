@@ -26,7 +26,17 @@ const App: React.FC = () => {
   const [showMaintenance, setShowMaintenance] = useState<boolean>(true);
 
   useEffect(() => {
-    setLeaderboard(dataService.getLeaderboard());
+    const initializeLeaderboard = async () => {
+      try {
+        const scores = await dataService.getLeaderboard();
+        setLeaderboard(scores);
+      } catch (error) {
+        console.error('Failed to load leaderboard:', error);
+        setLeaderboard([]);
+      }
+    };
+    
+    initializeLeaderboard();
     dataService.initSyncManager();
     
     // Initialize Arduino sensor service globally
@@ -79,6 +89,10 @@ const App: React.FC = () => {
 
   const handleHowToNext = useCallback(() => {
     setGameState(GameState.ENTER_DETAILS);
+  }, []);
+
+  const handleShowLeaderboard = useCallback(() => {
+    setGameState(GameState.LEADERBOARD);
   }, []);
   
   const handleDetailsSubmit = useCallback((details: { name: string; email: string; phone: string }) => {
@@ -215,7 +229,7 @@ const App: React.FC = () => {
       case GameState.INSTRUCTIONS:
         return <InstructionsScreen onStart={handleStart} />;
       case GameState.HOWTO:
-        return <HowToScreen onNext={handleHowToNext} />;
+        return <HowToScreen onNext={handleHowToNext} onShowLeaderboard={handleShowLeaderboard} />;
       case GameState.ENTER_DETAILS:
         return <EnterDetailsScreen onSubmit={handleDetailsSubmit} />;
       case GameState.READY:
