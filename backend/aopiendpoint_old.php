@@ -73,14 +73,16 @@ try {
 }
 
 /**
- * Convert score time in milliseconds to prize tier (Updated for 2-tier system)
+ * Convert score time in milliseconds to prize tier (Updated for 3-tier system)
  */
 function getTimeTier(int $timeMs): string {
-    if ($timeMs >= 120000) {         // 120+ seconds (4+ minutes) = Gold
+    if ($timeMs >= 240000) {         // 240+ seconds (4+ minutes) = Gold
         return 'gold';
-    } elseif ($timeMs >= 10000) {    // 10 seconds = Silver
+    } elseif ($timeMs >= 120000) {    // 120-239.999 seconds (2-3.999 minutes) = Silver
         return 'silver';
-    } else {                           // <120 seconds = No prize
+    } elseif ($timeMs >= 10000) {     // 10-119.999 seconds = Bronze
+        return 'bronze';
+    } else {                           // <10 seconds = No prize
         return 'none';
     }
 }
@@ -388,7 +390,7 @@ function handleGetRequest($conn, $path) {
 
     elseif (strpos($path, '/api/inventory/slots/') === 0) {
         $tier = getRouteParam($path, 3);
-        if (in_array($tier, ['gold', 'silver'])) {
+        if (in_array($tier, ['gold', 'silver', 'bronze'])) {
             $stmt = $conn->prepare("SELECT slot, tier, dispense_count, max_dispenses FROM slot_inventory WHERE tier = ? ORDER BY slot");
             $stmt->bind_param("s", $tier);
             $stmt->execute();
@@ -408,7 +410,7 @@ function handleGetRequest($conn, $path) {
             echo json_encode(['success' => true, 'tier' => $tier, 'data' => $slots, 'total_tier_slots' => count($slots)]);
         } else {
             http_response_code(400);
-            echo json_encode(['error' => true, 'message' => 'Invalid tier. Must be gold or silver']);
+            echo json_encode(['error' => true, 'message' => 'Invalid tier. Must be gold, silver, or bronze']);
         }
     }
 
@@ -428,10 +430,10 @@ function handleGetRequest($conn, $path) {
         
         $goldSlots = $stats['gold']['slots'] ?? 0;
         $silverSlots = $stats['silver']['slots'] ?? 0;
-        $bronzeSlots = 0; // Removed bronze tier
+        $bronzeSlots = $stats['bronze']['slots'] ?? 0;
         $goldDispensed = $stats['gold']['dispensed'] ?? 0;
         $silverDispensed = $stats['silver']['dispensed'] ?? 0;
-        $bronzeDispensed = 0; // Removed bronze tier
+        $bronzeDispensed = $stats['bronze']['dispensed'] ?? 0;
         
         $emptySlotsResult = $conn->query("SELECT COUNT(*) as count FROM slot_inventory WHERE dispense_count >= max_dispenses");
         $emptySlots = (int)($emptySlotsResult->fetch_assoc()['count']);
@@ -910,19 +912,8 @@ function handlePostRequest($conn, $path) {
             } else {
                 $scoreId = (int)$scoreIdInput;
             }
-            
-            // Validate that the score exists in the database
-            if ($scoreId > 0) {
-                $stmt = $conn->prepare("SELECT id FROM scores WHERE id = ?");
-                $stmt->bind_param("i", $scoreId);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                if ($result->num_rows === 0) {
-                    // Score doesn't exist, set to null to avoid foreign key constraint
-                    error_log("Warning: Score ID {$scoreId} not found in database for electron vending log. Setting to null.");
-                    $scoreId = null;
-                }
-            } else {
+            // Validate converted score ID
+            if ($scoreId <= 0) {
                 $scoreId = null; // Set to null if invalid
             }
         } else {
@@ -937,22 +928,22 @@ function handlePostRequest($conn, $path) {
         $inventoryAfter = $input['inventory_after'] ?? null;
         $responseTimeMs = $input['response_time_ms'] ?? null;
         
-        $stmt->bind_param("sisiiiiiiissssii",
-            $input['action'],           // s - string (action)
-            $gameTimeMs,               // i - integer (game_time_ms)
-            $tier,                     // s - string (tier) - FIXED: was i, now s to match varchar(20)
-            $selectedSlot,              // i - integer (selected_slot)
-            $channelUsed,               // i - integer (channel_used)
-            $scoreId,                  // i - integer (score_id)
-            $prizeId,                  // i - integer (prize_id)
-            $input['success'],          // i - integer (success) - tinyint(1)
-            $errorCode,                 // i - integer (error_code)
-            $errorMessage,              // s - string (error_message)
-            $dispenseMethod,            // s - string (dispense_method)
-            $inventoryBefore,            // i - integer (inventory_before)
-            $inventoryAfter,            // i - integer (inventory_after)
-            $responseTimeMs,            // i - integer (response_time_ms)
-            $input['source']            // s - string (source)
+        $stmt->bind_param("isisiiiiiissssiiis",
+            $input['action'],
+            $gameTimeMs,
+            $tier,
+            $selectedSlot,
+            $channelUsed,
+            $scoreId,
+            $prizeId,
+            $input['success'],
+            $errorCode,
+            $errorMessage,
+            $dispenseMethod,
+            $inventoryBefore,
+            $inventoryAfter,
+            $responseTimeMs,
+            $input['source']
         );
         $stmt->execute();
 
@@ -1153,30 +1144,11 @@ function handlePostRequest($conn, $path) {
         $prize_id = (int)($input['prize_id'] ?? 0);
         
         // Handle score_id that might come as string like "score_1234567890"
-        $score_id_input = $input['score_id'] ?? null;
-        if ($score_id_input !== null) {
-            if (is_string($score_id_input) && strpos($score_id_input, 'score_') === 0) {
-                $score_id = (int)str_replace('score_', '', $score_id_input);
-            } else {
-                $score_id = (int)$score_id_input;
-            }
-            
-            // Validate that the score exists in the database
-            if ($score_id > 0) {
-                $stmt = $conn->prepare("SELECT id FROM scores WHERE id = ?");
-                $stmt->bind_param("i", $score_id);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                if ($result->num_rows === 0) {
-                    // Score doesn't exist, set to null to avoid foreign key constraint
-                    error_log("Warning: Score ID {$score_id} not found in database. Setting to null.");
-                    $score_id = null;
-                }
-            } else {
-                $score_id = null;
-            }
+        $score_id_input = $input['score_id'] ?? 0;
+        if (is_string($score_id_input) && strpos($score_id_input, 'score_') === 0) {
+            $score_id = (int)str_replace('score_', '', $score_id_input);
         } else {
-            $score_id = null;
+            $score_id = (int)$score_id_input;
         }
         
         // Allow dispensing without score_id for testing purposes
@@ -1184,6 +1156,12 @@ function handlePostRequest($conn, $path) {
             http_response_code(400);
             echo json_encode(['error' => true, 'message' => 'Prize ID is required']);
             return;
+        }
+        
+        if ($score_id <= 0) {
+            // Log warning but continue with dispensing for testing
+            error_log("Warning: No valid score_id provided for prize dispensing. Continuing for testing purposes.");
+            $score_id = null; // Set to null to avoid foreign key constraint
         }
         
         // Get prize info
@@ -1208,10 +1186,12 @@ function handlePostRequest($conn, $path) {
             $scoreData = $result->fetch_assoc();
            
             if (!$scoreData) {
-                // Score not found, but continue with dispensing for testing
-                error_log("Warning: Score ID {$score_id} not found during vending check. Continuing without score validation.");
-                $score_id = null;
-            } else if ($scoreData['dispensed']) {
+                http_response_code(404);
+                echo json_encode(['error' => true, 'message' => 'Score not found']);
+                return;
+            }
+           
+            if ($scoreData['dispensed']) {
                 http_response_code(400);
                 echo json_encode(['error' => true, 'message' => 'Prize already dispensed for this score']);
                 return;
@@ -1292,7 +1272,7 @@ function handlePostRequest($conn, $path) {
         ];
         file_put_contents('spring_vending.log', json_encode($logEntry) . "\n", FILE_APPEND);
         
-        // Determine channel based on tier (Updated for 2-tier system)
+        // Determine channel based on tier (Updated for 3-tier system)
         $channel = 0;
         $prize_id = 0;
         switch ($tier) {
@@ -1301,12 +1281,16 @@ function handlePostRequest($conn, $path) {
                 $prize_id = 1;
                 break;
             case 'silver':
-                $channel = 1; // Fixed silver slot (using slot 1 for silver)
+                $channel = 24; // Fixed silver slot
                 $prize_id = 2;
+                break;
+            case 'bronze':
+                $channel = 26; // Fixed bronze prize slot (avoiding conflict with slot 1)
+                $prize_id = 3;
                 break;
             default:
                 http_response_code(400);
-                echo json_encode(['error' => true, 'message' => 'Invalid tier. Must be gold or silver']);
+                echo json_encode(['error' => true, 'message' => 'Invalid tier. Must be gold, silver, or bronze']);
                 return;
         }
         

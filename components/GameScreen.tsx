@@ -94,8 +94,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
           onSensorChange: (state: number, ts?: number) => {
             setArduinoState(state);
             console.log('[GameScreen] Arduino sensor state change:', state, 'ts=', ts || Date.now());
-            
-            // Enhanced status reporting
+             
+            // Enhanced status reporting - match 135new2.md pattern
             if (state === 1) {
               console.log('[GameScreen] Arduino: DETECTION - Object detected by sensor');
             } else {
@@ -213,7 +213,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
                 onMouseUp={handleGameEnd}
                 onTouchStart={onHoldStart}
                 onTouchEnd={handleGameEnd}
-                className="w-3/4 max-w-2xl transform focus:outline-none scale-75"
+                className="transform focus:outline-none scale-75"
               >
                 <img
                   src={isHolding ? "./UI/RB_zero_UI_slice_button_04.png" : "./UI/RB_zero_UI_slice_button_03.png"}

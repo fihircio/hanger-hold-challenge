@@ -15,7 +15,7 @@ const InstructionsScreen: React.FC<InstructionsScreenProps> = ({ onStart }) => {
         </div>
 
         {/* absolutely position the start button near the lower third, centered */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 bottom-8 sm:bottom-4 md:bottom-8">
+        <div className="absolute left-1/2 transform -translate-x-1/2 bottom-[10%] sm:bottom-[15%] md:bottom-[10%]">
           <button
             onClick={onStart}
             className="transform hover:scale-105 transition-transform duration-200 drop-shadow-lg"

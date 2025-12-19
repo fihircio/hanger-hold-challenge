@@ -27,17 +27,13 @@ export class TCNIntegrationService {
   private slotCache: Map<number, number> = new Map(); // Cache for performance
   private cacheValid: boolean = false;
   
-  // Updated slot configuration for 2-tier system
+  // Slot configuration for 2-tier system
   private readonly prizeChannels = {
-    gold: [24, 25],
+    gold: [24, 25], // Gold slots 24-25
     silver: [
-      1, 2, 3, 4, 5, 6, 7, 8,
-      11, 12, 13, 14, 15, 16, 17, 18,
-      21, 22, 23, 26, 27, 28,
-      31, 32, 33, 34, 35, 36, 37, 38,
-      45, 46, 47, 48,
-      51, 52, 53, 54, 55, 56, 57, 58
-    ]
+      1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23,
+      26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38, 45, 46, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58
+    ] // Silver slots (1-8, 11-18, 21-23, 26-38, 45-48, 51-58) - 53 total
   };
 
   private constructor() {
@@ -51,6 +47,10 @@ export class TCNIntegrationService {
     try {
       console.log('[TCN INTEGRATION] Initializing complete vending system...');
       
+      // Initialize cache
+      this.cacheValid = false;
+      this.slotCache.clear();
+      
       // Initialize persistent storage first
       const storageInitialized = await inventoryStorageService.initialize();
         if (!storageInitialized) {
@@ -58,7 +58,10 @@ export class TCNIntegrationService {
           // couldn't be set up. Continue and fall back to in-memory cache so
           // TCN hardware connection can proceed.
           console.warn('[TCN INTEGRATION] Failed to initialize storage service - continuing with in-memory fallback');
-      }
+        } else {
+          // Clear and reinitialize slot data with updated configuration
+          await inventoryStorageService.clearAndReinitialize();
+        }
       
       // Load existing slot data
       await this.loadSlotData();
@@ -110,22 +113,33 @@ export class TCNIntegrationService {
   private async loadSlotData(): Promise<void> {
     try {
       const slotInventory = await inventoryStorageService.getAllSlotInventory();
+      console.log(`[TCN INTEGRATION] Loaded ${slotInventory.length} slot records from storage`);
+      
+      // Load slot configuration
+      const allSlots = [...this.prizeChannels.gold, ...this.prizeChannels.silver];
       
       // Update cache with loaded data
-      this.slotCache.clear();
       for (const slotData of slotInventory) {
         this.slotCache.set(slotData.slot, slotData.dispenseCount);
       }
       
       // Initialize any missing slots (new configuration)
-      const allSlots = [...this.prizeChannels.gold, ...this.prizeChannels.silver];
+      let missingSlots = 0;
       for (const slot of allSlots) {
         if (!this.slotCache.has(slot)) {
+          missingSlots++;
           this.slotCache.set(slot, 0);
           // Initialize in persistent storage
+          let tier: 'gold' | 'silver';
+          if (this.prizeChannels.gold.includes(slot)) {
+            tier = 'gold';
+          } else {
+            tier = 'silver';
+          }
+          
           await inventoryStorageService.updateSlotInventory({
             slot,
-            tier: this.prizeChannels.gold.includes(slot) ? 'gold' : this.prizeChannels.silver.includes(slot) ? 'silver' : 'gold',
+            tier,
             dispenseCount: 0,
             maxDispenses: this.maxDispensesPerSlot,
             updatedAt: new Date().toISOString()
@@ -135,6 +149,7 @@ export class TCNIntegrationService {
       
       this.cacheValid = true;
       console.log(`[TCN INTEGRATION] Loaded ${slotInventory.length} slot records from storage`);
+      
     } catch (error) {
       console.error('[TCN INTEGRATION] Failed to load slot data:', error);
       // Fallback to empty cache
@@ -271,7 +286,7 @@ export class TCNIntegrationService {
 
   /**
      * Determine prize tier based on game performance
-     * Updated for 2-tier system (gold/silver only)
+     * Updated for 2-tier system (gold/silver)
      */
   private determinePrizeTier(): 'gold' | 'silver' | 'bronze' | null {
     // For demonstration, we'll use a random tier
@@ -280,11 +295,11 @@ export class TCNIntegrationService {
     
     if (random < 0.15) {
       return 'gold'; // 15% chance (rarer)
-    } else if (random < 0.85) {
-      return 'silver'; // 70% chance
+    } else if (random < 0.70) {
+      return 'silver'; // 55% chance
     }
     
-    return null; // 15% chance of no prize
+    return null; // 30% chance of no prize
   }
 
   /**
@@ -344,7 +359,12 @@ export class TCNIntegrationService {
   async incrementSlotCount(slot: number): Promise<number> {
     try {
       // Update in persistent storage
-      const tier = this.prizeChannels.gold.includes(slot) ? 'gold' : this.prizeChannels.silver.includes(slot) ? 'silver' : 'gold';
+      let tier: 'gold' | 'silver';
+      if (this.prizeChannels.gold.includes(slot)) {
+        tier = 'gold';
+      } else {
+        tier = 'silver';
+      }
       const updatedData = await inventoryStorageService.incrementSlotCount(slot, tier);
       
       // Update cache
@@ -685,15 +705,15 @@ export class TCNIntegrationService {
    * @param time Game time in milliseconds
    * @returns Prize tier or null if no prize
    */
-  private determinePrizeTierByTime(time: number): 'gold' | 'silver' | 'null' {
-    // Updated prize thresholds for 3-tier system
-    if (time >= 240000) { // 4 minutes (240 seconds) or more - GOLD
+  private determinePrizeTierByTime(time: number): 'gold' | 'silver' | null {
+    // Updated prize thresholds for 2-tier system
+    if (time >= 240000) { // 4 minutes (240,000ms) or more
       return 'gold';
-    } else if (time >= 120000) { // 2 minutes (120 seconds) or more - SILVER
+    } else if (time >= 120000) { // 2 minutes (120,000ms) or more
       return 'silver';
     }
     
-    return null; // Less than 10 seconds - no prize
+    return null; // Less than 2 minutes - no prize
   }
 
   /**

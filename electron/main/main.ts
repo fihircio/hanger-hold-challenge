@@ -342,18 +342,16 @@ ipcMain.handle('send-serial-command', async (event, command: string) => {
   // Only block if SerialPort module is truly unavailable
   if (serialPortError && !SerialPortModule) {
     console.warn('[SERIAL] Command blocked - Serial Port module not available');
-    throw new Error('Serial Port module not available');
+    return { success: false, error: 'Serial Port module not available' };
   }
   
   // VERSION 1.0.3 COMPATIBLE: Force real connection - NO SIMULATION
   if (!serialPort || !serialPort.isOpen) {
     console.log('[SERIAL] No port available - attempting emergency connection to COM1');
-    
     // EMERGENCY CONNECTION: Try to connect to COM1 immediately (like version 1.0.3)
     try {
       const ports = await SerialPortModule.SerialPort.list();
       const com1Port = ports.find((port: any) => port.path === 'COM1');
-      
       if (com1Port) {
         console.log('[SERIAL] Found COM1, attempting emergency connection...');
         serialPort = new SerialPort({
@@ -363,26 +361,25 @@ ipcMain.handle('send-serial-command', async (event, command: string) => {
           parity: 'none',
           stopBits: 1,
         });
-        
         // Wait for connection
         await new Promise<void>((resolve, reject) => {
           const timeout = setTimeout(() => reject(new Error('Connection timeout')), 5000);
-          
           serialPort.on('open', () => {
             clearTimeout(timeout);
             console.log('[SERIAL] Emergency COM1 connection successful');
             resolve();
           });
-          
           serialPort.on('error', (err: any) => {
             clearTimeout(timeout);
             reject(err);
           });
         });
-      } else {
+      }
+      else {
         throw new Error('COM1 not available for emergency connection');
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error('[SERIAL] Emergency connection failed:', error);
       throw new Error(`No serial port available and emergency connection failed: ${(error as Error).message}`);
     }
@@ -497,6 +494,8 @@ ipcMain.handle('connect-serial-port', async (event, portPath: string, baudRate?:
         if (isArduinoPort) {
           console.log(`[SERIAL] Forwarding Arduino data to dedicated channel: ${dataString}`);
           mainWindow.webContents.send('arduino-data', dataString);
+          // CRITICAL FIX: Also send to general serial-data channel for Arduino sensor service compatibility
+          mainWindow.webContents.send('serial-data', dataString);
         } else {
           console.log(`[SERIAL] Forwarding serial data to general channel: ${dataString}`);
           mainWindow.webContents.send('serial-data', dataString);
@@ -576,6 +575,18 @@ ipcMain.handle('get-tcn-status', async () => {
   } catch (err) {
     console.error('Error in get-tcn-status handler:', err);
     return { connected: false, mode: serialPortError ? 'mock' : 'native', lastError: (err as any)?.message || String(err) };
+  }
+});
+
+// IPC handler for resetting serial ports
+ipcMain.handle('reset-serial-ports', async () => {
+  try {
+    console.log('[SERIAL] Resetting serial ports via IPC call...');
+    await resetSerialPorts();
+    return { success: true, message: 'Serial ports reset successfully' };
+  } catch (error) {
+    console.error('[SERIAL] Failed to reset serial ports:', error);
+    return { success: false, message: (error as Error).message };
   }
 });
 

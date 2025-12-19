@@ -3,7 +3,7 @@
 export interface ElectronAPI {
   toggleFullscreen: () => Promise<{ success: boolean; isFullScreen: boolean }>;
   isFullscreen: () => Promise<boolean>;
-  sendSerialCommand: (command: string) => Promise<{ success: boolean }>;
+  sendSerialCommand: (command: string) => Promise<{ success: boolean; port?: string; type?: string; simulated?: boolean; message?: string; error?: string }>;
   getSerialPorts: () => Promise<Array<{
     path: string;
     manufacturer?: string;
@@ -12,9 +12,10 @@ export interface ElectronAPI {
     vendorId?: string;
     productId?: string;
   }>>;
-  connectSerialPort: (portPath: string) => Promise<{ success: boolean }>;
+  connectSerialPort: (portPath: string, baud?: number) => Promise<{ success: boolean }>;
   disconnectSerialPort: () => Promise<{ success: boolean; message?: string }>;
   onSerialData: (callback: (data: string) => void) => void;
+  onArduinoData: (callback: (data: string) => void) => void;
   onSerialError: (callback: (error: string) => void) => void;
   removeAllSerialListeners: () => void;
   resetSerialPorts: () => Promise<{ success: boolean; message?: string; error?: string }>;

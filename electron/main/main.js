@@ -254,11 +254,11 @@ electron_1.ipcMain.handle('is-fullscreen', async () => {
     }
     return mainWindow.isFullScreen();
 });
-// IPC handlers for serial communication
+// IPC handlers for serial communication - VERSION 1.0.3 COMPATIBLE (SIMPLIFIED)
 electron_1.ipcMain.handle('send-serial-command', async (event, command) => {
     if (serialPortError) {
         console.warn('[SERIAL] Command blocked - Serial Port module not available');
-        throw new Error('Serial Port module is not available. Please reinstall the application.');
+        return { success: false, error: 'Serial Port module not available' };
     }
     if (!serialPort) {
         console.warn('[SERIAL] Command blocked - No serial port initialized');
@@ -338,7 +338,17 @@ electron_1.ipcMain.handle('connect-serial-port', async (event, portPath, baudRat
             console.log(`[SERIAL] Forwarding to renderer: ${dataString}`);
             // Forward data to renderer process as plain text (Arduino sends 0 or 1)
             if (mainWindow) {
-                mainWindow.webContents.send('serial-data', dataString);
+                // Use separate channels for Arduino vs other devices
+                if (isArduinoPort) {
+                    console.log(`[SERIAL] Forwarding Arduino data to dedicated channel: ${dataString}`);
+                    mainWindow.webContents.send('arduino-data', dataString);
+                    // CRITICAL FIX: Also send to general serial-data channel for Arduino sensor service compatibility
+                    mainWindow.webContents.send('serial-data', dataString);
+                }
+                else {
+                    console.log(`[SERIAL] Forwarding serial data to general channel: ${dataString}`);
+                    mainWindow.webContents.send('serial-data', dataString);
+                }
             }
             else {
                 console.error('[SERIAL] CRITICAL: mainWindow is null, cannot forward data');
@@ -411,6 +421,18 @@ electron_1.ipcMain.handle('get-tcn-status', async () => {
     catch (err) {
         console.error('Error in get-tcn-status handler:', err);
         return { connected: false, mode: serialPortError ? 'mock' : 'native', lastError: err?.message || String(err) };
+    }
+});
+// IPC handler for resetting serial ports
+electron_1.ipcMain.handle('reset-serial-ports', async () => {
+    try {
+        console.log('[SERIAL] Resetting serial ports via IPC call...');
+        await resetSerialPorts();
+        return { success: true, message: 'Serial ports reset successfully' };
+    }
+    catch (error) {
+        console.error('[SERIAL] Failed to reset serial ports:', error);
+        return { success: false, message: error.message };
     }
 });
 // Clean up on app quit

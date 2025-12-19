@@ -103,11 +103,14 @@ class SpringVendingService {
   private lastError: SpringError | null = null;
   private lastSelfCheck: SelfCheckResult | null = null;
   
-  // Gold, Silver, Bronze channel mapping (1-25 channels total)
+  // Gold, Silver, Bronze channel mapping (1-58 channels total)
   private readonly prizeChannels = {
-    gold: [1, 2, 3, 4, 5],
-    silver: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-    bronze: [16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+    gold: [25], // Gold slot 25
+    silver: [24], // Silver slot 24
+    bronze: [
+      1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23,
+      26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38, 41, 42, 43, 44, 45, 46, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58
+    ] // All bronze slots (1-8, 11-18, 21-23, 26-28, 31-38, 41-48, 51-58) for regular inventory selection
   };
 
   // Error descriptions and actions

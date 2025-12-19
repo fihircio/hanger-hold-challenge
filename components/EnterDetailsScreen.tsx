@@ -69,8 +69,9 @@ const EnterDetailsScreen: React.FC<EnterDetailsScreenProps> = ({ onSubmit }) => 
                   <input
                     type="text"
                     value={name}
+                    onChange={(e) => setName(e.target.value)}
                     onFocus={() => setActiveInput('name')}
-                    readOnly
+                    onClick={() => setActiveInput('name')}
                     className={`${inputClasses} ${activeInput === 'name' ? activeInputClasses : 'border-gray-600'}`}
                   />
                 </div>
@@ -79,8 +80,9 @@ const EnterDetailsScreen: React.FC<EnterDetailsScreenProps> = ({ onSubmit }) => 
                   <input
                     type="email"
                     value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     onFocus={() => setActiveInput('email')}
-                    readOnly
+                    onClick={() => setActiveInput('email')}
                     className={`${inputClasses} ${activeInput === 'email' ? activeInputClasses : 'border-gray-600'}`}
                   />
                 </div>
@@ -89,8 +91,9 @@ const EnterDetailsScreen: React.FC<EnterDetailsScreenProps> = ({ onSubmit }) => 
                   <input
                     type="tel"
                     value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                     onFocus={() => setActiveInput('phone')}
-                    readOnly
+                    onClick={() => setActiveInput('phone')}
                     className={`${inputClasses} ${activeInput === 'phone' ? activeInputClasses : 'border-gray-600'}`}
                   />
                 </div>

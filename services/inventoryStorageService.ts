@@ -69,8 +69,8 @@ class InventoryStorageService {
       return new Promise((resolve, reject) => {
         const request = indexedDB.open(this.dbName, this.dbVersion);
 
-        request.onerror = () => {
-          console.error('[INVENTORY STORAGE] Failed to open database');
+        request.onerror = (event: any) => {
+          console.error('[INVENTORY STORAGE] Failed to open database:', (event.target as any)?.error);
           reject(false);
         };
 
@@ -193,7 +193,7 @@ class InventoryStorageService {
   /**
    * Increment dispense count for a slot
    */
-  async incrementSlotCount(slot: number, tier: 'gold' | 'silver'): Promise<SlotInventoryData> {
+  async incrementSlotCount(slot: number, tier: 'gold' | 'silver' | 'bronze'): Promise<SlotInventoryData> {
     const currentData = await this.getSlotInventory(slot) || {
       slot,
       tier,
@@ -503,6 +503,100 @@ class InventoryStorageService {
       count: items.length,
       items
     };
+  }
+
+  /**
+   * Get pending dispensing logs that haven't been synced to server
+   */
+  async getPendingDispensingLogs(): Promise<any[]> {
+    if (!this.db) return [];
+    
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(['dispensingLogs'], 'readonly');
+      const store = transaction.objectStore('dispensingLogs');
+      const request = store.getAll();
+      
+      request.onsuccess = () => {
+        const logs = request.result || [];
+        // Filter logs that haven't been synced to server (no server_sync_timestamp)
+        const pendingLogs = logs.filter((log: any) => !log.server_sync_timestamp);
+        resolve(pendingLogs);
+      };
+      
+      request.onerror = () => {
+        console.error('[INVENTORY STORAGE] Error getting pending dispensing logs:', request.error);
+        resolve([]);
+      };
+    });
+  }
+
+  /**
+   * Clear pending dispensing logs after successful sync
+   */
+  async clearPendingDispensingLogs(): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(['dispensingLogs'], 'readwrite');
+      const store = transaction.objectStore('dispensingLogs');
+      
+      // Get all logs first
+      const getAllRequest = store.getAll();
+      
+      getAllRequest.onsuccess = () => {
+        const logs = getAllRequest.result || [];
+        
+        // Update each log to mark as synced
+        logs.forEach((log: any) => {
+          if (!log.server_sync_timestamp) {
+            log.server_sync_timestamp = new Date().toISOString();
+            store.put(log);
+          }
+        });
+        
+        transaction.oncomplete = () => {
+          console.log('[INVENTORY STORAGE] Pending dispensing logs cleared');
+          resolve();
+        };
+        
+        transaction.onerror = () => {
+          console.error('[INVENTORY STORAGE] Error clearing pending logs:', transaction.error);
+          reject(transaction.error);
+        };
+      };
+      
+      getAllRequest.onerror = () => {
+        console.error('[INVENTORY STORAGE] Error getting logs for clearing:', getAllRequest.error);
+        reject(getAllRequest.error);
+      };
+    });
+  }
+
+  /**
+   * Clear all slot inventory data and reinitialize
+   * This forces the system to use the updated slot configuration
+   */
+  async clearAndReinitialize(): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+
+    try {
+      console.log('[INVENTORY STORAGE] Clearing all slot inventory for reinitialization...');
+      
+      return new Promise((resolve, reject) => {
+        const transaction = this.db!.transaction(['slotInventory'], 'readwrite');
+        const store = transaction.objectStore('slotInventory');
+        const request = store.clear();
+
+        request.onsuccess = () => {
+          console.log('[INVENTORY STORAGE] All slot inventory cleared successfully');
+          resolve();
+        };
+        request.onerror = () => reject(request.error);
+      });
+    } catch (error) {
+      console.error('[INVENTORY STORAGE] Failed to clear slot inventory:', error);
+      throw error;
+    }
   }
 }
 

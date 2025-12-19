@@ -34,11 +34,11 @@ const constructVendCommand = (slotNumber: number): string => {
 
 /**
  * Enhanced prize dispensing using Spring SDK protocol
- * @param tier The prize tier (gold, silver, bronze)
+ * @param tier The prize tier (gold, silver)
  * @param prizeId Optional prize ID for API logging
  * @param scoreId Optional score ID for API logging
  */
-export const dispensePrizeByTier = async (tier: 'gold' | 'silver' | 'bronze', prizeId?: number, scoreId?: number): Promise<boolean> => {
+export const dispensePrizeByTier = async (tier: 'gold' | 'silver', prizeId?: number, scoreId?: number): Promise<boolean> => {
   // Try TCN Serial Service first (direct hardware control)
   try {
     console.log(`[VENDING SERVICE] Attempting TCN hardware dispense for ${tier} tier`);
@@ -102,7 +102,7 @@ export const dispensePrizeByTier = async (tier: 'gold' | 'silver' | 'bronze', pr
 /**
  * Simulation fallback for when hardware is not available
  */
-const simulateDispense = async (tier: 'gold' | 'silver' | 'bronze', prizeId?: number, scoreId?: number): Promise<boolean> => {
+const simulateDispense = async (tier: 'gold' | 'silver', prizeId?: number, scoreId?: number): Promise<boolean> => {
 
   console.log(`[VENDING SIMULATION] Dispensing ${tier} prize...`);
   
@@ -114,9 +114,6 @@ const simulateDispense = async (tier: 'gold' | 'silver' | 'bronze', prizeId?: nu
       break;
     case 'silver':
       slotNumber = Math.floor(Math.random() * 10) + 6; // 6-15
-      break;
-    case 'bronze':
-      slotNumber = Math.floor(Math.random() * 10) + 16; // 16-25
       break;
     default:
       throw new Error(`Unknown tier: ${tier}`);
@@ -171,13 +168,13 @@ export const dispensePrize = async (slotNumber: number, prizeId?: number, scoreI
       // Try to use enhanced Spring SDK service first
       if (electronVendingService.isSpringSDKInitialized()) {
         // Map slot number to tier
-        let tier: 'gold' | 'silver' | 'bronze';
+        let tier: 'gold' | 'silver';
         if (slotNumber <= 5) {
           tier = 'gold';
         } else if (slotNumber <= 15) {
           tier = 'silver';
         } else {
-          tier = 'bronze';
+          tier = 'silver'; // Default to silver for other slots
         }
         
         return await electronVendingService.dispensePrizeByTier(tier, prizeId, scoreId);

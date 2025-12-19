@@ -34,6 +34,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   version: process.version,
   // TCN / Serial status
   getTcnStatus: () => ipcRenderer.invoke('get-tcn-status'),
+  resetSerialPorts: () => ipcRenderer.invoke('reset-serial-ports'),
 });
 
 // Type definitions for the exposed API
@@ -58,6 +59,7 @@ export interface ElectronAPI {
   platform: string;
   version: string;
   getTcnStatus: () => Promise<any>;
+  resetSerialPorts: () => Promise<{ success: boolean; message?: string }>;
 }
 
 declare global {

@@ -13,7 +13,7 @@ export interface ElectronVendingResult {
 
 export interface PrizeDispenseResult {
   success: boolean;
-  tier: 'gold' | 'silver' | 'bronze';
+  tier: 'gold' | 'silver';
   channel: number | null;
   slot: number | null;
   error?: string;
@@ -25,17 +25,16 @@ class ElectronVendingService {
   private springService = springVendingService;
   private isInitialized: boolean = false;
   
-  // Channel mapping for prize tiers (aligned with TCN configuration)
+  // Round-robin selection state for guaranteed slot distribution
+  private roundRobinIndex: Map<string, number> = new Map();
+  
+  // Channel mapping for prize tiers (Updated for 2-tier system)
   private readonly prizeChannels = {
-    gold: [24, 25],
+    gold: [24, 25], // Gold slots 24-25
     silver: [
-      1, 2, 3, 4, 5, 6, 7, 8,
-      11, 12, 13, 14, 15, 16, 17, 18,
-      21, 22, 23, 26, 27, 28,
-      31, 32, 33, 34, 35, 36, 37, 38,
-      45, 46, 47, 48,
-      51, 52, 53, 54, 55, 56, 57, 58
-    ]
+      1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23,
+      26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38, 45, 46, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58
+    ] // Silver slots (1-8, 11-18, 21-23, 26-38, 45-48, 51-58) - 55 total
   };
 
   private isElectron(): boolean {
@@ -76,13 +75,119 @@ class ElectronVendingService {
         console.warn('[ELECTRON VENDING] Failed to initialize inventory storage - using in-memory fallback');
       }
       
+      // CRITICAL FIX: Only clear and reinitialize if slot configuration has changed
+      // This preserves slot counts between app restarts and prevents state loss
+      const existingSlots = await inventoryStorageService.getAllSlotInventory();
+      const currentConfigSlots = [...this.prizeChannels.gold, ...this.prizeChannels.silver];
+      
+      // Check if we need to reinitialize (missing slots or configuration change)
+      const needsReinit = existingSlots.length === 0 ||
+        !currentConfigSlots.every(slot => existingSlots.some(existing => existing.slot === slot));
+      
+      if (needsReinit) {
+        console.log('[ELECTRON VENDING] Slot configuration changed or first run - clearing and reinitializing...');
+        await inventoryStorageService.clearAndReinitialize();
+      } else {
+        console.log('[ELECTRON VENDING] Existing slot configuration found - preserving counts');
+      }
+      
       // Load existing slot data and sync with local configuration
       await this.syncSlotConfiguration();
+      
+      // CRITICAL FIX: Handle offline scenario - sync pending operations when internet reconnects
+      await this.syncPendingOperations();
       
       console.log('[ELECTRON VENDING] Inventory management initialized');
     } catch (error) {
       console.error('[ELECTRON VENDING] Failed to initialize inventory management:', error);
     }
+  }
+
+  /**
+   * Sync pending operations when internet reconnects
+   * This handles the scenario where user closes program after getting gold prize
+   * and reopens when server is not available
+   */
+  private async syncPendingOperations(): Promise<void> {
+    try {
+      console.log('[ELECTRON VENDING] Checking for pending operations to sync...');
+      
+      // Get all pending dispensing logs that haven't been synced to server
+      const pendingLogs = await inventoryStorageService.getPendingDispensingLogs();
+      
+      if (pendingLogs.length > 0) {
+        console.log(`[ELECTRON VENDING] Found ${pendingLogs.length} pending operations to sync`);
+        
+        // Try to sync each pending operation to server
+        for (const log of pendingLogs) {
+          try {
+            await this.syncPendingLogToServer(log);
+          } catch (error) {
+            console.warn(`[ELECTRON VENDING] Failed to sync pending log ${log.id}:`, error);
+          }
+        }
+        
+        // Clear pending logs after attempting sync
+        await inventoryStorageService.clearPendingDispensingLogs();
+      } else {
+        console.log('[ELECTRON VENDING] No pending operations to sync');
+      }
+    } catch (error) {
+      console.error('[ELECTRON VENDING] Failed to sync pending operations:', error);
+    }
+  }
+
+  /**
+   * Sync a single pending log to server
+   */
+  private async syncPendingLogToServer(log: any): Promise<void> {
+    const API_BASE_URL = (window as any).process?.env?.REACT_APP_API_URL || 'https://vendinghanger.eeelab.xyz/apiendpoints.php';
+    
+    const electronVendingLogEntry = {
+      action: log.action || 'prize_dispensing',
+      game_time_ms: log.gameTimeMs,
+      tier: log.tier,
+      selected_slot: log.slot,
+      channel_used: log.channel,
+      score_id: log.scoreId,
+      prize_id: log.prizeId,
+      success: log.success,
+      error_message: log.error,
+      dispense_method: log.dispenseMethod || 'legacy',
+      inventory_before: log.inventoryBefore,
+      inventory_after: log.inventoryAfter,
+      response_time_ms: log.responseTimeMs,
+      source: 'electron_vending_service_sync'
+    };
+
+    // Sanitize log entry to remove null values
+    const sanitizeLogEntry = (entry: any) => {
+      Object.keys(entry).forEach(key => {
+        if (entry[key] === null || entry[key] === undefined) {
+          delete entry[key];
+        }
+      });
+      return entry;
+    };
+
+    const sanitizedLogEntry = sanitizeLogEntry({...electronVendingLogEntry});
+
+    // Try to send to Electron Vending Service logs table (non-blocking)
+    fetch(`${API_BASE_URL}/api/electron-vending/log`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(sanitizedLogEntry)
+    }).then(response => {
+      if (response.ok) {
+        console.log(`[ELECTRON VENDING] Successfully synced pending log for slot ${log.slot}, tier ${log.tier}`);
+      } else {
+        console.warn(`[ELECTRON VENDING] Failed to sync pending log for slot ${log.slot}, tier ${log.tier}`);
+      }
+    }).catch(err => {
+      console.warn(`[ELECTRON VENDING] Network error syncing pending log:`, err);
+    });
   }
 
   /**
@@ -97,7 +202,13 @@ class ElectronVendingService {
         
         if (!existingData) {
           // Initialize new slot in storage
-          const tier = this.prizeChannels.gold.includes(slot) ? 'gold' : 'silver';
+          let tier: 'gold' | 'silver';
+          if (this.prizeChannels.gold.includes(slot)) {
+            tier = 'gold';
+          } else {
+            tier = 'silver';
+          }
+          
           await inventoryStorageService.updateSlotInventory({
             slot,
             tier,
@@ -116,14 +227,14 @@ class ElectronVendingService {
    * Determine prize tier based on game time
    */
   private determinePrizeTierByTime(time: number): 'gold' | 'silver' | null {
-    // Updated prize thresholds for 2-tier system
-    if (time >= 60000) { // 60 seconds or more
+    // Updated prize thresholds for 2-tier system (user requirements)
+    if (time >= 120000) { // 2 minutes (120,000ms) or more = Gold
       return 'gold';
-    } else if (time >= 30000) { // 30 seconds or more
+    } else if (time >= 10000) { // 10 seconds (10,000ms) or more = Silver
       return 'silver';
     }
     
-    return null; // Less than 30 seconds - no prize
+    return null; // Less than 10 seconds - no prize
   }
 
   /**
@@ -142,22 +253,157 @@ class ElectronVendingService {
       
       if (availableSlots.length === 0) {
         console.warn(`[ELECTRON VENDING] No available slots for ${tier} tier`);
+        
+        // CRITICAL FIX: Check if all slots are at max capacity and reset if needed
+        const allSlotsFull = tierSlots.every(slot => {
+          const slotData = slotInventory.find(data => data.slot === slot);
+          return slotData && slotData.dispenseCount >= slotData.maxDispenses;
+        });
+        
+        if (allSlotsFull) {
+          console.warn(`[ELECTRON VENDING] All ${tier} slots are at maximum capacity (${tierSlots.length} slots)`);
+          
+          // Reset all slots for this tier to allow continued operation
+          console.log(`[ELECTRON VENDING] Resetting all ${tier} slots to 0 count for continued operation`);
+          
+          for (const slot of tierSlots) {
+            try {
+              await inventoryStorageService.updateSlotInventory({
+                slot,
+                tier,
+                dispenseCount: 0,
+                maxDispenses: 5,
+                updatedAt: new Date().toISOString()
+              });
+            } catch (resetError) {
+              console.error(`[ELECTRON VENDING] Failed to reset slot ${slot}:`, resetError);
+            }
+          }
+          
+          // Log the reset operation
+          await this.logDispensingToServer(
+            0,
+            tier,
+            false,
+            undefined,
+            undefined,
+            `All ${tier} slots reset from max capacity (${tierSlots.length} slots) - allowing continued operation`,
+            undefined,
+            undefined,
+            'slot_reset',
+            undefined,
+            undefined,
+            Date.now()
+          );
+          
+          // Try to get available slot again after reset
+          const updatedSlotInventory = await inventoryStorageService.getSlotsByTier(tier);
+          const resetAvailableSlots = tierSlots.filter(slot => {
+            const slotData = updatedSlotInventory.find(data => data.slot === slot);
+            return slotData && slotData.dispenseCount < slotData.maxDispenses;
+          });
+          
+          if (resetAvailableSlots.length > 0) {
+            // CRITICAL FIX: Apply stable sorting with tie-breaking for reset slots
+            const resetSortedSlots = resetAvailableSlots.sort((a, b) => {
+              const countA = updatedSlotInventory.find(data => data.slot === a)?.dispenseCount || 0;
+              const countB = updatedSlotInventory.find(data => data.slot === b)?.dispenseCount || 0;
+              
+              // Primary: by count (ascending)
+              if (countA !== countB) {
+                return countA - countB;
+              }
+              
+              // CRITICAL FIX: Secondary: by slot number (ascending) for stable tie-breaking
+              console.log(`[ELECTRON VENDING] Reset tie-breaker: slot ${a} vs slot ${b} (both count=${countA}) - selecting ${a < b ? a : b}`);
+              return a - b;
+            });
+            
+            const selectedSlot = resetSortedSlots[0];
+            console.log(`[ELECTRON VENDING] Selected slot ${selectedSlot} for ${tier} tier after reset (count: 0)`);
+            return selectedSlot;
+          } else {
+            console.error(`[ELECTRON VENDING] Failed to reset ${tier} slots - no slots available after reset`);
+            return null;
+          }
+        }
+        
         return null;
       }
       
-      // Sort by dispense count (ascending) to use least used slots first
+      // COMPREHENSIVE LOGGING: Debug slot selection process
+      console.log(`[ELECTRON VENDING] Slot selection debug for ${tier} tier:`);
+      console.log(`[ELECTRON VENDING] - Tier slots: [${tierSlots.join(', ')}]`);
+      console.log(`[ELECTRON VENDING] - Available slots: [${availableSlots.join(', ')}]`);
+      console.log(`[ELECTRON VENDING] - Slot inventory:`);
+      availableSlots.forEach(slot => {
+        const slotData = slotInventory.find(data => data.slot === slot);
+        console.log(`[ELECTRON VENDING]   * Slot ${slot}: count=${slotData?.dispenseCount || 0}, max=${slotData?.maxDispenses || 5}`);
+      });
+      
+      // CRITICAL FIX: Stable sorting with tie-breaking to prevent slot 2 repetition
       const sortedSlots = availableSlots.sort((a, b) => {
         const countA = slotInventory.find(data => data.slot === a)?.dispenseCount || 0;
         const countB = slotInventory.find(data => data.slot === b)?.dispenseCount || 0;
-        return countA - countB;
+        
+        // Primary: by count (ascending) to use least used slots first
+        if (countA !== countB) {
+          return countA - countB;
+        }
+        
+        // CRITICAL FIX: Secondary: by slot number (ascending) for stable tie-breaking
+        // This prevents slot 2 from being selected repeatedly when counts are equal
+        console.log(`[ELECTRON VENDING] Tie-breaker: slot ${a} vs slot ${b} (both count=${countA}) - selecting ${a < b ? a : b}`);
+        return a - b;
       });
       
       const selectedSlot = sortedSlots[0];
-      console.log(`[ELECTRON VENDING] Selected slot ${selectedSlot} for ${tier} tier (count: ${slotInventory.find(data => data.slot === selectedSlot)?.dispenseCount || 0})`);
+      const selectedCount = slotInventory.find(data => data.slot === selectedSlot)?.dispenseCount || 0;
+      
+      console.log(`[ELECTRON VENDING] Selected slot ${selectedSlot} for ${tier} tier (stable sort, count: ${selectedCount})`);
+      console.log(`[ELECTRON VENDING] Slot selection summary: [${sortedSlots.join(', ')}] -> selected: ${selectedSlot}`);
       
       return selectedSlot;
     } catch (error) {
       console.error('[ELECTRON VENDING] Failed to get next available slot:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Alternative: Round-robin slot selection for guaranteed distribution
+   */
+  private async getNextAvailableSlotRoundRobin(tier: 'gold' | 'silver'): Promise<number | null> {
+    try {
+      const tierSlots = this.prizeChannels[tier];
+      const slotInventory = await inventoryStorageService.getSlotsByTier(tier);
+      
+      // Find slots with capacity
+      const availableSlots = tierSlots.filter(slot => {
+        const slotData = slotInventory.find(data => data.slot === slot);
+        return slotData && slotData.dispenseCount < slotData.maxDispenses;
+      });
+      
+      if (availableSlots.length === 0) {
+        console.warn(`[ELECTRON VENDING] No available slots for ${tier} tier (round-robin)`);
+        return null;
+      }
+      
+      // Get or initialize round-robin index for this tier
+      const currentIndex = this.roundRobinIndex.get(tier) || 0;
+      const selectedSlot = availableSlots[currentIndex % availableSlots.length];
+      
+      // Update round-robin index for next selection
+      this.roundRobinIndex.set(tier, currentIndex + 1);
+      
+      const selectedCount = slotInventory.find(data => data.slot === selectedSlot)?.dispenseCount || 0;
+      
+      console.log(`[ELECTRON VENDING] Round-robin selected slot ${selectedSlot} for ${tier} tier (index: ${currentIndex}, count: ${selectedCount})`);
+      console.log(`[ELECTRON VENDING] Round-robin available slots: [${availableSlots.join(', ')}] -> selected: ${selectedSlot}`);
+      
+      return selectedSlot;
+    } catch (error) {
+      console.error('[ELECTRON VENDING] Failed to get next available slot (round-robin):', error);
       return null;
     }
   }
@@ -344,7 +590,7 @@ class ElectronVendingService {
         // Log no prize awarded
         await this.logDispensingToServer(
           0,
-          'bronze',
+          'silver',
           false,
           undefined,
           undefined,
@@ -359,7 +605,7 @@ class ElectronVendingService {
         
         return {
           success: false,
-          tier: 'bronze',
+          tier: 'silver',
           channel: null,
           slot: null,
           error: 'Game time too short for prize eligibility'
@@ -368,8 +614,15 @@ class ElectronVendingService {
 
       console.log(`[ELECTRON VENDING] Game time ${time}ms qualifies for ${tier} prize`);
       
-      // Get next available slot for this tier with load balancing
-      const selectedSlot = await this.getNextAvailableSlot(tier);
+      // Get next available slot for this tier with enhanced load balancing
+      // Try stable sorting first, fallback to round-robin if needed
+      let selectedSlot = await this.getNextAvailableSlot(tier);
+      
+      // Fallback to round-robin if stable sorting fails or returns null
+      if (!selectedSlot) {
+        console.log(`[ELECTRON VENDING] Stable sorting failed, trying round-robin for ${tier} tier`);
+        selectedSlot = await this.getNextAvailableSlotRoundRobin(tier);
+      }
       
       if (!selectedSlot) {
         console.warn(`[ELECTRON VENDING] No available slots for ${tier} tier - machine may be empty`);
@@ -459,8 +712,8 @@ class ElectronVendingService {
         // Don't throw - continue with dispensing even if API fails
       }
 
-      // ENHANCED FALLBACK LOGIC - Try methods in order of preference
-      // LEGACY SERIAL FIRST for Windows testing environment
+      // VERSION 1.0.3 COMPATIBLE FALLBACK LOGIC - Enhanced to match 135new2.md pattern
+      // Use Direct Legacy Serial (bypasses TCN Serial Service and Mock Mode)
       const dispensingMethods = [
         {
           name: 'Legacy Serial',
@@ -471,7 +724,73 @@ class ElectronVendingService {
             if (!this.isElectron()) {
               throw new Error('Electron API not available - not running in Electron environment');
             }
-            
+            const command = this.constructVendCommand(selectedSlot);
+            console.log(`[ELECTRON VENDING] Command (HEX): ${command}`);
+            console.log(`[ELECTRON VENDING] Direct Legacy Serial (Version 1.0.3): ${command}`);
+           
+            try {
+              // VERSION 1.0.3 METHOD: Direct serial communication bypassing TCN Serial Service
+              const result = await this.sendDirectSerialCommand(command);
+              
+              if (result.success) {
+                console.log(`[ELECTRON VENDING] Direct Legacy Serial command sent successfully`);
+                console.log(`[ELECTRON VENDING] Command sent successfully to slot ${selectedSlot}`);
+                await this.incrementSlotCount(selectedSlot, tier);
+                const slotData = await inventoryStorageService.getSlotInventory(selectedSlot);
+                inventoryAfter = slotData?.dispenseCount;
+                
+                await this.logDispensingToServer(
+                  selectedSlot, tier, true, prizeIdForApi, scoreIdNum,
+                  undefined, time, selectedSlot, 'direct_legacy_serial', inventoryBefore, inventoryAfter,
+                  Date.now() - startTime
+                );
+                
+                console.log(`[ELECTRON VENDING] ✓ Direct Legacy Serial (Version 1.0.3 Compatible) successful for ${tier} prize`);
+                
+                return {
+                  success: true, tier, channel: selectedSlot, slot: selectedSlot,
+                  prizeId: prizeIdForApi, scoreId: scoreIdNum
+                };
+              } else {
+                const errorMessage = result.error || 'Failed to send serial command';
+                await this.logDispensingToServer(
+                  selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
+                  errorMessage, time, selectedSlot, 'direct_legacy_serial', inventoryBefore, inventoryAfter,
+                  Date.now() - startTime
+                );
+                
+                return {
+                  success: false, tier, channel: selectedSlot, slot: selectedSlot,
+                  error: errorMessage, prizeId: prizeIdForApi, scoreId: scoreIdNum
+                };
+              }
+            } catch (serialError) {
+              console.error(`[ELECTRON VENDING] Direct Legacy Serial error:`, serialError);
+              const errorMessage = (serialError as Error).message || 'Serial communication error';
+              
+              await this.logDispensingToServer(
+                selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
+                errorMessage, time, selectedSlot, 'direct_legacy_serial_error', inventoryBefore, inventoryAfter,
+                Date.now() - startTime
+              );
+              
+              return {
+                success: false, tier, channel: selectedSlot, slot: selectedSlot,
+                error: errorMessage, prizeId: prizeIdForApi, scoreId: scoreIdNum
+              };
+            }
+          }
+        },
+        {
+          name: 'On-Demand Serial (Fallback)',
+          try: async () => {
+            console.log(`[ELECTRON VENDING] Using On-Demand Serial (Fallback) for ${tier} prize dispensing`);
+           
+            // Check if Electron API is available
+            if (!this.isElectron()) {
+              throw new Error('Electron API not available - not running in Electron environment');
+            }
+           
             const command = this.constructVendCommand(selectedSlot);
             console.log(`[ELECTRON VENDING] Constructed HEX command: ${command}`);
             
@@ -635,7 +954,7 @@ class ElectronVendingService {
       // Log error to Electron Vending Service table
       await this.logDispensingToServer(
         0,
-        'bronze',
+        'silver',
         false,
         undefined,
         undefined,
@@ -650,7 +969,7 @@ class ElectronVendingService {
       
       return {
         success: false,
-        tier: 'bronze',
+        tier: 'silver',
         channel: null,
         slot: null,
         error: error.message
@@ -838,6 +1157,7 @@ class ElectronVendingService {
         }
       }
       
+      
       totalDispensed = goldDispensed + silverDispensed;
       
       return {
@@ -896,7 +1216,7 @@ class ElectronVendingService {
   /**
    * Enhanced prize dispensing using Spring SDK protocol
    */
-  async dispensePrizeByTier(tier: 'gold' | 'silver' | 'bronze', prizeId?: number, scoreId?: number): Promise<boolean> {
+  async dispensePrizeByTier(tier: 'gold' | 'silver', prizeId?: number, scoreId?: number): Promise<boolean> {
     if (!this.isInitialized) {
       console.warn('[ELECTRON VENDING] Spring SDK service not initialized');
       return false;
@@ -944,13 +1264,11 @@ class ElectronVendingService {
     // If Spring SDK is initialized, use enhanced method
     if (this.isInitialized) {
       // Map slot number to tier (1-5: gold, 6-15: silver, 16-25: bronze)
-      let tier: 'gold' | 'silver' | 'bronze';
+      let tier: 'gold' | 'silver';
       if (slotNumber <= 5) {
         tier = 'gold';
-      } else if (slotNumber <= 15) {
-        tier = 'silver';
       } else {
-        tier = 'bronze';
+        tier = 'silver';
       }
       
       return await this.dispensePrizeByTier(tier, prizeId, scoreId);
@@ -1185,14 +1503,29 @@ class ElectronVendingService {
       return false;
     }
   
+    console.log('[ELECTRON VENDING] === FORCE RELOAD INITIATED ===');
+    console.log('[ELECTRON VENDING] Resetting both Arduino and TCN services...');
+    
+    // Step 1: Reset TCN vending service state
+    this.isInitialized = false;
+    console.log('[ELECTRON VENDING] TCN vending service state reset');
+    
     try {
       // Call the new IPC handler
       const result = await window.electronAPI.resetSerialPorts();
       console.log('[ELECTRON VENDING] Serial ports reset successfully');
       
-      // Reinitialize after delay
+      // Step 3: Force reinitialize TCN service after delay
       setTimeout(async () => {
+        console.log('[ELECTRON VENDING] Reinitializing TCN vending service...');
         await this.initializeVending();
+        
+        // Step 4: Verify TCN service is ready
+        if (this.isInitialized) {
+          console.log('[ELECTRON VENDING] ✓ TCN vending service successfully reinitialized');
+        } else {
+          console.error('[ELECTRON VENDING] ✗ TCN vending service failed to reinitialize');
+        }
       }, 3000);
       
       return true;

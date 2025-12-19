@@ -1,4 +1,4 @@
-// Arduino Sensor Service with debouncing and state management
+// Arduino Sensor Service
 
 export interface SensorEventHandlers {
   onSensorStart?: (timestamp?: number) => void;
@@ -12,10 +12,12 @@ class ArduinoSensorService {
   private currentState: number = 0;
   private lastStableState: number = 0;
   private debounceTimer: NodeJS.Timeout | null = null;
-  private readonly DEBOUNCE_DELAY = 300; // ms - require stable state for 300ms (reduced bounce issues)
+  private readonly DEBOUNCE_DELAY = 300; // ms - require stable state for 300ms
   private eventHandlers: SensorEventHandlers = {};
   private serialListenerSetup: boolean = false;
   private isConnected: boolean = false; // Track serial connection state to prevent retry loops
+  private channelRetryTimer: NodeJS.Timeout | null = null; // Auto-retry timer for channel establishment
+  private channelRetryCount: number = 0; // Track retry attempts
 
   private constructor() {}
 
@@ -49,6 +51,10 @@ class ArduinoSensorService {
         } else {
           console.log(`Arduino sensor ENABLED and ready for data (REAL HARDWARE MODE)`);
         }
+        
+        // CRITICAL FIX: Start automatic channel retry mechanism like 135new2.md
+        this.startChannelRetryMechanism();
+        
       }).catch(error => {
         console.error(`[Arduino Sensor] Failed to enable:`, error);
         this.isEnabled = false; // Revert on failure
@@ -70,13 +76,37 @@ class ArduinoSensorService {
     }
     
     try {
+      // ENHANCED DEBUGGING: Add detailed Windows COM port diagnostics
+      console.log('[Arduino Sensor] === ENHANCED WINDOWS COM PORT DEBUGGING ===');
+      console.log('[Arduino Sensor] ElectronAPI available:', !!window.electronAPI);
+      console.log('[Arduino Sensor] getSerialPorts method available:', !!(window.electronAPI && window.electronAPI.getSerialPorts));
+      
       // PROACTIVE FIX: Pre-warm COM ports to prevent Windows state persistence issues
       console.log('[Arduino Sensor] Proactive COM port initialization starting...');
       await this.proactivePortInitialization();
       
       // Try to get available ports first
-      const ports = await window.electronAPI.getSerialPorts();
-      if (ports.length > 0) {
+      console.log('[Arduino Sensor] Attempting to get serial ports...');
+      let ports;
+      try {
+        ports = await window.electronAPI.getSerialPorts();
+        console.log('[Arduino Sensor] Raw ports result:', ports);
+        console.log('[Arduino Sensor] Ports type:', typeof ports);
+        console.log('[Arduino Sensor] Ports isArray:', Array.isArray(ports));
+        if (ports) {
+          console.log('[Arduino Sensor] Ports length:', ports.length);
+        }
+      } catch (portError) {
+        console.error('[Arduino Sensor] ERROR getting serial ports:', portError);
+        console.log('[Arduino Sensor] Port error details:', {
+          message: portError.message,
+          stack: portError.stack,
+          name: portError.name
+        });
+        ports = [];
+      }
+      
+      if (ports && ports.length > 0) {
         console.log('[Arduino Sensor] Available ports:', ports);
         
         // ENHANCED: More robust Arduino port detection with manufacturer checking
@@ -184,11 +214,9 @@ class ArduinoSensorService {
               window.electronAPI.onSerialData((data: string) => {
                 // Only process data when sensor is enabled
                 if (this.isEnabled) {
-                  // OPTIMIZED: Only log data reception periodically to reduce spam
+                  // RESTORED: Process every data reception like working version (135new2.md)
                   dataReceptionCount++;
-                  if (dataReceptionCount === 1 || dataReceptionCount % 10 === 0) {
-                    console.log(`[Arduino Sensor] Received data via general serial channel (${dataReceptionCount}):`, data);
-                  }
+                  console.log(`[Arduino Sensor] Received data via shared channel (${dataReceptionCount}):`, data);
                   this.handleSerialData(data);
                 } else {
                   // Silently ignore data when disabled (don't log "Already DISABLED" spam)
@@ -201,11 +229,9 @@ class ArduinoSensorService {
                 window.electronAPI.onArduinoData((data: string) => {
                   // Only process data when sensor is enabled
                   if (this.isEnabled) {
-                    // OPTIMIZED: Only log data reception periodically to reduce spam
+                    // RESTORED: Process every data reception like working version (135new6.md)
                     dataReceptionCount++;
-                    if (dataReceptionCount === 1 || dataReceptionCount % 10 === 0) {
-                      console.log(`[Arduino Sensor] Received data via dedicated Arduino channel (${dataReceptionCount}):`, data);
-                    }
+                    console.log(`[Arduino Sensor] Received data via dedicated Arduino channel (${dataReceptionCount}):`, data);
                     this.handleSerialData(data);
                   } else {
                     // Silently ignore data when disabled (don't log "Already DISABLED" spam)
@@ -240,6 +266,9 @@ class ArduinoSensorService {
               
               this.serialListenerSetup = true;
               console.log('[Arduino Sensor] IPC listeners set up after serial connection (data will only be processed when enabled)');
+              
+              // CRITICAL FIX: Start automatic channel retry mechanism like 135new2.md
+              this.startChannelRetryMechanism();
             }
           } else {
             console.error(`[Arduino Sensor] ✗ Failed to connect to ${targetPort.path} after all strategies`);
@@ -325,10 +354,12 @@ class ArduinoSensorService {
       return;
     }
 
-    // Only process if the state actually changed
+    // CRITICAL FIX: Prevent data flooding from repeated "1" values
+    // Only process if the state actually changed OR if it's a valid transition
     if (sensorValue === this.currentState) {
-      return;
+      return; // Skip duplicate values completely
     }
+
 
     console.log(`Arduino sensor state change: ${this.currentState} -> ${sensorValue}`);
 
@@ -600,10 +631,89 @@ class ArduinoSensorService {
   /**
    * Cleanup resources
    */
+  /**
+   * Start automatic channel retry mechanism like 135new2.md
+   * Continuously tries to ensure Arduino data channel is active
+   */
+  private startChannelRetryMechanism(): void {
+    // Clear any existing retry timer
+    if (this.channelRetryTimer) {
+      clearInterval(this.channelRetryTimer);
+    }
+    
+    console.log('[Arduino Sensor] Starting automatic channel retry mechanism...');
+    this.channelRetryCount = 0;
+    
+    // Set up periodic retry every 5 seconds like working version
+    this.channelRetryTimer = setInterval(() => {
+      this.performChannelRetry();
+    }, 5000);
+  }
+  
+  /**
+   * Perform a single channel retry attempt
+   */
+  private async performChannelRetry(): Promise<void> {
+    if (!this.isEnabled) {
+      return; // Don't retry if sensor is disabled
+    }
+    
+    this.channelRetryCount++;
+    
+    // Only log every 6th retry to avoid spam (like 135new2.md pattern)
+    if (this.channelRetryCount % 6 === 0) {
+      console.log(`[Arduino Sensor] Auto-retry attempt ${this.channelRetryCount} - ensuring channel is active...`);
+    }
+    
+    try {
+      // Check if we can still get serial ports (connection health check)
+      if (window.electronAPI && window.electronAPI.getSerialPorts) {
+        const ports = await window.electronAPI.getSerialPorts();
+        
+        if (!ports || ports.length === 0) {
+          // No ports available - this is expected in some cases
+          if (this.channelRetryCount % 6 === 0) {
+            console.log('[Arduino Sensor] Auto-retry: No serial ports available (normal in some environments)');
+          }
+          return;
+        }
+        
+        // If we have ports but no connection, try to re-establish
+        if (!this.isConnected && ports.length > 0) {
+          if (this.channelRetryCount % 6 === 0) {
+            console.log('[Arduino Sensor] Auto-retry: Connection lost, attempting to re-establish...');
+          }
+          
+          // Try to reconnect to the best available port
+          await this.ensureSerialConnection();
+        }
+        
+        // Log channel status periodically
+        if (this.channelRetryCount % 12 === 0) { // Every minute
+          console.log(`[Arduino Sensor] Channel status: Connected=${this.isConnected}, Enabled=${this.isEnabled}, Ports=${ports.length}`);
+        }
+      }
+    } catch (error) {
+      // Only log errors periodically to avoid spam
+      if (this.channelRetryCount % 6 === 0) {
+        console.warn('[Arduino Sensor] Auto-retry check failed:', error);
+      }
+    }
+  }
+
+
   cleanup(): void {
     this.clearDebounceTimer();
+    
+    // Clear channel retry timer
+    if (this.channelRetryTimer) {
+      clearInterval(this.channelRetryTimer);
+      this.channelRetryTimer = null;
+    }
+    
     this.isEnabled = false;
     this.isConnected = false; // Reset connection state
+    this.channelRetryCount = 0; // Reset retry counter
     this.eventHandlers = {};
     if (this.serialListenerSetup && window.electronAPI) {
       const { electronVendingService } = require('./electronVendingService');

@@ -32,4 +32,5 @@ electron_1.contextBridge.exposeInMainWorld('electronAPI', {
     version: process.version,
     // TCN / Serial status
     getTcnStatus: () => electron_1.ipcRenderer.invoke('get-tcn-status'),
+    resetSerialPorts: () => electron_1.ipcRenderer.invoke('reset-serial-ports'),
 });
