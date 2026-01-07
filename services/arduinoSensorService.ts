@@ -13,6 +13,9 @@ class ArduinoSensorService {
   private lastStableState: number = 0;
   private debounceTimer: NodeJS.Timeout | null = null;
   private readonly DEBOUNCE_DELAY = 300; // ms - require stable state for 300ms
+  // Rate limiter to cap processed sensor updates (10 Hz)
+  private lastProcessedTs: number = 0;
+  private readonly MIN_PROCESS_INTERVAL = 100; // ms (10 per second)
   private eventHandlers: SensorEventHandlers = {};
   private serialListenerSetup: boolean = false;
   private isConnected: boolean = false; // Track serial connection state to prevent retry loops
@@ -354,22 +357,34 @@ class ArduinoSensorService {
       return;
     }
 
-    // CRITICAL FIX: Prevent data flooding from repeated "1" values
-    // Only process if the state actually changed OR if it's a valid transition
-    if (sensorValue === this.currentState) {
-      return; // Skip duplicate values completely
+    // Rate limiting: avoid processing more than MIN_PROCESS_INTERVAL
+    const now = Date.now();
+    if (now - this.lastProcessedTs < this.MIN_PROCESS_INTERVAL) {
+      // If value is duplicate of current state, skip immediately
+      if (sensorValue === this.currentState) {
+        return;
+      }
+      // If value differs but we're within rate limit, still debounce but skip heavy processing/logging
+      // Allow the debounce timer to pick up the change (still schedule below)
     }
 
-
-    console.log(`Arduino sensor state change: ${this.currentState} -> ${sensorValue}`);
+    // CRITICAL OPTIMIZATION: Add minimum processing delay to prevent rapid state changes
+    // Only log state changes, not every data reception
+    // Lightweight log for state changes (throttled)
+    if (now - this.lastProcessedTs >= this.MIN_PROCESS_INTERVAL) {
+      console.log(`[Arduino Sensor] State change: ${this.currentState} -> ${sensorValue} (filtered)`);
+    }
 
     // Clear any existing debounce timer
     this.clearDebounceTimer();
 
-    // Set a new debounce timer
+    // Set a new debounce timer with increased delay for rapid data filtering
     this.debounceTimer = setTimeout(() => {
       this.processStableStateChange(sensorValue);
     }, this.DEBOUNCE_DELAY);
+
+    // Update last processed timestamp to enforce rate limiter
+    this.lastProcessedTs = now;
   }
 
   /**

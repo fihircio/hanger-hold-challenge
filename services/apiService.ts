@@ -134,9 +134,8 @@ class ApiService {
       // Return fallback prizes when API fails - match 135new2.md pattern
       return {
         prizes: [
-          { id: 1, name: 'Bronze', message: '10+ seconds', slot: 1, time_threshold: 10000 },
-          { id: 2, name: 'Silver', message: '2+ minutes', slot: 24, time_threshold: 120000 },
-          { id: 3, name: 'Gold', message: '4+ minutes', slot: 25, time_threshold: 240000 }
+          { id: 1, name: 'Silver', message: '3+ seconds', slot: 1, time_threshold: 3000 },
+          { id: 2, name: 'Gold', message: '2+ minutes', slot: 25, time_threshold: 120000 }
         ]
       };
     }

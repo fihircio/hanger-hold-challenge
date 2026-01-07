@@ -111,8 +111,8 @@ CREATE INDEX `idx_spring_vending_logs_success` ON `spring_vending_logs` (`succes
 -- 6. Seed Prizes Table (Updated for 2-tier system)
 -- ============================================
 INSERT INTO `prizes` (`name`, `message`, `slot`, `time_threshold`) VALUES
-('Gold Prize', 'Incredible! You won Gold Prize!', 25, 120000),  -- 4+ minutes (primary gold slot)
-('Silver Prize', 'Amazing! You won Silver Prize!', 1, 10000); -- 2+ minutes (primary silver slot)
+('Gold Prize', 'Incredible! You won Gold Prize!', 25, 120000),  -- 2+ minutes (primary gold slot)
+('Silver Prize', 'Amazing! You won Silver Prize!', 1, 3000); -- 3 seconds (primary silver slot)
 
 -- =============================================
 -- 7. Create Users Table for Authentication

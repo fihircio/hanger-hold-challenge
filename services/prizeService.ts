@@ -13,8 +13,8 @@ export interface Prize {
 
 // Fallback prize tiers for offline mode (updated for new slot configuration)
 const FALLBACK_PRIZE_TIERS: { time: number; prize: Prize }[] = [
-  { time: 120000, prize: { name: 'Gold Prize', message: 'Incredible! You won the Gold Prize!', slot: 25, tier: 'gold' } }, // 4+ minutes - Gold slot 25
-  { time: 10000, prize: { name: 'Silver Prize', message: 'Amazing! You won the Silver Prize!', slot: 1, tier: 'silver' } }, // 2+ minutes - Silver slot 1
+  { time: 120000, prize: { name: 'Gold Prize', message: 'Incredible! You won the Gold Prize!', slot: 25, tier: 'gold' } }, // 2+ minutes - Gold slot 25
+  { time: 3000, prize: { name: 'Silver Prize', message: 'Amazing! You won the Silver Prize!', slot: 1, tier: 'silver' } }, // 3 seconds - Silver slot 1
 ];
 
 /**

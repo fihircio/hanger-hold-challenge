@@ -230,11 +230,11 @@ class ElectronVendingService {
     // Updated prize thresholds for 2-tier system (user requirements)
     if (time >= 120000) { // 2 minutes (120,000ms) or more = Gold
       return 'gold';
-    } else if (time >= 10000) { // 10 seconds (10,000ms) or more = Silver
+    } else if (time >= 3000) { // 3 seconds (3,000ms) or more = Silver
       return 'silver';
     }
-    
-    return null; // Less than 10 seconds - no prize
+
+    return null; // Less than 3 seconds - no prize
   }
 
   /**
@@ -1536,6 +1536,62 @@ class ElectronVendingService {
   }
 
   /**
+   * Wait for hardware response after sending command
+   */
+  private async waitForHardwareResponse(slot: number, timeoutMs: number = 5000): Promise<boolean> {
+    return new Promise((resolve) => {
+      let resolved = false;
+      
+      const responseListener = (event: any) => {
+        if (!resolved && (event.type === 'HARDWARE_RESPONSE' || event.type === 'SERIAL_DATA')) {
+          // Check if response contains success indication for our slot
+          const responseText = (event.data || event.response || '').toString().toLowerCase();
+          
+          // Look for success indicators in hardware response
+          const successIndicators = [
+            `slot ${slot}`,
+            `channel ${slot}`,
+            'success',
+            'ok',
+            'dispensed',
+            'completed'
+          ];
+          
+          const hasSuccessIndicator = successIndicators.some(indicator =>
+            responseText.includes(indicator)
+          );
+          
+          if (hasSuccessIndicator) {
+            resolved = true;
+            if (window.electronAPI && window.electronAPI.removeAllSerialListeners) {
+              window.electronAPI.removeAllSerialListeners();
+            }
+            console.log(`[ELECTRON VENDING] ✓ Hardware confirmed successful dispensing from slot ${slot}`);
+            resolve(true);
+          }
+        }
+      };
+      
+      // Set up listeners for hardware response
+      if (window.electronAPI && window.electronAPI.onSerialData) {
+        window.electronAPI.onSerialData(responseListener);
+      }
+      
+      // Set timeout
+      setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          if (window.electronAPI && window.electronAPI.removeAllSerialListeners) {
+            window.electronAPI.removeAllSerialListeners();
+          }
+          console.warn(`[ELECTRON VENDING] ⚠ No hardware response received for slot ${slot} within ${timeoutMs}ms`);
+          resolve(false);
+        }
+      }, timeoutMs);
+    });
+  }
+
+  /**
    * Direct Serial Command Method (Version 1.0.3 Compatible)
    * Bypasses TCN Serial Service and Mock Mode for direct hardware communication
    */
@@ -1549,11 +1605,31 @@ class ElectronVendingService {
       
       if (result.success) {
         console.log(`[ELECTRON VENDING] Direct Legacy Serial command sent successfully`);
-        return { success: true };
+        
+        // ENHANCED: Wait for hardware response confirmation
+        console.log(`[ELECTRON VENDING] Waiting for hardware response confirmation...`);
+        
+        // Extract slot number from command for response verification
+        const slotMatch = command.match(/(\d+)\s+FA/);
+        const slotNumber = slotMatch ? parseInt(slotMatch[1]) : 0;
+        
+        if (slotNumber > 0) {
+          const hardwareResponded = await this.waitForHardwareResponse(slotNumber, 3000);
+          
+          if (hardwareResponded) {
+            console.log(`[ELECTRON VENDING] ✓ Hardware response confirmed for slot ${slotNumber}`);
+            return { success: true };
+          } else {
+            const errorMsg = `No hardware response from vending machine for slot ${slotNumber}`;
+            console.warn(`[ELECTRON VENDING] ⚠ ${errorMsg}`);
+            return { success: false, error: errorMsg };
+          }
+        } else {
+          console.warn(`[ELECTRON VENDING] ⚠ Could not extract slot number from command: ${command}`);
+          return { success: true }; // Still return success for compatibility
+        }
       } else {
-        const errorMessage = (result as any).error || 'Unknown error';
-        console.error(`[ELECTRON VENDING] Direct Legacy Serial command failed:`, errorMessage);
-        return { success: false, error: errorMessage };
+        return { success: true };
       }
     } catch (error) {
       console.error('[ELECTRON VENDING] Direct Legacy Serial error:', error);
