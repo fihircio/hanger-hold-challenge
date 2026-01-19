@@ -12,6 +12,7 @@ class ArduinoSensorService {
   private currentState: number = 0;
   private lastStableState: number = 0;
   private debounceTimer: NodeJS.Timeout | null = null;
+  private pendingDebounceValue: number = -1; // Track value we are debouncing towards
   private readonly DEBOUNCE_DELAY = 300; // ms - require stable state for 300ms
   // Rate limiter to cap processed sensor updates (10 Hz)
   private lastProcessedTs: number = 0;
@@ -22,7 +23,7 @@ class ArduinoSensorService {
   private channelRetryTimer: NodeJS.Timeout | null = null; // Auto-retry timer for channel establishment
   private channelRetryCount: number = 0; // Track retry attempts
 
-  private constructor() {}
+  private constructor() { }
 
   static getInstance(): ArduinoSensorService {
     if (!ArduinoSensorService.instance) {
@@ -40,7 +41,7 @@ class ArduinoSensorService {
       console.log(`[Arduino Sensor] Already ${enabled ? 'ENABLED' : 'DISABLED'} - skipping`);
       return;
     }
-    
+
     this.isEnabled = enabled;
     if (!enabled) {
       this.clearDebounceTimer();
@@ -54,10 +55,10 @@ class ArduinoSensorService {
         } else {
           console.log(`Arduino sensor ENABLED and ready for data (REAL HARDWARE MODE)`);
         }
-        
+
         // CRITICAL FIX: Start automatic channel retry mechanism like 135new2.md
         this.startChannelRetryMechanism();
-        
+
       }).catch(error => {
         console.error(`[Arduino Sensor] Failed to enable:`, error);
         this.isEnabled = false; // Revert on failure
@@ -71,23 +72,23 @@ class ArduinoSensorService {
    */
   private async ensureSerialConnection(): Promise<void> {
     if (!window.electronAPI) return;
-    
+
     // CRITICAL FIX: Check if already connected to prevent retry loops
     if (this.serialListenerSetup && this.isConnected) {
       console.log('[Arduino Sensor] Already connected to serial port, skipping reconnection');
       return;
     }
-    
+
     try {
       // ENHANCED DEBUGGING: Add detailed Windows COM port diagnostics
       console.log('[Arduino Sensor] === ENHANCED WINDOWS COM PORT DEBUGGING ===');
       console.log('[Arduino Sensor] ElectronAPI available:', !!window.electronAPI);
       console.log('[Arduino Sensor] getSerialPorts method available:', !!(window.electronAPI && window.electronAPI.getSerialPorts));
-      
+
       // PROACTIVE FIX: Pre-warm COM ports to prevent Windows state persistence issues
       console.log('[Arduino Sensor] Proactive COM port initialization starting...');
       await this.proactivePortInitialization();
-      
+
       // Try to get available ports first
       console.log('[Arduino Sensor] Attempting to get serial ports...');
       let ports;
@@ -108,17 +109,17 @@ class ArduinoSensorService {
         });
         ports = [];
       }
-      
+
       if (ports && ports.length > 0) {
         console.log('[Arduino Sensor] Available ports:', ports);
-        
+
         // ENHANCED: More robust Arduino port detection with manufacturer checking
         // Arduino sensor should use HIGHER numbered COM ports (COM6+) to avoid conflict with Spring Vending
         // Priority 1: Arduino manufacturer ports (most reliable)
         // Priority 2: High COM ports without Arduino manufacturer
         // Priority 3: Any available port as last resort
         let targetPort = null;
-        
+
         // Find Arduino-like ports first (most reliable)
         const arduinoPorts = ports.filter((port: any) =>
           port.manufacturer && (
@@ -127,7 +128,7 @@ class ArduinoSensorService {
             port.manufacturer.toLowerCase().includes('ch340')
           )
         );
-        
+
         // Sort available COM ports by number (descending - Arduino gets higher numbers)
         const allComPorts = ports
           .filter((port: any) => port.path.startsWith('COM'))
@@ -136,7 +137,7 @@ class ArduinoSensorService {
             const numB = parseInt(b.path.replace('COM', ''));
             return numB - numA; // Descending order (higher numbers first)
           });
-        
+
         // Priority 1: Use Arduino manufacturer ports (most reliable)
         if (arduinoPorts.length > 0) {
           const arduinoComPorts = arduinoPorts.filter((port: any) => port.path.startsWith('COM'));
@@ -145,26 +146,26 @@ class ArduinoSensorService {
             const numB = parseInt(b.path.replace('COM', ''));
             return numB - numA; // Highest number first
           });
-          
+
           if (arduinoComPorts.length > 0) {
             targetPort = arduinoComPorts[0]; // Use highest numbered Arduino manufacturer port
             console.log(`[Arduino Sensor] Selected Arduino manufacturer port: ${targetPort.path} (most reliable for Arduino)`);
           }
         }
-        
+
         // Priority 2: Use high COM ports (COM6+) that are NOT Arduino manufacturer
         if (!targetPort) {
           const highComPorts = allComPorts.filter((port: any) => {
             const comNum = parseInt(port.path.replace('COM', ''));
             return comNum >= 6; // COM6+ for Arduino sensor
           });
-          
+
           // Exclude Arduino manufacturer ports to avoid conflicts
           const nonArduinoHighPorts = highComPorts.filter((port: any) => {
             const mfr = (port.manufacturer || '').toLowerCase();
             return !mfr.includes('arduino') && !mfr.includes('ftdi') && !mfr.includes('ch340');
           });
-          
+
           if (nonArduinoHighPorts.length > 0) {
             // Sort by number (higher first) to get highest COM port
             nonArduinoHighPorts.sort((a: any, b: any) => {
@@ -172,46 +173,47 @@ class ArduinoSensorService {
               const numB = parseInt(b.path.replace('COM', ''));
               return numB - numA;
             });
-            
+
             targetPort = nonArduinoHighPorts[0]; // Use highest numbered non-Arduino COM port
             console.log(`[Arduino Sensor] Selected high COM port: ${targetPort.path} (non-Arduino manufacturer, COM6+)`);
           }
         }
-        
+
         // Priority 3: Last resort - any available port
         if (!targetPort && allComPorts.length > 0) {
           targetPort = allComPorts[0]; // Highest numbered COM port available
           console.log(`[Arduino Sensor] Using fallback port: ${targetPort.path} (no Arduino-compatible ports found)`);
         }
-        
+
         if (!targetPort) {
           console.warn('[Arduino Sensor] No suitable serial ports available for Arduino sensor');
           return;
         }
-        
+
         // ENHANCED: Add port validation and debugging
         console.log(`[Arduino Sensor] Port selection details:`);
         console.log(`  - Available ports:`, ports.map((p: any) => `${p.path} (${p.manufacturer || 'Unknown'})`));
         console.log(`  - Arduino manufacturer ports:`, arduinoPorts.map((p: any) => `${p.path} (${p.manufacturer})`));
         console.log(`  - Selected port: ${targetPort?.path || 'None'}`);
         console.log(`  - Port manufacturer: ${targetPort?.manufacturer || 'Unknown'}`);
-        
+
         if (targetPort) {
           console.log(`[Arduino Sensor] Attempting to connect to ${targetPort.path}`);
-          
+
           // ENHANCED CONNECTION STRATEGY: Multiple attempts with different approaches
           const connectionSuccess = await this.attemptConnectionWithStrategies(targetPort);
-          
+
           if (connectionSuccess) {
             console.log(`[Arduino Sensor] ✓ Successfully connected to ${targetPort.path} at 9600 baud`);
             this.isConnected = true; // Track connection state
-             
+
             // CRITICAL FIX: Set up IPC listeners AFTER serial port is connected
             // This ensures listeners are attached to the actual connection
             // Always set up listeners when connecting to ensure data flow
             if (window.electronAPI && window.electronAPI.onSerialData) {
               let dataReceptionCount = 0; // Track data reception for optimized logging
-              
+              let lastLogTime = 0; // Throttle logs to reduce noise
+
               // FIXED: Listen to dedicated Arduino data channel to prevent Spring Vending interference
               // Arduino sensor now uses separate IPC channel: 'arduino-data'
               window.electronAPI.onSerialData((data: string) => {
@@ -219,14 +221,22 @@ class ArduinoSensorService {
                 if (this.isEnabled) {
                   // RESTORED: Process every data reception like working version (135new2.md)
                   dataReceptionCount++;
-                  console.log(`[Arduino Sensor] Received data via shared channel (${dataReceptionCount}):`, data);
+
+                  // LOGGING OPTIMIZATION: Only log every 10 seconds
+                  const now = Date.now();
+                  if (now - lastLogTime > 10000) {
+                    console.log(`[Arduino Sensor] Received data via shared channel (${dataReceptionCount}):`, data);
+                    // Update timestamp only if we logged
+                    lastLogTime = now;
+                  }
+
                   this.handleSerialData(data);
                 } else {
                   // Silently ignore data when disabled (don't log "Already DISABLED" spam)
                   return;
                 }
               });
-              
+
               // NEW: Listen to dedicated Arduino data channel
               if (window.electronAPI.onArduinoData) {
                 window.electronAPI.onArduinoData((data: string) => {
@@ -234,7 +244,14 @@ class ArduinoSensorService {
                   if (this.isEnabled) {
                     // RESTORED: Process every data reception like working version (135new6.md)
                     dataReceptionCount++;
-                    console.log(`[Arduino Sensor] Received data via dedicated Arduino channel (${dataReceptionCount}):`, data);
+
+                    // LOGGING OPTIMIZATION: Only log every 10 seconds
+                    const now = Date.now();
+                    if (now - lastLogTime > 10000) {
+                      console.log(`[Arduino Sensor] Received data via dedicated Arduino channel (${dataReceptionCount}):`, data);
+                      lastLogTime = now;
+                    }
+
                     this.handleSerialData(data);
                   } else {
                     // Silently ignore data when disabled (don't log "Already DISABLED" spam)
@@ -245,31 +262,31 @@ class ArduinoSensorService {
               } else {
                 console.warn('[Arduino Sensor] Dedicated Arduino data channel not available - using shared channel (fallback)');
               }
-              
+
               window.electronAPI.onSerialError((error: string) => {
                 console.error('[Arduino Sensor] Received error via preload:', error);
-                
+
                 // Update connection state on error
                 if (error.includes('Access denied') || error.includes('Permission denied') || error.includes('Serial port is not open')) {
                   this.isConnected = false; // Mark as disconnected
                 }
-                
+
                 // ENHANCED: Handle "Access denied" errors with retry logic and multiple COM ports
                 if (error.includes('Access denied') || error.includes('Permission denied')) {
                   console.warn('[Arduino Sensor] Access denied - attempting retry with different approach...');
-                  
+
                   // IMPLEMENT RETRY LOGIC: Try different COM ports or approaches
                   this.retryWithDifferentPorts(targetPort);
-                  
+
                 } else {
                   // For other errors, Don't disable sensor, just log it
                   console.warn('[Arduino Sensor] Non-permission error, continuing to monitor for data');
                 }
               });
-              
+
               this.serialListenerSetup = true;
               console.log('[Arduino Sensor] IPC listeners set up after serial connection (data will only be processed when enabled)');
-              
+
               // CRITICAL FIX: Start automatic channel retry mechanism like 135new2.md
               this.startChannelRetryMechanism();
             }
@@ -311,12 +328,12 @@ class ArduinoSensorService {
 
     try {
       const { electronVendingService } = await import('./electronVendingService');
-      
+
       // Check available ports before setting up listeners
       try {
         const ports = await window.electronAPI.getSerialPorts();
         console.log('[Arduino Sensor] Available ports:', ports);
-        
+
         if (ports.length === 0) {
           console.warn('[Arduino Sensor] No serial ports available - running in MOCK MODE');
         } else {
@@ -325,15 +342,15 @@ class ArduinoSensorService {
       } catch (statusError) {
         console.warn('[Arduino Sensor] Could not check serial ports:', statusError);
       }
-      
+
       // FIXED: Listen to the correct IPC channel for Arduino data
       // The Arduino service should receive data directly from the preload's onSerialData
       // which gets data from Electron main's serial port
-      
+
       // Don't set up IPC listeners here - set them up when serial port actually connects
       // This prevents the issue where listeners are set up before port is connected
       console.log('[Arduino Sensor] IPC listeners will be set up when serial port connects');
-      
+
       this.serialListenerSetup = true;
       console.log('Arduino sensor service initialized');
     } catch (error) {
@@ -350,7 +367,7 @@ class ArduinoSensorService {
     }
 
     const sensorValue = parseInt(data.trim());
-    
+
     // Validate the sensor value
     if (isNaN(sensorValue) || (sensorValue !== 0 && sensorValue !== 1)) {
       console.warn('Invalid sensor value received:', data);
@@ -375,13 +392,25 @@ class ArduinoSensorService {
       console.log(`[Arduino Sensor] State change: ${this.currentState} -> ${sensorValue} (filtered)`);
     }
 
-    // Clear any existing debounce timer
-    this.clearDebounceTimer();
+    // CRITICAL OPTIMIZATION: Only reset debounce timer if the VALUE changes
+    // If we keep receiving the same value (e.g. 0 0 0), let the existing timer run!
+    // Otherwise, a fast data stream (> 3Hz) will constantly reset the timer and never trigger.
 
-    // Set a new debounce timer with increased delay for rapid data filtering
-    this.debounceTimer = setTimeout(() => {
-      this.processStableStateChange(sensorValue);
-    }, this.DEBOUNCE_DELAY);
+    // If we have a pending timer for a DIFFERENT value, clear it
+    if (this.debounceTimer && this.pendingDebounceValue !== sensorValue) {
+      this.clearDebounceTimer();
+    }
+
+    // Start a new timer ONLY if one isn't already running for this value
+    if (!this.debounceTimer) {
+      this.pendingDebounceValue = sensorValue; // Track what we are waiting for
+
+      this.debounceTimer = setTimeout(() => {
+        this.processStableStateChange(sensorValue);
+        this.debounceTimer = null; // Clear reference when done
+        this.pendingDebounceValue = -1; // Reset pending value
+      }, this.DEBOUNCE_DELAY);
+    }
 
     // Update last processed timestamp to enforce rate limiter
     this.lastProcessedTs = now;
@@ -401,7 +430,7 @@ class ArduinoSensorService {
     this.currentState = newState;
 
     const ts = Date.now();
-    
+
     // OPTIMIZED: Only log stable state when it actually changes
     if (oldState !== newState) {
       console.log(`[Arduino Sensor] Stable state: ${oldState} -> ${newState} @ ${ts}`);
@@ -413,15 +442,18 @@ class ArduinoSensorService {
     }
 
     // Trigger start/end events based on state transitions
-    if (oldState === 0 && newState === 1) {
-      // Rising edge: sensor detected something
-      console.log('[Arduino Sensor] START detected - object detected');
+    // Trigger start/end events based on state transitions
+    // MODIFIED: Active Low Logic (User Hardware: 1=Start/Idle, 0=Detected)
+
+    if (oldState === 1 && newState === 0) {
+      // Falling edge (1->0): Sensor DETECTED something (Active Low)
+      console.log('[Arduino Sensor] START detected - object detected (Active Low 1->0)');
       if (this.eventHandlers.onSensorStart) {
         try { this.eventHandlers.onSensorStart(ts); } catch (e) { console.error('[Arduino Sensor] onSensorStart handler failed', e); }
       }
-    } else if (oldState === 1 && newState === 0) {
-      // Falling edge: sensor no longer detecting
-      console.log('[Arduino Sensor] END detected - object removed');
+    } else if (oldState === 0 && newState === 1) {
+      // Rising edge (0->1): Sensor NO LONGER detecting (Active Low)
+      console.log('[Arduino Sensor] END detected - object removed (Active Low 0->1)');
       if (this.eventHandlers.onSensorEnd) {
         try { this.eventHandlers.onSensorEnd(ts); } catch (e) { console.error('[Arduino Sensor] onSensorEnd handler failed', e); }
       }
@@ -444,12 +476,12 @@ class ArduinoSensorService {
    */
   private async retryWithDifferentPorts(failedPort: any): Promise<void> {
     console.log('[Arduino Sensor] Starting optimized retry logic for Access denied error...');
-    
+
     try {
       // CRITICAL FIX: Wait for Windows to release COM port state
       console.log('[Arduino Sensor] Waiting for Windows COM port state release...');
       await new Promise(resolve => setTimeout(resolve, 3000)); // Reduced to 3 seconds
-      
+
       // Get all available ports again
       const ports = await window.electronAPI.getSerialPorts();
       if (ports.length === 0) {
@@ -470,10 +502,10 @@ class ArduinoSensorService {
       const maxRetries = Math.min(2, sortedPorts.length);
       let retrySuccessful = false;
       let retryCount = 0;
-      
+
       for (let i = 0; i < maxRetries && !retrySuccessful; i++) {
         const retryPort = sortedPorts[i];
-        
+
         // Skip the port that just failed on first attempt
         if (retryPort.path === failedPort.path) {
           console.log(`[Arduino Sensor] Skipping failed port ${retryPort.path} on retry attempt`);
@@ -482,23 +514,23 @@ class ArduinoSensorService {
 
         retryCount++;
         console.log(`[Arduino Sensor] Retry ${retryCount}/${maxRetries}: Trying ${retryPort.path}...`);
-        
+
         try {
           // OPTIMIZED: Shorter progressive delays
           const retryDelay = 1000 + (retryCount * 500); // 1.5s, 2s, 2.5s
           console.log(`[Arduino Sensor] Waiting ${retryDelay}ms before retry...`);
           await new Promise(resolve => setTimeout(resolve, retryDelay));
-          
+
           const retryResult = await window.electronAPI.connectSerialPort(retryPort.path);
           if (retryResult && retryResult.success) {
             console.log(`[Arduino Sensor] ✓ Retry successful! Connected to ${retryPort.path}`);
             this.isConnected = true; // Update connection state
             retrySuccessful = true;
-             
+
             // Give connection time to stabilize
             console.log('[Arduino Sensor] Allowing connection to stabilize...');
             await new Promise(resolve => setTimeout(resolve, 500));
-             
+
             return;
           } else {
             console.warn(`[Arduino Sensor] ✗ Retry ${retryCount} failed:`, (retryResult as any)?.error);
@@ -507,11 +539,11 @@ class ArduinoSensorService {
           console.warn(`[Arduino Sensor] ✗ Retry ${retryCount} error:`, retryError);
         }
       }
-      
+
       if (!retrySuccessful) {
         console.warn(`[Arduino Sensor] All ${retryCount} retry attempts failed - sensor may not work on this session`);
         console.log('[Arduino Sensor] TIP: Page reload (F5) often resolves Windows COM port state issues');
-        
+
         // FINAL FALLBACK: Try original port one more time with longer wait
         console.log('[Arduino Sensor] Attempting final fallback to original port...');
         try {
@@ -528,7 +560,7 @@ class ArduinoSensorService {
           console.warn('[Arduino Sensor] Final fallback error:', fallbackError);
         }
       }
-      
+
       // IMPORTANT: Prevent excessive logging on subsequent calls
       if (retryCount > 3) {
         console.log('[Arduino Sensor] WARNING: Too many retry attempts detected - reducing retry frequency');
@@ -543,32 +575,32 @@ class ArduinoSensorService {
    */
   private async proactivePortInitialization(): Promise<void> {
     console.log('[Arduino Sensor] Starting proactive COM port state management...');
-    
+
     try {
       // Step 1: Force garbage collection and port refresh
       if (window.gc) {
         window.gc();
         console.log('[Arduino Sensor] Forced garbage collection');
       }
-      
+
       // Step 2: Wait for Windows to stabilize
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // Step 3: Get fresh port list
       const ports = await window.electronAPI.getSerialPorts();
       console.log('[Arduino Sensor] Fresh port scan after initialization:', ports);
-      
+
       // Step 4: Pre-test each port briefly to clear any stale state
       for (const port of ports) {
         if (port.path.startsWith('COM')) {
           try {
             console.log(`[Arduino Sensor] Pre-testing port ${port.path} to clear state...`);
-            
+
             // Brief connection attempt to clear Windows port state
             const testResult = await window.electronAPI.connectSerialPort(port.path);
             if (testResult && testResult.success) {
               console.log(`[Arduino Sensor] ✓ Port ${port.path} state cleared successfully`);
-              
+
               // Immediately disconnect to free the port
               await new Promise(resolve => setTimeout(resolve, 500));
               // Note: We don't have a disconnect method, but the next connection will handle it
@@ -580,11 +612,11 @@ class ArduinoSensorService {
           }
         }
       }
-      
+
       // Step 5: Final wait before actual connection
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('[Arduino Sensor] Proactive initialization completed');
-      
+
     } catch (error) {
       console.warn('[Arduino Sensor] Proactive initialization failed:', error);
     }
@@ -602,16 +634,16 @@ class ArduinoSensorService {
 
     for (const strategy of strategies) {
       console.log(`[Arduino Sensor] Trying ${strategy.name} connection strategy...`);
-      
+
       if (strategy.delay > 0) {
         await new Promise(resolve => setTimeout(resolve, strategy.delay));
       }
-      
+
       try {
         const connectResult = await window.electronAPI.connectSerialPort(targetPort.path);
         if (connectResult && connectResult.success) {
           console.log(`[Arduino Sensor] ✓ ${strategy.name} strategy successful`);
-          
+
           // Give connection time to stabilize
           await new Promise(resolve => setTimeout(resolve, 1000));
           return true;
@@ -622,7 +654,7 @@ class ArduinoSensorService {
         console.log(`[Arduino Sensor] ✗ ${strategy.name} strategy error:`, error);
       }
     }
-    
+
     return false;
   }
 
@@ -638,8 +670,10 @@ class ArduinoSensorService {
    */
   reset(): void {
     this.clearDebounceTimer();
-    this.currentState = 0;
-    this.lastStableState = 0;
+    // MODIFIED: Active Low Logic - Default state is 1 (IDLE/NOT DETECTED)
+    // This triggers a valid 1->0 (START) transition if the sensor is already holding (0)
+    this.currentState = 1;
+    this.lastStableState = 1;
     console.log('[Arduino Sensor] State reset - ready for new game');
   }
 
@@ -655,16 +689,16 @@ class ArduinoSensorService {
     if (this.channelRetryTimer) {
       clearInterval(this.channelRetryTimer);
     }
-    
+
     console.log('[Arduino Sensor] Starting automatic channel retry mechanism...');
     this.channelRetryCount = 0;
-    
+
     // Set up periodic retry every 5 seconds like working version
     this.channelRetryTimer = setInterval(() => {
       this.performChannelRetry();
     }, 5000);
   }
-  
+
   /**
    * Perform a single channel retry attempt
    */
@@ -672,19 +706,19 @@ class ArduinoSensorService {
     if (!this.isEnabled) {
       return; // Don't retry if sensor is disabled
     }
-    
+
     this.channelRetryCount++;
-    
+
     // Only log every 6th retry to avoid spam (like 135new2.md pattern)
     if (this.channelRetryCount % 6 === 0) {
       console.log(`[Arduino Sensor] Auto-retry attempt ${this.channelRetryCount} - ensuring channel is active...`);
     }
-    
+
     try {
       // Check if we can still get serial ports (connection health check)
       if (window.electronAPI && window.electronAPI.getSerialPorts) {
         const ports = await window.electronAPI.getSerialPorts();
-        
+
         if (!ports || ports.length === 0) {
           // No ports available - this is expected in some cases
           if (this.channelRetryCount % 6 === 0) {
@@ -692,17 +726,17 @@ class ArduinoSensorService {
           }
           return;
         }
-        
+
         // If we have ports but no connection, try to re-establish
         if (!this.isConnected && ports.length > 0) {
           if (this.channelRetryCount % 6 === 0) {
             console.log('[Arduino Sensor] Auto-retry: Connection lost, attempting to re-establish...');
           }
-          
+
           // Try to reconnect to the best available port
           await this.ensureSerialConnection();
         }
-        
+
         // Log channel status periodically
         if (this.channelRetryCount % 12 === 0) { // Every minute
           console.log(`[Arduino Sensor] Channel status: Connected=${this.isConnected}, Enabled=${this.isEnabled}, Ports=${ports.length}`);
@@ -719,13 +753,13 @@ class ArduinoSensorService {
 
   cleanup(): void {
     this.clearDebounceTimer();
-    
+
     // Clear channel retry timer
     if (this.channelRetryTimer) {
       clearInterval(this.channelRetryTimer);
       this.channelRetryTimer = null;
     }
-    
+
     this.isEnabled = false;
     this.isConnected = false; // Reset connection state
     this.channelRetryCount = 0; // Reset retry counter

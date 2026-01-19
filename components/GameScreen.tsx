@@ -19,7 +19,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
   const [vendingStatus, setVendingStatus] = useState<string>('Ready');
   // Show maintenance in development mode (activator now on GameOverScreen)
   const isDevelopmentMode = !window.electronAPI; // true for npm run dev, false for electron exe
-  
+
   const startTimeRef = useRef<number | null>(null);
   const animationFrameRef = useRef<number>();
 
@@ -65,11 +65,11 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
     // Check if we're in Electron environment
     if (window.electronAPI) {
       console.log('[GameScreen] Setting up Arduino sensor service...');
-      
+
       // Initialize the sensor service with enhanced error handling
       arduinoSensorService.initialize().then(() => {
         console.log('[GameScreen] Arduino sensor service initialized, setting up handlers...');
-        
+
         // Set up event handlers with enhanced logging
         arduinoSensorService.setEventHandlers({
           onSensorStart: (ts?: number) => {
@@ -95,12 +95,14 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
           onSensorChange: (state: number, ts?: number) => {
             setArduinoState(state);
             console.log('[GameScreen] Arduino sensor state change:', state, 'ts=', ts || Date.now());
-             
+
             // Enhanced status reporting - match 135new2.md pattern
-            if (state === 1) {
-              console.log('[GameScreen] Arduino: DETECTION - Object detected by sensor');
+            // Enhanced status reporting - match 135new2.md pattern
+            // MODIFIED: Active Low Logic (User Hardware: 0=Detected)
+            if (state === 0) {
+              console.log('[GameScreen] Arduino: DETECTION - Object detected by sensor (Active Low)');
             } else {
-              console.log('[GameScreen] Arduino: NO DETECTION - Object removed from sensor');
+              console.log('[GameScreen] Arduino: NO DETECTION - Object removed from sensor (Active Low)');
             }
           }
         });
@@ -112,7 +114,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
         } catch (error) {
           console.error('[GameScreen] Failed to enable Arduino sensor:', error);
         }
-        
+
         // Reset sensor state when component mounts
         try {
           arduinoSensorService.reset();
@@ -125,7 +127,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
         // Set a fallback state to show sensor is not available
         setArduinoState(0);
       });
-      
+
       return () => {
         // Disable sensor when component unmounts with error handling
         try {
@@ -171,61 +173,61 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
     <BackgroundWrapper imagePath="./UI/04.gamescreen.png">
       <div className="flex flex-col items-center justify-center h-screen w-screen text-center p-8 scale-40 origin-center">
         <div className="w-full max-w-4xl flex flex-col p-12 justify-between" style={{ maxHeight: '70vh' }}>
-            <div className="text-center">
-              <div className="mb-4 flex justify-center">
-                <img
-                  src={isHolding ? "./UI/RB_zero_UI_slice_text_06.png" : "./UI/RB_zero_UI_slice_text_04.png"}
-                  alt={isHolding ? "KEEP GOING!" : "GET READY!"}
-                  className="h-auto"
-                  style={{ maxHeight: '60px' }}
-                />
-              </div>
-              <div className="mb-4 flex justify-center">
-                <img
-                  src="./UI/RB_zero_UI_slice_text_05.png"
-                  alt="PRESS AND HOLD TO START"
-                  className="h-auto"
-                  style={{ maxHeight: '60px' }}
-                />
-              </div>
-              <div className="mb-4 flex justify-center">
-                {isHolding && (
-                  <img
-                    src="./UI/RB_zero_UI_slice_text_07.png"
-                    alt="HOLDING..."
-                    className="h-auto"
-                    style={{ maxHeight: '60px' }}
-                  />
-                )}
-              </div>
-              <h3 className="text-3xl font-semibold text-gray-300">
-                {!isHolding ? "" : ""}
-              </h3>
-              
+          <div className="text-center">
+            <div className="mb-4 flex justify-center">
+              <img
+                src={isHolding ? "./UI/RB_zero_UI_slice_text_06.png" : "./UI/RB_zero_UI_slice_text_04.png"}
+                alt={isHolding ? "KEEP GOING!" : "GET READY!"}
+                className="h-auto"
+                style={{ maxHeight: '60px' }}
+              />
             </div>
+            <div className="mb-4 flex justify-center">
+              <img
+                src="./UI/RB_zero_UI_slice_text_05.png"
+                alt="PRESS AND HOLD TO START"
+                className="h-auto"
+                style={{ maxHeight: '60px' }}
+              />
+            </div>
+            <div className="mb-4 flex justify-center">
+              {isHolding && (
+                <img
+                  src="./UI/RB_zero_UI_slice_text_07.png"
+                  alt="HOLDING..."
+                  className="h-auto"
+                  style={{ maxHeight: '60px' }}
+                />
+              )}
+            </div>
+            <h3 className="text-3xl font-semibold text-gray-300">
+              {!isHolding ? "" : ""}
+            </h3>
 
-            <div className="flex-grow flex items-center justify-center mb-8">
-              <TimerDisplay time={time} className="text-9xl w-full scale-125" />
-            </div>
-                
-            <div className="flex justify-center">
-              <button
-                onMouseDown={onHoldStart}
-                onMouseUp={handleGameEnd}
-                onTouchStart={onHoldStart}
-                onTouchEnd={handleGameEnd}
-                className="transform focus:outline-none scale-75"
-              >
-                <img
-                  src={isHolding ? "./UI/RB_zero_UI_slice_button_04.png" : "./UI/RB_zero_UI_slice_button_03.png"}
-                  alt={isHolding ? "RELEASE TO STOP" : "PRESS AND HOLD"}
-                  className="h-auto"
-                  style={{ maxHeight: '80px' }}
-                />
-              </button>
-            </div>
-            
-            {/* Maintenance activator moved to GameOverScreen */}
+          </div>
+
+          <div className="flex-grow flex items-center justify-center mb-8">
+            <TimerDisplay time={time} className="text-9xl w-full scale-125" />
+          </div>
+
+          <div className="flex justify-center">
+            <button
+              onMouseDown={onHoldStart}
+              onMouseUp={handleGameEnd}
+              onTouchStart={onHoldStart}
+              onTouchEnd={handleGameEnd}
+              className="transform focus:outline-none scale-75"
+            >
+              <img
+                src={isHolding ? "./UI/RB_zero_UI_slice_button_04.png" : "./UI/RB_zero_UI_slice_button_03.png"}
+                alt={isHolding ? "RELEASE TO STOP" : "PRESS AND HOLD"}
+                className="h-auto"
+                style={{ maxHeight: '80px' }}
+              />
+            </button>
+          </div>
+
+          {/* Maintenance activator moved to GameOverScreen */}
         </div>
       </div>
     </BackgroundWrapper>
