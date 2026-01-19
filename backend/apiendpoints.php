@@ -300,3 +300,249 @@ function handleGetRequest($conn, $path) {
         }
     }
 }
+
+function handlePostRequest($conn, $path) {
+    // Players endpoint - Create new player
+    if ($path === '/players' || $path === '/players/') {
+        $data = getRequestBody();
+        
+        // Validate required fields
+        if (!isset($data['name']) || empty($data['name'])) {
+            http_response_code(400);
+            echo json_encode(['error' => true, 'message' => 'Player name is required']);
+            return;
+        }
+        
+        // Check if player already exists by email/phone
+        if (isset($data['email']) && !empty($data['email'])) {
+            $stmt = $conn->prepare("SELECT id FROM players WHERE email = ?");
+            $stmt->bind_param("s", $data['email']);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $existingPlayer = $result->fetch_assoc();
+                echo json_encode([
+                    'id' => $existingPlayer['id'],
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'phone' => $data['phone'] ?? null,
+                    'existing' => true
+                ]);
+                return;
+            }
+        }
+        
+        // Insert new player
+        $stmt = $conn->prepare("INSERT INTO players (name, email, phone) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $data['name'], $data['email'], $data['phone']);
+        
+        if ($stmt->execute()) {
+            $playerId = $conn->insert_id;
+            echo json_encode([
+                'id' => $playerId,
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+                'existing' => false
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => true, 'message' => 'Failed to create player']);
+        }
+    }
+    
+    // Scores endpoint - Submit new score
+    elseif ($path === '/scores' || $path === '/scores/') {
+        $data = getRequestBody();
+        
+        // Validate required fields
+        if (!isset($data['name']) || !isset($data['time'])) {
+            http_response_code(400);
+            echo json_encode(['error' => true, 'message' => 'Player name and time are required']);
+            return;
+        }
+        
+        // First, create or get player
+        $playerId = null;
+        if (isset($data['email']) && !empty($data['email'])) {
+            // Check if player exists
+            $stmt = $conn->prepare("SELECT id FROM players WHERE email = ?");
+            $stmt->bind_param("s", $data['email']);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $player = $result->fetch_assoc();
+                $playerId = $player['id'];
+            }
+        }
+        
+        // If no existing player, create new one
+        if (!$playerId) {
+            $stmt = $conn->prepare("INSERT INTO players (name, email, phone) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $data['name'], $data['email'], $data['phone']);
+            $stmt->execute();
+            $playerId = $conn->insert_id;
+        }
+        
+        // Determine prize tier
+        $timeMs = (int)$data['time'];
+        $tier = getTimeTier($timeMs);
+        $prizeId = null;
+        
+        if ($tier !== 'none') {
+            // Get prize for this tier using time_threshold instead of tier column
+            // The prizes table doesn't have a tier column, so we'll use time_threshold
+            if ($tier === 'gold') {
+                $stmt = $conn->prepare("SELECT id FROM prizes WHERE time_threshold >= 120000 AND active = 1 LIMIT 1");
+            } else {
+                $stmt = $conn->prepare("SELECT id FROM prizes WHERE time_threshold >= 3000 AND time_threshold < 120000 AND active = 1 LIMIT 1");
+            }
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $prize = $result->fetch_assoc();
+                $prizeId = $prize['id'];
+            }
+        }
+        
+        // Insert score
+        $stmt = $conn->prepare("INSERT INTO scores (player_id, time, prize_id, dispensed) VALUES (?, ?, ?, 0)");
+        $stmt->bind_param("iii", $playerId, $timeMs, $prizeId);
+        
+        if ($stmt->execute()) {
+            $scoreId = $conn->insert_id;
+            echo json_encode([
+                'success' => true,
+                'score_id' => $scoreId,
+                'player_id' => $playerId,
+                'time' => $timeMs,
+                'tier' => $tier,
+                'prize_id' => $prizeId,
+                'message' => "Score submitted successfully. Tier: " . ucfirst($tier)
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => true, 'message' => 'Failed to submit score']);
+        }
+    }
+    
+    // Electron Vending Log endpoint - use electron_vending_logs table
+    elseif ($path === '/api/electron-vending/log' || $path === '/api/electron-vending/log/') {
+        $data = getRequestBody();
+        
+        // Validate required fields (matching electron_vending_logs table schema)
+        $requiredFields = ['action', 'tier', 'selected_slot', 'success', 'source'];
+        foreach ($requiredFields as $field) {
+            if (!isset($data[$field])) {
+                http_response_code(400);
+                echo json_encode(['error' => true, 'message' => "Missing required field: $field"]);
+                return;
+            }
+        }
+        
+        // Set optional fields to null if not provided
+        $action = $data['action'] ?? 'prize_dispensing';
+        $gameTimeMs = $data['game_time_ms'] ?? 0;
+        $channelUsed = $data['channel_used'] ?? null;
+        $scoreId = $data['score_id'] ?? null;
+        $prizeId = $data['prize_id'] ?? null;
+        $errorCode = $data['error_code'] ?? null;
+        $errorMessage = $data['error_message'] ?? null;
+        $dispenseMethod = $data['dispense_method'] ?? 'legacy';
+        $inventoryBefore = $data['inventory_before'] ?? null;
+        $inventoryAfter = $data['inventory_after'] ?? null;
+        $responseTimeMs = $data['response_time_ms'] ?? 0;
+        foreach ($requiredFields as $field) {
+            if (!isset($data[$field])) {
+                http_response_code(400);
+                echo json_encode(['error' => true, 'message' => "Missing required field: $field"]);
+                return;
+            }
+        }
+        
+        // Set optional fields to null if not provided
+        $errorCode = isset($data['error_code']) ? $data['error_code'] : null;
+        $errorMessage = isset($data['error_message']) ? $data['error_message'] : null;
+        
+        // Insert dispensing log
+        $stmt = $conn->prepare("INSERT INTO electron_vending_logs (action, game_time_ms, tier, selected_slot, channel_used, score_id, prize_id, success, error_code, error_message, dispense_method, inventory_before, inventory_after, response_time_ms, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        
+        $stmt->bind_param("sisiisiisisiiis",
+            $action,
+            $gameTimeMs,
+            $data['tier'],
+            $data['selected_slot'],
+            $channelUsed,
+            $scoreId,
+            $prizeId,
+            $data['success'],
+            $errorCode,
+            $errorMessage,
+            $dispenseMethod,
+            $inventoryBefore,
+            $inventoryAfter,
+            $responseTimeMs,
+            $data['source']
+        );
+        
+        if ($stmt->execute()) {
+            $logId = $conn->insert_id;
+            echo json_encode([
+                'success' => true,
+                'log_id' => $logId,
+                'message' => 'Electron vending log recorded successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => true, 'message' => 'Failed to record electron vending log']);
+        }
+    }
+    
+    // Vending dispense endpoint
+    elseif ($path === '/vending/dispense' || $path === '/vending/dispense/') {
+        $data = getRequestBody();
+        
+        // Validate required fields
+        if (!isset($data['prize_id']) || !isset($data['score_id'])) {
+            http_response_code(400);
+            echo json_encode(['error' => true, 'message' => 'Prize ID and Score ID are required']);
+            return;
+        }
+        
+        // Get prize details
+        $stmt = $conn->prepare("SELECT * FROM prizes WHERE id = ? AND active = 1");
+        $stmt->bind_param("i", $data['prize_id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $prize = $result->fetch_assoc();
+        
+        if (!$prize) {
+            http_response_code(404);
+            echo json_encode(['error' => true, 'message' => 'Prize not found']);
+            return;
+        }
+        
+        // Update score as dispensed
+        $stmt = $conn->prepare("UPDATE scores SET dispensed = 1 WHERE id = ?");
+        $stmt->bind_param("i", $data['score_id']);
+        
+        if ($stmt->execute()) {
+            echo json_encode([
+                'success' => true,
+                'score_id' => $data['score_id'],
+                'prize_id' => $data['prize_id'],
+                'prize_name' => $prize['name'],
+                'slot' => $prize['slot'],
+                'message' => 'Prize dispensed successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => true, 'message' => 'Failed to dispense prize']);
+        }
+    }
+    
+    else {
+        http_response_code(404);
+        echo json_encode(['error' => true, 'message' => 'Endpoint not found']);
+    }
+}

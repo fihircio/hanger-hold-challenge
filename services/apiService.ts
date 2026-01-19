@@ -47,9 +47,12 @@ export interface VendingResult {
 
 class ApiService {
   private async request(endpoint: string, options: RequestInit = {}): Promise<any> {
-    // Fix: Append endpoint to base URL for proper routing
-    const cleanEndpoint = endpoint.replace(/^\//, ''); // Remove leading slash
-    const url = `${API_BASE_URL}/${cleanEndpoint}`;
+    // Fix: Properly construct URL for PHP backend
+    // The PHP script expects the endpoint to be in the path after the script name
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
+    
+    // For PHP backend, append the endpoint as a path after the script name
+    const url = cleanEndpoint ? `${API_BASE_URL}/${cleanEndpoint}` : API_BASE_URL;
     
     // For GET requests, don't send body, for POST requests send the data directly
     const isGetRequest = (options.method || 'GET') === 'GET';
@@ -80,20 +83,20 @@ class ApiService {
 
   // Player endpoints
   async createPlayer(playerData: { name: string; email?: string; phone?: string }): Promise<Player> {
-    return this.request('/players', {
+    return this.request('players', {
       method: 'POST',
       body: JSON.stringify(playerData),
     });
   }
 
   async getPlayer(id: number): Promise<Player> {
-    return this.request(`/players?id=${id}`);
+    return this.request(`players?id=${id}`);
   }
 
   // Score endpoints - Updated to create player and score in one request
   async submitScore(scoreData: { id: string; name: string; email?: string; phone?: string; time: number }): Promise<any> {
     try {
-      return await this.request('/scores', {
+      return await this.request('scores', {
         method: 'POST',
         body: JSON.stringify(scoreData),
       });
@@ -109,33 +112,36 @@ class ApiService {
   }
 
   async getLeaderboard(limit: number = 10): Promise<{ scores: ScoreWithPlayer[]; total: number }> {
-    return this.request('/leaderboard');
+    return this.request('leaderboard');
   }
 
   // Prize endpoints - Enhanced with better error handling
   async checkPrizeEligibility(time: number): Promise<{ eligible: boolean; prize?: Prize; message?: string }> {
-    try {
-      return await this.request(`/prizes?check=1&time=${time}`);
-    } catch (error) {
-      console.warn('[API SERVICE] Failed to check prize eligibility, using default:', error);
-      // Return default eligibility for bronze prizes when API fails - match 135new2.md pattern
-      return {
-        eligible: time >= 10000, // 10 seconds minimum for bronze
-        message: 'Endpoint not found'
-      };
-    }
+      try {
+          const response = await this.request(`prizes?check=1&time=${time}`);
+          
+          return response;
+      } catch (error) {
+          // ✅ FIXED: Return proper fallback for all tiers (matching database thresholds)
+          if (time >= 120000) {
+              return { eligible: true, prize: { id: 1, name: 'Gold Prize', message: 'Incredible! You won Gold Prize!', slot: 25, time_threshold: 120000 }};
+          } else if (time >= 3000) {
+              return { eligible: true, prize: { id: 2, name: 'Silver Prize', message: 'Amazing! You won Silver Prize!', slot: 1, time_threshold: 3000 }};
+          }
+          return { eligible: false, message: 'No prize eligible for this time' };
+      }
   }
 
   async getAllPrizes(): Promise<{ prizes: Prize[] }> {
     try {
-      return await this.request('/prizes');
+      return await this.request('prizes');
     } catch (error) {
       console.warn('[API SERVICE] Failed to get prizes, using fallback:', error);
-      // Return fallback prizes when API fails - match 135new2.md pattern
+      // Return fallback prizes when API fails - match database schema
       return {
         prizes: [
-          { id: 1, name: 'Silver', message: '3+ seconds', slot: 1, time_threshold: 3000 },
-          { id: 2, name: 'Gold', message: '2+ minutes', slot: 25, time_threshold: 120000 }
+          { id: 1, name: 'Silver Prize', message: 'Amazing! You won Silver Prize!', slot: 1, time_threshold: 3000 },
+          { id: 2, name: 'Gold Prize', message: 'Incredible! You won Gold Prize!', slot: 25, time_threshold: 120000 }
         ]
       };
     }
@@ -144,7 +150,7 @@ class ApiService {
   // Vending endpoints - Enhanced with better error handling
   async dispensePrize(prizeId: number, scoreId: number): Promise<VendingResult> {
     try {
-      return await this.request('/vending/dispense', {
+      return await this.request('vending/dispense', {
         method: 'POST',
         body: JSON.stringify({
           prize_id: prizeId,
@@ -166,7 +172,7 @@ class ApiService {
   }
 
   async getVendingStatus(): Promise<{ status: string; recent_logs: any[] }> {
-    return this.request('/vending/status');
+    return this.request('vending/status');
   }
 
   // New method for Electron Vending Service logging - Enhanced with better error handling
@@ -188,7 +194,7 @@ class ApiService {
     source: string;
   }): Promise<any> {
     try {
-      return await this.request('/api/electron-vending/log', {
+      return await this.request('api/electron-vending/log', {
         method: 'POST',
         body: JSON.stringify(logData),
       });

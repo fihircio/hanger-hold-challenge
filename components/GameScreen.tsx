@@ -34,7 +34,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ isHolding, onHoldStart, onHoldE
       };
       animationFrameRef.current = requestAnimationFrame(animate);
     } else {
-      setTime(0);
+      // Don't reset time to 0 here to avoid "flicker" to 00.00 before Game Over screen
+      // setTime(0); 
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }

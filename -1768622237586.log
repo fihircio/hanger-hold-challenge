@@ -1,0 +1,1744 @@
+(index):64 cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+(anonymous) @ (index):64
+(anonymous) @ (index):64
+index.js:50 [TCN SERIAL] CRITICAL: serialport not available, using MockSerialPort
+(anonymous) @ index.js:50
+index.js:50 [TCN SERIAL] Try: npm rebuild serialport or npx electron-rebuild
+(anonymous) @ index.js:50
+index.js:50 [TCN SERIAL] ATTEMPTING FORCE LOAD NATIVE SERIALPORT...
+index.js:50 [TCN SERIAL] ✗ Force load error: require is not defined
+index.js:50 [TCN SERIAL] Mode: MOCK
+index.js:50 [TCN SERIAL] TCN Service initialized with COM1 priority
+index.js:54 [TCN INTEGRATION] Initialized with 2 gold, 42 silver slots
+index.js:54 [INVENTORY STORAGE] Database not initialized, attempting to initialize...
+getAllSlotInventory @ index.js:54
+loadSlotData @ index.js:54
+ensureCacheValid @ index.js:54
+getSlotInventory @ index.js:54
+V @ index.js:54
+(anonymous) @ index.js:54
+ea @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+uf @ index.js:48
+(anonymous) @ index.js:48
+ft @ index.js:25
+index.js:54 [INVENTORY STORAGE] Initializing database...
+index.js:55 [APP] Spring Vending Service DISABLED to prevent IPC channel conflicts with Arduino sensor
+index.js:55 [APP] Using Legacy Electron Vending only for prize dispensing
+index.js:55 [ELECTRON VENDING] Spring SDK DISABLED - using Enhanced Legacy Serial with Arduino compatibility
+index.js:55 [ELECTRON VENDING] Initializing inventory management...
+index.js:54 [INVENTORY STORAGE] Initializing database...
+index.js:54 [TCN INTEGRATION] Initializing complete vending system...
+index.js:54 [INVENTORY STORAGE] Initializing database...
+index.js:49 [Arduino Sensor] Already DISABLED - skipping
+index.js:49 [Arduino Sensor] Available ports: [{…}]
+index.js:49 [Arduino Sensor] Found serial ports, setting up listeners
+index.js:49 [Arduino Sensor] IPC listeners will be set up when serial port connects
+index.js:49 Arduino sensor service initialized
+index.js:54 [INVENTORY STORAGE] Database initialized successfully
+index.js:54 [INVENTORY STORAGE] Database initialized successfully
+index.js:54 [INVENTORY STORAGE] Database initialized successfully
+index.js:54 [INVENTORY STORAGE] Clearing all slot inventory for reinitialization...
+index.js:54 [TCN INTEGRATION] Loaded 44 slot records from storage
+index.js:54 [TCN INTEGRATION] Loaded 44 slot records from storage
+ [ELECTRON VENDING] Existing slot configuration found - preserving counts
+ [INVENTORY STORAGE] All slot inventory cleared successfully
+ [TCN INTEGRATION] Loaded 0 slot records from storage
+ [TCN INTEGRATION] Loaded 0 slot records from storage
+ [TCN INTEGRATION] Step 1: Connecting to TCN hardware...
+ === TCN SERIAL AUTO-CONNECT ===
+ [TCN SERIAL] MODE: MOCK
+ [TCN SERIAL] Starting COM1 priority auto-detection...
+ [TCN SERIAL] CRITICAL: Still in mock mode - serialport package not loading properly
+autoConnect @ index.js:50
+initialize @ index.js:54
+await in initialize (async)
+(anonymous) @ index.js:55
+ea @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+uf @ index.js:48
+(anonymous) @ index.js:48
+ft @ index.js:25
+ [TCN SERIAL] Try: npm rebuild serialport or npx electron-rebuild
+autoConnect @ index.js:50
+initialize @ index.js:54
+await in initialize (async)
+(anonymous) @ index.js:55
+ea @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+uf @ index.js:48
+(anonymous) @ index.js:48
+ft @ index.js:25
+ [TCN SERIAL] PRODUCTION NOTE: In production, ensure serialport package is properly built
+ [TCN SERIAL] VERSION 1.0.3 COMPATIBILITY: Attempting real connection despite mock mode...
+ [TCN SERIAL] Attempting aggressive force-load of serialport...
+ [TCN SERIAL] Found 3 available ports: (3) [{…}, {…}, {…}]
+ [TCN SERIAL] PRODUCTION NOTE: System will auto-detect TCN controller on any available COM port
+ [TCN SERIAL] Using mock-to-real bridge for Version 1.0.3 compatibility
+ [TCN SERIAL] Simulating port detection for forced connection...
+ [TCN SERIAL] PRODUCTION NOTE: System will auto-detect TCN controller on any available COM port
+ [TCN SERIAL] PRIORITY 1: Found COM1, attempting connection...
+ [TCN SERIAL] COM1 Details: {"path":"COM1","manufacturer":"(Standard port types)"}
+ [TCN SERIAL] VERSION 1.0.3: Attempting forced real connection to COM1...
+ [TCN SERIAL] FORCED CONNECTION: COM1 at 115200 baud
+ [TCN SERIAL] VERSION 1.0.3: Attempting to bypass mock mode...
+ [TCN SERIAL] VERSION 1.0.3: Using forced connection method for COM1...
+ [TCN SERIAL] FORCED CONNECTION: COM1 at 115200 baud
+ [TCN SERIAL] VERSION 1.0.3: Attempting to bypass mock mode...
+ [TCN SERIAL] ✗ Approach 1 failed: require is not defined
+ [TCN SERIAL] ✗ Approach 1 failed: require is not defined
+ [INVENTORY STORAGE] Updated slot 24: 0/5
+ [TCN SERIAL] ✗ Approach 2 failed: Class extends value undefined is not a constructor or null
+ [TCN SERIAL] ✗ Could not acquire real serialport, falling back to mock
+ [TCN SERIAL] ✗ Failed to connect to COM1
+ [TCN SERIAL] Analyzing ports for TCN compatibility...
+ [TCN SERIAL] Available ports were: (4) ['COM1', 'COM3', 'COM4', 'COM8']
+ [TCN SERIAL] Port COM1: manufacturer="(standard port types)", pnpId="N/A"
+ [TCN SERIAL] Port COM1: USB=false, COM=true, Unix=false, TCN=true
+ [TCN SERIAL] Port COM3: manufacturer="prolific", pnpId="N/A"
+index.js:50 [TCN SERIAL] Port COM3: USB=false, COM=true, Unix=false, TCN=true
+index.js:50 [TCN SERIAL] Port COM4: manufacturer="ch340", pnpId="N/A"
+index.js:50 [TCN SERIAL] Port COM4: USB=false, COM=true, Unix=false, TCN=true
+index.js:50 [TCN SERIAL] Port COM8: manufacturer="microsoft", pnpId="N/A"
+index.js:50 [TCN SERIAL] Port COM8: USB=false, COM=true, Unix=false, TCN=true
+index.js:50 [TCN SERIAL] Found 4 TCN-compatible ports: (4) [{…}, {…}, {…}, {…}]
+index.js:50 [TCN SERIAL] PRIORITY 2: Trying port: COM1 (manufacturer=(Standard port types))
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Attempting forced real connection to COM1...
+index.js:50 [TCN SERIAL] FORCED CONNECTION: COM1 at 115200 baud
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Attempting to bypass mock mode...
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Using forced connection method for COM1...
+index.js:50 [TCN SERIAL] FORCED CONNECTION: COM1 at 115200 baud
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Attempting to bypass mock mode...
+index.js:50 [TCN SERIAL] ✗ Approach 1 failed: require is not defined
+index.js:50 [TCN SERIAL] ✗ Approach 1 failed: require is not defined
+index.js:50 [TCN SERIAL] ✗ Approach 2 failed: Class extends value undefined is not a constructor or null
+index.js:50 [TCN SERIAL] ✗ Could not acquire real serialport, falling back to mock
+index.js:50 [TCN SERIAL] ✗ Could not acquire real serialport, falling back to mock
+index.js:50 [TCN SERIAL] PRIORITY 2: Trying port: COM3 (manufacturer=Prolific)
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Attempting forced real connection to COM3...
+index.js:50 [TCN SERIAL] FORCED CONNECTION: COM3 at 115200 baud
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Attempting to bypass mock mode...
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Using forced connection method for COM3...
+index.js:50 [TCN SERIAL] FORCED CONNECTION: COM3 at 115200 baud
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Attempting to bypass mock mode...
+index.js:50 [TCN SERIAL] ✗ Approach 1 failed: require is not defined
+index.js:50 [TCN SERIAL] ✗ Approach 1 failed: require is not defined
+index.js:50 [TCN SERIAL] ✗ Approach 2 failed: Class extends value undefined is not a constructor or null
+index.js:50 [TCN SERIAL] ✗ Could not acquire real serialport, falling back to mock
+index.js:50 [TCN SERIAL] ✗ Could not acquire real serialport, falling back to mock
+index.js:50 [TCN SERIAL] PRIORITY 2: Trying port: COM4 (manufacturer=CH340)
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Attempting forced real connection to COM4...
+index.js:50 [TCN SERIAL] FORCED CONNECTION: COM4 at 115200 baud
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Attempting to bypass mock mode...
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Using forced connection method for COM4...
+index.js:50 [TCN SERIAL] FORCED CONNECTION: COM4 at 115200 baud
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Attempting to bypass mock mode...
+index.js:50 [TCN SERIAL] ✗ Approach 1 failed: require is not defined
+index.js:50 [TCN SERIAL] ✗ Approach 1 failed: require is not defined
+index.js:54 [INVENTORY STORAGE] Updated slot 25: 0/5
+index.js:50 [TCN SERIAL] ✗ Approach 2 failed: Class extends value undefined is not a constructor or null
+index.js:50 [TCN SERIAL] ✗ Could not acquire real serialport, falling back to mock
+index.js:50 [TCN SERIAL] ✗ Could not acquire real serialport, falling back to mock
+index.js:50 [TCN SERIAL] PRIORITY 2: Trying port: COM8 (manufacturer=Microsoft)
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Attempting forced real connection to COM8...
+index.js:50 [TCN SERIAL] FORCED CONNECTION: COM8 at 115200 baud
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Attempting to bypass mock mode...
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Using forced connection method for COM8...
+index.js:50 [TCN SERIAL] FORCED CONNECTION: COM8 at 115200 baud
+index.js:50 [TCN SERIAL] VERSION 1.0.3: Attempting to bypass mock mode...
+index.js:50 [TCN SERIAL] ✗ Approach 1 failed: require is not defined
+index.js:50 [TCN SERIAL] ✗ Approach 1 failed: require is not defined
+index.js:50 [TCN SERIAL] ✗ Approach 2 failed: Class extends value undefined is not a constructor or null
+index.js:50 [TCN SERIAL] ✗ Could not acquire real serialport, falling back to mock
+index.js:50 [TCN SERIAL] ✗ Could not acquire real serialport, falling back to mock
+index.js:50 [TCN SERIAL] ✗ Failed to connect to any serial port
+autoConnect @ index.js:50
+await in autoConnect (async)
+initialize @ index.js:54
+await in initialize (async)
+(anonymous) @ index.js:55
+ea @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+uf @ index.js:48
+(anonymous) @ index.js:48
+ft @ index.js:25
+index.js:50 [TCN SERIAL] Available ports were: (4) ['COM1', 'COM3', 'COM4', 'COM8']0: "COM1"1: "COM3"2: "COM4"3: "COM8"length: 4[[Prototype]]: Array(0)
+autoConnect @ index.js:50
+await in autoConnect (async)
+initialize @ index.js:54
+await in initialize (async)
+(anonymous) @ index.js:55
+ea @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+uf @ index.js:48
+(anonymous) @ index.js:48
+ft @ index.js:25
+index.js:54 [TCN INTEGRATION] Auto-connect failed, trying COM1 force connection...
+initialize @ index.js:54
+await in initialize (async)
+(anonymous) @ index.js:55
+ea @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+uf @ index.js:48
+(anonymous) @ index.js:48
+ft @ index.js:25
+index.js:50 [TCN SERIAL] FORCING COM1 CONNECTION...
+index.js:50 [TCN SERIAL] Cannot force COM1 - still in mock mode
+forceConnectCOM1 @ index.js:50
+initialize @ index.js:54
+await in initialize (async)
+(anonymous) @ index.js:55
+ea @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+uf @ index.js:48
+(anonymous) @ index.js:48
+ft @ index.js:25
+index.js:54 [TCN INTEGRATION] TCN hardware not available, will use simulation
+initialize @ index.js:54
+await in initialize (async)
+(anonymous) @ index.js:55
+ea @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+Rt @ index.js:48
+qu @ index.js:48
+uf @ index.js:48
+(anonymous) @ index.js:48
+ft @ index.js:25
+index.js:54 [TCN INTEGRATION] Step 2: Initializing Arduino sensors...
+index.js:54 [TCN INTEGRATION] Arduino sensor service initialized (GameScreen will manage activation)
+index.js:54 [TCN INTEGRATION] Integration complete
+index.js:55 [APP] TCN Integration initialization: SUCCESS
+index.js:54 [INVENTORY STORAGE] Updated slot 1: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 2: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 3: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 4: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 5: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 6: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 7: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 8: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 11: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 12: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 13: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 14: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 15: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 16: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 17: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 18: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 21: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 22: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 23: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 26: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 27: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 28: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 31: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 32: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 33: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 34: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 35: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 36: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 37: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 38: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 45: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 46: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 47: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 48: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 51: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 52: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 53: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 54: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 55: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 56: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 57: 0/5
+index.js:54 [INVENTORY STORAGE] Updated slot 58: 0/5
+index.js:55 [ELECTRON VENDING] Checking for pending operations to sync...
+index.js:55 [ELECTRON VENDING] No pending operations to sync
+index.js:55 [ELECTRON VENDING] Inventory management initialized
+index.js:55 [ELECTRON VENDING] Enhanced Legacy Serial initialized successfully
+index.js:55 [APP] Legacy Electron Vending initialization: SUCCESS
+index.js:49 [Arduino Sensor] Already DISABLED - skipping
+index.js:49 [Arduino Sensor] Already DISABLED - skipping
+index.js:49 [Arduino Sensor] Already DISABLED - skipping
+index.js:54 Sync queue is empty.
+index.js:54 [GameScreen] Setting up Arduino sensor service...
+index.js:49 [Arduino Sensor] === ENHANCED WINDOWS COM PORT DEBUGGING ===
+index.js:49 [Arduino Sensor] ElectronAPI available: true
+index.js:49 [Arduino Sensor] getSerialPorts method available: true
+index.js:49 [Arduino Sensor] Proactive COM port initialization starting...
+index.js:49 [Arduino Sensor] Starting proactive COM port state management...
+index.js:49 [Arduino Sensor] State reset - ready for new game
+index.js:54 [GameScreen] Arduino sensor service initialized, setting up handlers...
+index.js:49 [Arduino Sensor] Already ENABLED - skipping
+index.js:54 [GameScreen] Arduino sensor service enabled
+index.js:49 [Arduino Sensor] State reset - ready for new game
+index.js:54 [GameScreen] Arduino sensor state reset
+index.js:49 [Arduino Sensor] Fresh port scan after initialization: [{…}]
+index.js:49 [Arduino Sensor] Pre-testing port COM10 to clear state...
+index.js:49 [Arduino Sensor] ✓ Port COM10 state cleared successfully
+index.js:49 [Arduino Sensor] Proactive initialization completed
+index.js:49 [Arduino Sensor] Attempting to get serial ports...
+index.js:49 [Arduino Sensor] Raw ports result: [{…}]
+index.js:49 [Arduino Sensor] Ports type: object
+index.js:49 [Arduino Sensor] Ports isArray: true
+index.js:49 [Arduino Sensor] Ports length: 1
+index.js:49 [Arduino Sensor] Available ports: [{…}]
+index.js:49 [Arduino Sensor] Selected Arduino manufacturer port: COM10 (most reliable for Arduino)
+index.js:49 [Arduino Sensor] Port selection details:
+index.js:49   - Available ports: ['COM10 (Arduino LLC (www.arduino.cc))']
+index.js:49   - Arduino manufacturer ports: ['COM10 (Arduino LLC (www.arduino.cc))']
+index.js:49   - Selected port: COM10
+index.js:49   - Port manufacturer: Arduino LLC (www.arduino.cc)
+index.js:49 [Arduino Sensor] Attempting to connect to COM10
+index.js:49 [Arduino Sensor] Trying Standard connection strategy...
+index.js:49 [Arduino Sensor] ✓ Standard strategy successful
+index.js:49 [Arduino Sensor] ✓ Successfully connected to COM10 at 9600 baud
+index.js:49 [Arduino Sensor] Dedicated Arduino data channel listener set up
+index.js:49 [Arduino Sensor] IPC listeners set up after serial connection (data will only be processed when enabled)
+index.js:49 [Arduino Sensor] Starting automatic channel retry mechanism...
+index.js:49 Arduino sensor ENABLED and ready for data (REAL HARDWARE MODE)
+index.js:49 [Arduino Sensor] Starting automatic channel retry mechanism...
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (1): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (2): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (3): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (4): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (5): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (6): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (7): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (8): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (9): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (10): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (11): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (12): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (13): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (14): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (15): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (16): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (17): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (18): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (19): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (20): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (21): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (22): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (23): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (24): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (25): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (26): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (27): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (28): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (29): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (30): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (31): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (32): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (33): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (34): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (35): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (36): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (37): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (38): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (39): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (40): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (41): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (42): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (43): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (44): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (45): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (46): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (47): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (48): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (49): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (50): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (51): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (52): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (53): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (54): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (55): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (56): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (57): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (58): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (59): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (60): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (61): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (62): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (63): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (64): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (65): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (66): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (67): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (68): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (69): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (70): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (71): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (72): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (73): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (74): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (75): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (76): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (77): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (78): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (79): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (80): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (81): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (82): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (83): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (84): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (85): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (86): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (87): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (88): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (89): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (90): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (91): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (92): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (93): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (94): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (95): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (96): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (97): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (98): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (99): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (100): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (101): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (102): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (103): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (104): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (105): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (106): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (107): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (108): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (109): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (110): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (111): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (112): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (113): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (114): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (115): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (116): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (117): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (118): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (119): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (120): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (121): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (122): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (123): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (124): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (125): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (126): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (127): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (128): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (129): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (130): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (131): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (132): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (133): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (134): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (135): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (136): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (137): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (138): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (139): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (140): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (141): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (142): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (143): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (144): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (145): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (146): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (147): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (148): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (149): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (150): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (151): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (152): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (153): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (154): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (155): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (156): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (157): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (158): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (159): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (160): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (161): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (162): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (163): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (164): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (165): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (166): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (167): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (168): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (169): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (170): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (171): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (172): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (173): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (174): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (175): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (176): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (177): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (178): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (179): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (180): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (181): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (182): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (183): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (184): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (185): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (186): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (187): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (188): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (189): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (190): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (191): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (192): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (193): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (194): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (195): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (196): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (197): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (198): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (199): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (200): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (201): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (202): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (203): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (204): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (205): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (206): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (207): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (208): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (209): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (210): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (211): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (212): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (213): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (214): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (215): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (216): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (217): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (218): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (219): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (220): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (221): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (222): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (223): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (224): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (225): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (226): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (227): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (228): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (229): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (230): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (231): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (232): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (233): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (234): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (235): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (236): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (237): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (238): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (239): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (240): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (241): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (242): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (243): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (244): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (245): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (246): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (247): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (248): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (249): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (250): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (251): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (252): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (253): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (254): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (255): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (256): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (257): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (258): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (259): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (260): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (261): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (262): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (263): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (264): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (265): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (266): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (267): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (268): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (269): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (270): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (271): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (272): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (273): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (274): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (275): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (276): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (277): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (278): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (279): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (280): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (281): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (282): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (283): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (284): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (285): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (286): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (287): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (288): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (289): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (290): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (291): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (292): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (293): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (294): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (295): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (296): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (297): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (298): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (299): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (300): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (301): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (302): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (303): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (304): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (305): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (306): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (307): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (308): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (309): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (310): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (311): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (312): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (313): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (314): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (315): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (316): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (317): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (318): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (319): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (320): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (321): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (322): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (323): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (324): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (325): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (326): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (327): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (328): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (329): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (330): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (331): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (332): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (333): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (334): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (335): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (336): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (337): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (338): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (339): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (340): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (341): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (342): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (343): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (344): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (345): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (346): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (347): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (348): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (349): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (350): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (351): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (352): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (353): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (354): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (355): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (356): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (357): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (358): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (359): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (360): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (361): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (362): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (363): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (364): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (365): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (366): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (367): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (368): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (369): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (370): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (371): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (372): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (373): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (374): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (375): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (376): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (377): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (378): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (379): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (380): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (381): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (382): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (383): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (384): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (385): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (386): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (387): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (388): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (389): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (390): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (391): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (392): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (393): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (394): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (395): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (396): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (397): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (398): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (399): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (400): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (401): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (402): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (403): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (404): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (405): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (406): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (407): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (408): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (409): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (410): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (411): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (412): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (413): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (414): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (415): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (416): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (417): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (418): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (419): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (420): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (421): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (422): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (423): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (424): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (425): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (426): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (427): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (428): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (429): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (430): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (431): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (432): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (433): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (434): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (435): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (436): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (437): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (438): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (439): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (440): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (441): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (442): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (443): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (444): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (445): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (446): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (447): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (448): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (449): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (450): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (451): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (452): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (453): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (454): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (455): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (456): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (457): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (458): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (459): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (460): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (461): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (462): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (463): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (464): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (465): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (466): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (467): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (468): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (469): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (470): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (471): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (472): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (473): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (474): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (475): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (476): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (477): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (478): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (479): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (480): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (481): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (482): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (483): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (484): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (485): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (486): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (487): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (488): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (489): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (490): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (491): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (492): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (493): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (494): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (495): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (496): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (497): 
+index.js:49 Invalid sensor value received: 
+handleSerialData @ index.js:49
+(anonymous) @ index.js:49
+(anonymous) @ VM15:21
+emit @ VM14 sandbox_bundle:2
+onMessage @ VM14 sandbox_bundle:2
+index.js:49 [Arduino Sensor] Received data via shared channel (498): 
+index.js:49 Invalid sensor value received: 
+handleSerialData @ index.js:49
+(anonymous) @ index.js:49
+(anonymous) @ VM15:18
+emit @ VM14 sandbox_bundle:2
+onMessage @ VM14 sandbox_bundle:2
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (499): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (500): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (501): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (502): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (503): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (504): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (505): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (506): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (507): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (508): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (509): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (510): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (511): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (512): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (513): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (514): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (515): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (516): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (517): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (518): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (519): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (520): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (521): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (522): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (523): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (524): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (525): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (526): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (527): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (528): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (529): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (530): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (531): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (532): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (533): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (534): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (535): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (536): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (537): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (538): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (539): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (540): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (541): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (542): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (543): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (544): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (545): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (546): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (547): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (548): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (549): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (550): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (551): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (552): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (553): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (554): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (555): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (556): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (557): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (558): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (559): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (560): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (561): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (562): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (563): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (564): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (565): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (566): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (567): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (568): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (569): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (570): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (571): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (572): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (573): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (574): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (575): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (576): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (577): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (578): 1
+index.js:49 [Arduino Sensor] Already ENABLED - skipping
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (579): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (580): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (581): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (582): 1
+index.js:55 [HOLD TIMER] end called: {value: 116, isTimestamp: undefined, typeof: 'number'}
+index.js:55 [HOLD TIMER] Final duration: 116
+index.js:55 [APP] Game completed with duration: 116ms - using new Electron Vending Service trigger chain
+index.js:55 [PRIZE SERVICE] Using Electron Vending Service as primary trigger for time: 116ms
+index.js:55 [ELECTRON VENDING] Handling prize dispensing for game time: 116ms, scoreId: score_1768622178406
+index.js:55 [ELECTRON VENDING] No prize awarded - game time too short
+index.js:54 [GAME SCREEN] Game ended with time: 116ms
+index.js:54 [INVENTORY STORAGE] Dispensing log synced successfully
+index.js:55 [ELECTRON VENDING] Dispensing logged: slot=0, tier=silver, success=false
+index.js:55 [PRIZE SERVICE] Electron Vending Service could not dispense prize: Game time too short for prize eligibility
+index.js:55 Time of 116ms did not qualify for a prize.
+index.js:54 Submitting score to API: {id: 'score_1768622178406', name: 't', email: 't@8.4', phone: '', time: 116}
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (583): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (584): 1
+index.js:54 [GameScreen] Cleaning up Arduino sensor service...
+index.js:49 Arduino sensor DISABLED
+index.js:49 [Arduino Sensor] Already DISABLED - skipping
+index.js:49 [Arduino Sensor] Already DISABLED - skipping
+index.js:49 [Arduino Sensor] Already DISABLED - skipping
+index.js:49 [Arduino Sensor] Already DISABLED - skipping
+index.js:49 [Arduino Sensor] Already DISABLED - skipping
+index.js:49 [Arduino Sensor] Already DISABLED - skipping
+index.js:54 [GameScreen] Setting up Arduino sensor service...
+index.js:49 [Arduino Sensor] Already connected to serial port, skipping reconnection
+index.js:49 [Arduino Sensor] State reset - ready for new game
+index.js:54 [GameScreen] Arduino sensor service initialized, setting up handlers...
+index.js:49 [Arduino Sensor] Already ENABLED - skipping
+index.js:54 [GameScreen] Arduino sensor service enabled
+index.js:49 [Arduino Sensor] State reset - ready for new game
+index.js:54 [GameScreen] Arduino sensor state reset
+index.js:49 Arduino sensor ENABLED and ready for data (REAL HARDWARE MODE)
+index.js:49 [Arduino Sensor] Starting automatic channel retry mechanism...
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (585): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (586): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (587): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (588): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (589): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (590): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (591): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (592): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (593): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (594): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (595): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (596): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (597): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (598): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (599): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (600): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (601): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (602): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (603): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (604): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (605): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (606): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (607): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (608): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (609): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (610): 1
+index.js:49 [Arduino Sensor] Already ENABLED - skipping
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (611): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (612): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (613): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (614): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (615): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (616): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (617): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (618): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (619): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (620): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (621): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (622): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (623): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (624): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (625): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (626): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (627): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (628): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (629): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (630): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (631): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (632): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (633): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (634): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (635): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (636): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (637): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (638): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (639): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (640): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (641): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (642): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (643): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (644): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (645): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (646): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (647): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (648): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (649): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (650): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (651): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (652): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (653): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (654): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (655): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (656): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (657): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (658): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (659): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (660): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (661): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (662): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (663): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (664): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (665): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (666): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (667): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (668): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (669): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (670): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (671): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (672): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (673): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (674): 1
+index.js:55 [HOLD TIMER] end called: {value: 3205, isTimestamp: undefined, typeof: 'number'}
+index.js:55 [HOLD TIMER] Final duration: 3205
+index.js:55 [APP] Game completed with duration: 3205ms - using new Electron Vending Service trigger chain
+index.js:55 [PRIZE SERVICE] Using Electron Vending Service as primary trigger for time: 3205ms
+index.js:55 [ELECTRON VENDING] Handling prize dispensing for game time: 3205ms, scoreId: score_1768622198586
+index.js:55 [ELECTRON VENDING] Game time 3205ms qualifies for silver prize
+index.js:54 [GAME SCREEN] Game ended with time: 3205ms
+index.js:55 [ELECTRON VENDING] Slot selection debug for silver tier:
+index.js:55 [ELECTRON VENDING] - Tier slots: [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38, 45, 46, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58]
+index.js:55 [ELECTRON VENDING] - Available slots: [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38, 45, 46, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58]
+index.js:55 [ELECTRON VENDING] - Slot inventory:
+index.js:55 [ELECTRON VENDING]   * Slot 1: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 2: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 3: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 4: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 5: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 6: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 7: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 8: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 11: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 12: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 13: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 14: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 15: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 16: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 17: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 18: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 21: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 22: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 23: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 26: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 27: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 28: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 31: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 32: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 33: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 34: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 35: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 36: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 37: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 38: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 45: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 46: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 47: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 48: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 51: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 52: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 53: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 54: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 55: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 56: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 57: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 58: count=0, max=5
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 2 vs slot 1 (both count=0) - selecting 1
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 3 vs slot 2 (both count=0) - selecting 2
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 4 vs slot 3 (both count=0) - selecting 3
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 5 vs slot 4 (both count=0) - selecting 4
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 6 vs slot 5 (both count=0) - selecting 5
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 7 vs slot 6 (both count=0) - selecting 6
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 8 vs slot 7 (both count=0) - selecting 7
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 11 vs slot 8 (both count=0) - selecting 8
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 12 vs slot 11 (both count=0) - selecting 11
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 13 vs slot 12 (both count=0) - selecting 12
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 14 vs slot 13 (both count=0) - selecting 13
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 15 vs slot 14 (both count=0) - selecting 14
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 16 vs slot 15 (both count=0) - selecting 15
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 17 vs slot 16 (both count=0) - selecting 16
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 18 vs slot 17 (both count=0) - selecting 17
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 21 vs slot 18 (both count=0) - selecting 18
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 22 vs slot 21 (both count=0) - selecting 21
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 23 vs slot 22 (both count=0) - selecting 22
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 26 vs slot 23 (both count=0) - selecting 23
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 27 vs slot 26 (both count=0) - selecting 26
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 28 vs slot 27 (both count=0) - selecting 27
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 31 vs slot 28 (both count=0) - selecting 28
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 32 vs slot 31 (both count=0) - selecting 31
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 33 vs slot 32 (both count=0) - selecting 32
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 34 vs slot 33 (both count=0) - selecting 33
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 35 vs slot 34 (both count=0) - selecting 34
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 36 vs slot 35 (both count=0) - selecting 35
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 37 vs slot 36 (both count=0) - selecting 36
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 38 vs slot 37 (both count=0) - selecting 37
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 45 vs slot 38 (both count=0) - selecting 38
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 46 vs slot 45 (both count=0) - selecting 45
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 47 vs slot 46 (both count=0) - selecting 46
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 48 vs slot 47 (both count=0) - selecting 47
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 51 vs slot 48 (both count=0) - selecting 48
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 52 vs slot 51 (both count=0) - selecting 51
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 53 vs slot 52 (both count=0) - selecting 52
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 54 vs slot 53 (both count=0) - selecting 53
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 55 vs slot 54 (both count=0) - selecting 54
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 56 vs slot 55 (both count=0) - selecting 55
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 57 vs slot 56 (both count=0) - selecting 56
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 58 vs slot 57 (both count=0) - selecting 57
+index.js:55 [ELECTRON VENDING] Selected slot 1 for silver tier (stable sort, count: 0)
+index.js:55 [ELECTRON VENDING] Slot selection summary: [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38, 45, 46, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58] -> selected: 1
+index.js:55 [ELECTRON VENDING] Selected slot 1 for silver prize
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (675): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (676): 1
+index.js:55 [ELECTRON VENDING] Prize dispensing logged to API with scoreId: 1768622198586
+index.js:55 [ELECTRON VENDING] Using Legacy Serial for silver prize dispensing
+index.js:55 [ELECTRON VENDING] Command (HEX): 00 FF 01 FE AA 55
+index.js:55 [ELECTRON VENDING] Direct Legacy Serial (Version 1.0.3): 00 FF 01 FE AA 55
+index.js:55 [ELECTRON VENDING] Direct Legacy Serial (Version 1.0.3): 00 FF 01 FE AA 55
+index.js:55 [ELECTRON VENDING] Direct Legacy Serial error: Error: Error invoking remote method 'send-serial-command': Error: No serial port available and emergency connection failed: COM1 not available for emergency connection
+sendDirectSerialCommand @ index.js:55
+await in sendDirectSerialCommand (async)
+try @ index.js:55
+handlePrizeDispensing @ index.js:55
+await in handlePrizeDispensing (async)
+checkAndDispensePrize @ index.js:55
+(anonymous) @ index.js:55
+(anonymous) @ index.js:55
+T @ index.js:54
+yf @ index.js:48
+(anonymous) @ index.js:48
+Rr @ index.js:48
+Ms @ index.js:48
+Ks @ index.js:49
+Ah @ index.js:49
+index.js:54 [INVENTORY STORAGE] Dispensing log synced successfully
+index.js:55 [ELECTRON VENDING] Dispensing logged: slot=1, tier=silver, success=false
+index.js:55 [ELECTRON VENDING] ✗ Legacy Serial failed for silver prize: Error invoking remote method 'send-serial-command': Error: No serial port available and emergency connection failed: COM1 not available for emergency connection
+handlePrizeDispensing @ index.js:55
+await in handlePrizeDispensing (async)
+checkAndDispensePrize @ index.js:55
+(anonymous) @ index.js:55
+(anonymous) @ index.js:55
+T @ index.js:54
+yf @ index.js:48
+(anonymous) @ index.js:48
+Rr @ index.js:48
+Ms @ index.js:48
+Ks @ index.js:49
+Ah @ index.js:49
+index.js:55 [ELECTRON VENDING] Using On-Demand Serial (Fallback) for silver prize dispensing
+index.js:55 [ELECTRON VENDING] Constructed HEX command: 00 FF 01 FE AA 55
+index.js:55 [ELECTRON VENDING] Legacy Serial error: Error: Error invoking remote method 'send-serial-command': Error: No serial port available and emergency connection failed: COM1 not available for emergency connection
+try @ index.js:55
+await in try (async)
+handlePrizeDispensing @ index.js:55
+await in handlePrizeDispensing (async)
+checkAndDispensePrize @ index.js:55
+(anonymous) @ index.js:55
+(anonymous) @ index.js:55
+T @ index.js:54
+yf @ index.js:48
+(anonymous) @ index.js:48
+Rr @ index.js:48
+Ms @ index.js:48
+Ks @ index.js:49
+Ah @ index.js:49
+index.js:54 [INVENTORY STORAGE] Dispensing log synced successfully
+index.js:55 [ELECTRON VENDING] Dispensing logged: slot=1, tier=silver, success=false
+index.js:55 [ELECTRON VENDING] ✗ On-Demand Serial (Fallback) failed for silver prize: Error invoking remote method 'send-serial-command': Error: No serial port available and emergency connection failed: COM1 not available for emergency connection
+handlePrizeDispensing @ index.js:55
+await in handlePrizeDispensing (async)
+checkAndDispensePrize @ index.js:55
+(anonymous) @ index.js:55
+(anonymous) @ index.js:55
+T @ index.js:54
+yf @ index.js:48
+(anonymous) @ index.js:48
+Rr @ index.js:48
+Ms @ index.js:48
+Ks @ index.js:49
+Ah @ index.js:49
+index.js:55 [ELECTRON VENDING] Trying Spring SDK for silver prize dispensing
+index.js:55 [SPRING VENDING] Cannot send command - not connected
+sendSpringCommand @ index.js:55
+(anonymous) @ index.js:55
+queryChannelStatus @ index.js:55
+findWorkingChannel @ index.js:55
+dispensePrizeByTier @ index.js:55
+try @ index.js:55
+handlePrizeDispensing @ index.js:55
+await in handlePrizeDispensing (async)
+checkAndDispensePrize @ index.js:55
+(anonymous) @ index.js:55
+(anonymous) @ index.js:55
+T @ index.js:54
+yf @ index.js:48
+(anonymous) @ index.js:48
+Rr @ index.js:48
+Ms @ index.js:48
+Ks @ index.js:49
+Ah @ index.js:49
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (677): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (678): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (679): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (680): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (681): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (682): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (683): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (684): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (685): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (686): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (687): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (688): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (689): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (690): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (691): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (692): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (693): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (694): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (695): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (696): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (697): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (698): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (699): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (700): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (701): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (702): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (703): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (704): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (705): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (706): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (707): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (708): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (709): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (710): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (711): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (712): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (713): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (714): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (715): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (716): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (717): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (718): 1
+index.js:54 [INVENTORY STORAGE] Dispensing log synced successfully
+index.js:55 [ELECTRON VENDING] Dispensing logged: slot=1, tier=silver, success=false
+index.js:55 [ELECTRON VENDING] ✗ Spring SDK failed for silver prize: No working channels available for silver tier
+handlePrizeDispensing @ index.js:55
+await in handlePrizeDispensing (async)
+checkAndDispensePrize @ index.js:55
+(anonymous) @ index.js:55
+(anonymous) @ index.js:55
+T @ index.js:54
+yf @ index.js:48
+(anonymous) @ index.js:48
+Rr @ index.js:48
+Ms @ index.js:48
+Ks @ index.js:49
+Ah @ index.js:49
+index.js:55 [ELECTRON VENDING] Trying Mock Mode for silver prize dispensing
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (719): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (720): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (721): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (722): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (723): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (724): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (725): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (726): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (727): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (728): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (729): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (730): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (731): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (732): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (733): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (734): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (735): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (736): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (737): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (738): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (739): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (740): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (741): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (742): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (743): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (744): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (745): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (746): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (747): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (748): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (749): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (750): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (751): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (752): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (753): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (754): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (755): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (756): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (757): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (758): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (759): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (760): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (761): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (762): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (763): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (764): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (765): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (766): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (767): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (768): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (769): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (770): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (771): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (772): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (773): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (774): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (775): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (776): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (777): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (778): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (779): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (780): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (781): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (782): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (783): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (784): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (785): 
+index.js:49 Invalid sensor value received: 
+handleSerialData @ index.js:49
+(anonymous) @ index.js:49
+(anonymous) @ VM15:21
+emit @ VM14 sandbox_bundle:2
+onMessage @ VM14 sandbox_bundle:2
+index.js:49 [Arduino Sensor] Received data via shared channel (786): 
+index.js:49 Invalid sensor value received: 
+handleSerialData @ index.js:49
+(anonymous) @ index.js:49
+(anonymous) @ VM15:18
+emit @ VM14 sandbox_bundle:2
+onMessage @ VM14 sandbox_bundle:2
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (787): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (788): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (789): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (790): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (791): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (792): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (793): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (794): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (795): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (796): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (797): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (798): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (799): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (800): 1
+index.js:54 [INVENTORY STORAGE] Updated slot 1: 1/5
+index.js:55 [ELECTRON VENDING] Slot 1 count incremented for silver tier
+index.js:54 [INVENTORY STORAGE] Dispensing log synced successfully
+index.js:55 [ELECTRON VENDING] Dispensing logged: slot=1, tier=silver, success=true
+index.js:55 [ELECTRON VENDING] ✓ Mock Mode successful for silver prize
+index.js:55 [PRIZE SERVICE] Electron Vending Service successfully dispensed Silver Prize from slot 1.
+index.js:54 Submitting score to API: {id: 'score_1768622198586', name: 't', email: 't@8.4', phone: '', time: 3205}
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (801): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (802): 1
+index.js:54 [GameScreen] Cleaning up Arduino sensor service...
+index.js:49 Arduino sensor DISABLED
+index.js:49 [Arduino Sensor] Already DISABLED - skipping

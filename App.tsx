@@ -35,27 +35,27 @@ const App: React.FC = () => {
         setLeaderboard([]);
       }
     };
-    
+
     initializeLeaderboard();
     dataService.initSyncManager();
-    
+
     // Initialize Arduino sensor service globally
     if (window.electronAPI) {
       arduinoSensorService.initialize();
-      
+
       // DISABLED: Spring Vending Service causing IPC channel conflicts with Arduino sensor
       // Arduino sensor data was being intercepted by Spring Vending instead of Arduino Sensor Service
       // Legacy Electron Vending will handle prize dispensing instead
       console.log('[APP] Spring Vending Service DISABLED to prevent IPC channel conflicts with Arduino sensor');
       console.log('[APP] Using Legacy Electron Vending only for prize dispensing');
-      
+
       // Initialize ONLY Legacy Electron Vending (Spring Vending disabled)
       electronVendingService.initializeVending().then(success => {
         console.log(`[APP] Legacy Electron Vending initialization: ${success ? 'SUCCESS' : 'FAILED'}`);
       }).catch(error => {
         console.error('[APP] Legacy Electron Vending initialization error:', error);
       });
-      
+
       // Also initialize TCN integration service as backup
       tcnIntegrationService.initialize().then(success => {
         console.log(`[APP] TCN Integration initialization: ${success ? 'SUCCESS' : 'FAILED'}`);
@@ -71,7 +71,7 @@ const App: React.FC = () => {
       // Only enable sensor when in READY or HOLDING states
       const shouldEnable = gameState === GameState.READY || gameState === GameState.HOLDING;
       arduinoSensorService.setEnabled(shouldEnable);
-      
+
       // Reset sensor state when entering READY state
       if (gameState === GameState.READY) {
         arduinoSensorService.reset();
@@ -94,7 +94,7 @@ const App: React.FC = () => {
   const handleShowLeaderboard = useCallback(() => {
     setGameState(GameState.LEADERBOARD);
   }, []);
-  
+
   const handleDetailsSubmit = useCallback((details: { name: string; email: string; phone: string }) => {
     setPlayerDetails(details);
     setGameState(GameState.READY);
@@ -116,7 +116,7 @@ const App: React.FC = () => {
     // Create score ID first to ensure it's available for prize service
     const newScoreId = `score_${Date.now()}`;
     console.log(`[APP] Game completed with duration: ${duration}ms - using new Electron Vending Service trigger chain`);
-    
+
     // Prize Service now uses Electron Vending Service as primary trigger with proper scoreId
     const awardedPrize = await prizeService.checkAndDispensePrize(duration, newScoreId);
     setPrize(awardedPrize);
@@ -132,7 +132,7 @@ const App: React.FC = () => {
 
     setGameState(GameState.GAME_OVER);
   }, [playerDetails]);
-  
+
   const handlePlayAgain = useCallback(() => {
     resetGame();
   }, []);
@@ -164,60 +164,60 @@ const App: React.FC = () => {
     if (idleEnabled) {
       resetGame();
     }
-  }, 60000, idleEnabled); // 60s timeout — adjust as needed
-  
+  }, 300000, idleEnabled); // 5 minutes timeout to prevent accidental resets during long holds
+
   // Custom hook for managing the hold state and timer start time
   const useHoldTimer = () => {
-      const [isHolding, setIsHolding] = useState(false);
-      const startTimeRef = React.useRef(0);
+    const [isHolding, setIsHolding] = useState(false);
+    const startTimeRef = React.useRef(0);
 
-        // Accept an optional start timestamp (ms since epoch)
-        const start = useCallback((startTimestamp?: number) => {
-          startTimeRef.current = typeof startTimestamp === 'number' && startTimestamp > 0 ? startTimestamp : Date.now();
-          setIsHolding(true);
-          handleHoldStart();
-        }, [handleHoldStart]);
+    // Accept an optional start timestamp (ms since epoch)
+    const start = useCallback((startTimestamp?: number) => {
+      startTimeRef.current = typeof startTimestamp === 'number' && startTimestamp > 0 ? startTimestamp : Date.now();
+      setIsHolding(true);
+      handleHoldStart();
+    }, [handleHoldStart]);
 
-        // Accept an optional measured duration (ms). If not provided, compute from startTimeRef.
-        // `value` may be either a measured duration (ms) OR an end timestamp (ms since epoch)
-        // `isTimestamp` disambiguates the meaning when true.
-        const end = useCallback((value?: number, isTimestamp?: boolean) => {
-          let duration: number;
+    // Accept an optional measured duration (ms). If not provided, compute from startTimeRef.
+    // `value` may be either a measured duration (ms) OR an end timestamp (ms since epoch)
+    // `isTimestamp` disambiguates the meaning when true.
+    const end = useCallback((value?: number, isTimestamp?: boolean) => {
+      let duration: number;
 
-          if (isTimestamp && typeof value === 'number' && startTimeRef.current > 0) {
-            // value is an end timestamp
-            duration = value - startTimeRef.current;
-          } else if (typeof value === 'number' && !isTimestamp) {
-            // value is a measured duration
-            duration = value;
-          } else if (startTimeRef.current > 0) {
-            duration = Date.now() - startTimeRef.current;
-          } else {
-            duration = 0;
-          }
+      if (isTimestamp && typeof value === 'number' && startTimeRef.current > 0) {
+        // value is an end timestamp
+        duration = value - startTimeRef.current;
+      } else if (typeof value === 'number' && !isTimestamp) {
+        // value is a measured duration
+        duration = value;
+      } else if (startTimeRef.current > 0) {
+        duration = Date.now() - startTimeRef.current;
+      } else {
+        duration = 0;
+      }
 
-          // Diagnostics: log measured vs computed duration and startTimeRef
-          try {
-            console.log('[HOLD TIMER] end called:', { value, isTimestamp, typeof: typeof value });
-          } catch (e) {
-            // ignore
-          }
+      // Diagnostics: log measured vs computed duration and startTimeRef
+      try {
+        console.log('[HOLD TIMER] end called:', { value, isTimestamp, typeof: typeof value });
+      } catch (e) {
+        // ignore
+      }
 
-          // ADD THIS VALIDATION
-          if (isNaN(duration) || duration < 0) {
-            console.error('[HOLD TIMER] Invalid duration calculated:', duration);
-            duration = 0;
-          }
+      // ADD THIS VALIDATION
+      if (isNaN(duration) || duration < 0) {
+        console.error('[HOLD TIMER] Invalid duration calculated:', duration);
+        duration = 0;
+      }
 
-          console.log('[HOLD TIMER] Final duration:', duration);
-  
-          handleHoldComplete(duration);
+      console.log('[HOLD TIMER] Final duration:', duration);
 
-          setIsHolding(false);
-          startTimeRef.current = 0;
-        }, [handleHoldComplete]);
-      
-      return { isHolding, start, end };
+      handleHoldComplete(duration);
+
+      setIsHolding(false);
+      startTimeRef.current = 0;
+    }, [handleHoldComplete]);
+
+    return { isHolding, start, end };
   };
 
   const { isHolding, start, end } = useHoldTimer();

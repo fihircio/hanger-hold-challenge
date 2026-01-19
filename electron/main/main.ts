@@ -22,7 +22,7 @@ try {
 } catch (error) {
   console.error('Failed to load SerialPort module:', error);
   serialPortError = true;
-  
+
   // Show error dialog to user
   dialog.showErrorBox(
     'Serial Port Module Error',
@@ -53,14 +53,14 @@ function createWindow(): void {
     // Try multiple possible paths for index.html to handle different build configurations
     const fs = require('fs');
     let indexPath = '';
-    
+
     // Path 1: For ASAR builds (standard electron-builder)
     const asarPath = path.join(__dirname, '../index.html');
     // Path 2: For unpackaged builds (like manual-build.js)
     const unpackedPath = path.join(__dirname, '../../index.html');
     // Path 3: Alternative path for some electron-builder configurations
     const alternativePath = path.join(process.resourcesPath, 'index.html');
-    
+
     if (fs.existsSync(asarPath)) {
       indexPath = asarPath;
     } else if (fs.existsSync(unpackedPath)) {
@@ -72,16 +72,16 @@ function createWindow(): void {
       console.error('  - ASAR path:', asarPath);
       console.error('  - Unpacked path:', unpackedPath);
       console.error('  - Alternative path:', alternativePath);
-      
+
       dialog.showErrorBox(
         'File Not Found',
         `Could not find index.html at any expected location.\n\nPlease check your installation.`
       );
       return;
     }
-    
+
     console.log('Loading index.html from:', indexPath);
-    
+
     mainWindow.loadFile(indexPath).then(() => {
       console.log('Index.html loaded successfully');
     }).catch((error) => {
@@ -91,7 +91,7 @@ function createWindow(): void {
         `Failed to load index.html:\n${error.message}\n\nPlease check your installation.`
       );
     });
-    
+
     mainWindow.webContents.openDevTools(); // Open DevTools for debugging
   }
 
@@ -147,77 +147,72 @@ async function initializeSerialPort(): Promise<void> {
     console.log('Platform:', process.platform);
 
     // ENHANCED PORT ALLOCATION STRATEGY
-    // Arduino sensor: HIGH COM ports (COM6+)
-    // Spring Vending: LOW COM ports (COM1-5)
-    // This prevents conflicts between services
-    
+    // Arduino sensor: HIGH COM ports (COM6+) or Arduino manufacturer
+    // Spring Vending: LOW COM ports or specific USB-Serial adapters
+
     const isWindows = process.platform === 'win32';
     let portPath = isWindows ? 'COM1' : '/dev/ttyUSB0'; // default fallback
-    
-    // Separate Arduino and Spring Vending ports
+
+    // 1. Identify Arduino Ports (to exclude them from Vending)
     const arduinoPorts = ports.filter((port: any) =>
       port.manufacturer && (
-        port.manufacturer.toLowerCase().includes('arduino') ||
-        port.manufacturer.toLowerCase().includes('ftdi') ||
-        port.manufacturer.toLowerCase().includes('ch340')
+        port.manufacturer.toLowerCase().includes('arduino')
+        // We do NOT include FTDI/CH340 here as those are often Vending Machines too
+        // Only explicit "Arduino" brand is safe to exclude
       )
     );
-    
-    // Sort COM ports by number
-    const sortedComPorts = ports
-      .filter((port: any) => port.path.startsWith('COM'))
-      .sort((a: any, b: any) => {
-        const numA = parseInt(a.path.replace('COM', ''));
-        const numB = parseInt(b.path.replace('COM', ''));
+
+    // 2. Identify Vending Candidates (Prolific, CH340, FTDI)
+    // These are almost always the Vending Machine USB adapters
+    const vendingCandidates = ports.filter((port: any) => {
+      const mfr = (port.manufacturer || '').toLowerCase();
+      const isArduino = mfr.includes('arduino');
+      const isUsbSerial = mfr.includes('prolific') || mfr.includes('ch340') || mfr.includes('ftdi') || mfr.includes('silicon labs');
+      return isUsbSerial && !isArduino;
+    });
+
+    console.log('Port classification:');
+    console.log('- Arduino candidates:', arduinoPorts.map((p: any) => p.path));
+    console.log('- Vending USB candidates:', vendingCandidates.map((p: any) => p.path));
+
+    // SELECTION LOGIC
+    if (vendingCandidates.length > 0) {
+      // PRIORITY 1: USB-to-Serial Adapter (Best guess for Vending Machine)
+      // Pick the lowest COM number among candidates (usually COM3/COM4)
+      const sortedCandidates = vendingCandidates.sort((a: any, b: any) => {
+        const numA = parseInt(a.path.replace('COM', '')) || 999;
+        const numB = parseInt(b.path.replace('COM', '')) || 999;
         return numA - numB;
       });
 
-    // PRIORITY: Use LOW COM ports for main serial communication (Spring Vending/TCN)
-    // HIGH COM ports (COM6+) will be reserved for Arduino sensor service
-    const lowComPorts = sortedComPorts.filter((port: any) => {
-      const comNum = parseInt(port.path.replace('COM', ''));
-      return comNum <= 5; // COM1-5 for main serial
-    });
+      portPath = sortedCandidates[0].path;
+      console.log(`[SERIAL] Selected USB-Serial adapter for vending: ${portPath} (${sortedCandidates[0].manufacturer})`);
 
-    const highComPorts = sortedComPorts.filter((port: any) => {
-      const comNum = parseInt(port.path.replace('COM', ''));
-      return comNum >= 6; // COM6+ for Arduino sensor
-    });
-
-    console.log('Port allocation strategy:');
-    console.log('- Low COM ports (COM1-5) for main serial:', lowComPorts.map((p: any) => p.path));
-    console.log('- High COM ports (COM6+) for Arduino sensor:', highComPorts.map((p: any) => p.path));
-    console.log('- Arduino-specific ports:', arduinoPorts.map((p: any) => `${p.path} (${p.manufacturer})`));
-
-    // Select port for main serial communication (Spring Vending/TCN)
-    // ENHANCED: Force COM1 for vending machine regardless of other ports
-    // Priority 1: COM1 (forced for vending machine)
-    // Priority 2: Other low COM ports if COM1 not available
-    // Priority 3: Arduino ports if no low COM ports available
-    // Priority 4: Any available port as last resort
-    
-    const com1Port = lowComPorts.find((port: any) => port.path === 'COM1');
-    if (com1Port) {
-      // Force COM1 for vending machine
-      portPath = 'COM1';
-      console.log(`[SERIAL] FORCING COM1 for main serial (vending machine) - ${com1Port.manufacturer || 'Unknown manufacturer'}`);
-    } else if (lowComPorts.length > 0) {
-      // Use first available low COM port
-      portPath = lowComPorts[0].path;
-      console.log(`Selected low COM port for main serial: ${portPath}`);
-    } else if (arduinoPorts.length > 0) {
-      // Use Arduino port if no low COM ports (but this might cause conflicts)
-      portPath = arduinoPorts[0].path;
-      console.log(`Using Arduino port for main serial (potential conflict): ${portPath}`);
-    } else if (ports.length > 0) {
-      // Use first available port as last resort
-      portPath = ports[0].path;
-      console.log(`Using first available port for main serial: ${portPath}`);
     } else {
-      console.warn('No serial ports available for main serial communication');
-      return;
+      // PRIORITY 2: Fallback to COM1 or First Available
+      const com1Port = ports.find((port: any) => port.path === 'COM1');
+
+      if (com1Port) {
+        portPath = 'COM1';
+        console.log(`[SERIAL] No USB adapters found. Defaulting to standard COM1.`);
+      } else if (ports.length > 0) {
+        // Exclude recognized Arduino ports if possible
+        const nonArduinoPorts = ports.filter((p: any) => !arduinoPorts.some((ap: any) => ap.path === p.path));
+
+        if (nonArduinoPorts.length > 0) {
+          portPath = nonArduinoPorts[0].path;
+          console.log(`[SERIAL] Using first available non-Arduino port: ${portPath}`);
+        } else {
+          // absolute last resort
+          portPath = ports[0].path;
+          console.log(`[SERIAL] Using absolute fallback port: ${portPath}`);
+        }
+      } else {
+        console.warn('[SERIAL] No serial ports available for main serial communication');
+        return;
+      }
     }
-    
+
     // Try common baud rates (prefer 115200 for modern devices like TCN/Arduino) and fall back to 9600
     const candidateBaudRates = [115200, 9600];
     let opened = false;
@@ -294,10 +289,10 @@ ipcMain.handle('toggle-fullscreen', async () => {
   if (!mainWindow) {
     throw new Error('Main window is not available');
   }
-  
+
   const isFullScreen = mainWindow.isFullScreen();
   mainWindow.setFullScreen(!isFullScreen);
-  
+
   return { success: true, isFullScreen: !isFullScreen };
 });
 
@@ -305,14 +300,14 @@ ipcMain.handle('is-fullscreen', async () => {
   if (!mainWindow) {
     throw new Error('Main window is not available');
   }
-  
+
   return mainWindow.isFullScreen();
 });
 
 // Add serial port reset function
 async function resetSerialPorts(): Promise<void> {
   console.log('[SERIAL] Resetting all serial ports...');
-  
+
   // Close all active ports
   for (const [portPath, port] of activeSerialPorts.entries()) {
     try {
@@ -324,15 +319,15 @@ async function resetSerialPorts(): Promise<void> {
       console.error(`[SERIAL] Error closing port ${portPath}:`, error);
     }
   }
-  
+
   // Clear all references
   activeSerialPorts.clear();
   arduinoPortPath = null;
   serialPort = null;
-  
+
   // Wait for ports to fully release
   await new Promise(resolve => setTimeout(resolve, 2000));
-  
+
   // Reinitialize
   await initializeSerialPort();
 }
@@ -344,7 +339,7 @@ ipcMain.handle('send-serial-command', async (event, command: string) => {
     console.warn('[SERIAL] Command blocked - Serial Port module not available');
     return { success: false, error: 'Serial Port module not available' };
   }
-  
+
   // VERSION 1.0.3 COMPATIBLE: Force real connection - NO SIMULATION
   if (!serialPort || !serialPort.isOpen) {
     console.log('[SERIAL] No port available - attempting emergency connection to COM1');
@@ -389,10 +384,10 @@ ipcMain.handle('send-serial-command', async (event, command: string) => {
     // Convert hex string to bytes
     const bytes = command.split(' ').map(byte => parseInt(byte, 16));
     const buffer = Buffer.from(bytes);
-    
+
     // Send to serial port
     serialPort.write(buffer);
-    
+
     console.log('[SERIAL] Sent command to serial port:', command);
     return { success: true };
   } catch (error) {
@@ -406,7 +401,7 @@ ipcMain.handle('get-serial-ports', async () => {
     console.log('Serial port module not available, returning empty port list');
     return [];
   }
-  
+
   try {
     const ports = await SerialPortModule.SerialPort.list();
     return ports.map((port: any) => ({
@@ -427,12 +422,12 @@ ipcMain.handle('connect-serial-port', async (event, portPath: string, baudRate?:
   if (serialPortError) {
     throw new Error('Serial Port module is not available. Please reinstall the application.');
   }
-  
+
   try {
     // ENHANCED: Check if this is an Arduino port (COM6+)
     const comNum = parseInt(portPath.replace('COM', ''));
     const isArduinoPort = !isNaN(comNum) && comNum >= 6;
-    
+
     if (isArduinoPort) {
       console.log(`[SERIAL] Detected Arduino port connection: ${portPath}`);
       arduinoPortPath = portPath;
@@ -441,7 +436,28 @@ ipcMain.handle('connect-serial-port', async (event, portPath: string, baudRate?:
     }
 
     // Close existing port if it's the same path
+    // OPTIMIZATION: If port is already open and valid, reuse it (Fast Path)
+    // This prevents unnecessary hardware resets and speeds up page reloads
+    if (activeSerialPorts.has(portPath)) {
+      const existingPort = activeSerialPorts.get(portPath);
+      if (existingPort && existingPort.isOpen) {
+        console.log(`[SERIAL] FAST PATH: Port ${portPath} is already open. Reusing existing connection.`);
+
+        // Update references just in case
+        if (isArduinoPort) {
+          arduinoPortPath = portPath;
+        } else {
+          serialPort = existingPort;
+        }
+
+        return { success: true };
+      }
+    }
+
+    // If we get here, we need to open a fresh connection
+    // Close existing global instance if it matches but wasn't in active map (stale reference)
     if (serialPort && serialPort.isOpen && serialPort.path === portPath) {
+      console.log(`[SERIAL] Closing stale global reference for ${portPath}`);
       await serialPort.close();
     }
 
@@ -461,10 +477,10 @@ ipcMain.handle('connect-serial-port', async (event, portPath: string, baudRate?:
     // This ensures Arduino data is actually received and forwarded
     newSerialPort.on('open', () => {
       console.log(`[SERIAL] Port ${portPath} opened successfully at ${br} baud`);
-      
+
       // Track the active port
       activeSerialPorts.set(portPath, newSerialPort);
-      
+
       // Update main serial port reference if this is the main serial port
       if (!isArduinoPort) {
         serialPort = newSerialPort;
@@ -476,7 +492,7 @@ ipcMain.handle('connect-serial-port', async (event, portPath: string, baudRate?:
       if (mainWindow) {
         mainWindow.webContents.send('serial-error', err.message);
       }
-      
+
       // Remove from active ports on error
       activeSerialPorts.delete(portPath);
       if (isArduinoPort && arduinoPortPath === portPath) {
@@ -487,7 +503,7 @@ ipcMain.handle('connect-serial-port', async (event, portPath: string, baudRate?:
     newSerialPort.on('data', (data: any) => {
       const dataString = Buffer.from(data).toString('utf8').trim();
       console.log(`[SERIAL] Received data from ${portPath}:`, dataString);
-      
+
       // Forward data to renderer process with SEPARATE channels to prevent conflicts
       if (mainWindow) {
         // Use separate channels for Arduino vs other devices
@@ -516,7 +532,7 @@ ipcMain.handle('disconnect-serial-port', async () => {
   if (serialPortError) {
     throw new Error('Serial Port module is not available. Please reinstall the application.');
   }
-  
+
   try {
     if (serialPort && serialPort.isOpen) {
       await serialPort.close();

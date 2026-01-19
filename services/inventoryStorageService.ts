@@ -193,7 +193,7 @@ class InventoryStorageService {
   /**
    * Increment dispense count for a slot
    */
-  async incrementSlotCount(slot: number, tier: 'gold' | 'silver' | 'bronze'): Promise<SlotInventoryData> {
+  async incrementSlotCount(slot: number, tier: 'gold' | 'silver'): Promise<SlotInventoryData> {
     const currentData = await this.getSlotInventory(slot) || {
       slot,
       tier,
@@ -437,12 +437,31 @@ class InventoryStorageService {
    */
   private async syncDispensingLog(log: DispensingLog): Promise<void> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/inventory/log-dispensing`, {
+      // Use the electron vending log endpoint that exists in the PHP backend
+      const electronVendingLogData = {
+        action: 'dispensing_log',
+        game_time_ms: 0, // Not available in dispensing log
+        tier: log.tier,
+        selected_slot: log.slot,
+        channel_used: 0, // Not available in dispensing log
+        score_id: '', // Not available in dispensing log
+        prize_id: 0, // Not available in dispensing log
+        success: log.success,
+        error_code: log.error ? 1 : 0,
+        error_message: log.error || null,
+        dispense_method: 'legacy',
+        inventory_before: 0, // Not available in dispensing log
+        inventory_after: 0, // Not available in dispensing log
+        response_time_ms: 0, // Not available in dispensing log
+        source: log.source
+      };
+
+      const response = await fetch(`${API_BASE_URL}/api/electron-vending/log`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(log)
+        body: JSON.stringify(electronVendingLogData)
       });
 
       if (!response.ok) {
@@ -461,12 +480,31 @@ class InventoryStorageService {
    */
   private async syncOutOfStockLog(log: OutOfStockLog): Promise<void> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/inventory/log-out-of-stock`, {
+      // Use the electron vending log endpoint that exists in the PHP backend
+      const electronVendingLogData = {
+        action: 'out_of_stock',
+        game_time_ms: 0,
+        tier: log.tier,
+        selected_slot: 0,
+        channel_used: 0,
+        score_id: '',
+        prize_id: 0,
+        success: false,
+        error_code: 1,
+        error_message: 'Out of stock',
+        dispense_method: 'legacy',
+        inventory_before: 0,
+        inventory_after: 0,
+        response_time_ms: 0,
+        source: log.source
+      };
+
+      const response = await fetch(`${API_BASE_URL}/api/electron-vending/log`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(log)
+        body: JSON.stringify(electronVendingLogData)
       });
 
       if (!response.ok) {

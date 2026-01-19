@@ -77,11 +77,14 @@ export const addScore = async (newScore: Score): Promise<Score[]> => {
     }
 
     // Log the exact payload we will send to the API
-    console.log('Submitting score to API:', { player_id: playerResponse.id, time: newScore.time });
+    console.log('Submitting score to API:', { id: newScore.id, name: newScore.name, email: newScore.email, phone: newScore.phone, time: newScore.time });
 
     // Then submit the score
     const scoreResponse = await apiService.submitScore({
-      player_id: playerResponse.id,
+      id: newScore.id,
+      name: newScore.name,
+      email: newScore.email,
+      phone: newScore.phone,
       time: newScore.time,
     });
     
@@ -167,7 +170,10 @@ export const syncData = async (): Promise<void> => {
 
       // Then submit the score
       await apiService.submitScore({
-        player_id: playerResponse.id,
+        id: score.id,
+        name: score.name,
+        email: score.email,
+        phone: score.phone,
         time: score.time,
       });
     };

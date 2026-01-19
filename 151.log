@@ -1,0 +1,1021 @@
+vendinghanger.eeelab.xyz/apiendpoints.php/api/electron-vending/log:1  Failed to load resource: the server responded with a status of 400 ()
+vendinghanger.eeelab.xyz/apiendpoints.php/api/electron-vending/log:1  Failed to load resource: the server responded with a status of 400 ()
+vendinghanger.eeelab.xyz/apiendpoints.php/api/electron-vending/log:1  Failed to load resource: the server responded with a status of 400 ()
+vendinghanger.eeelab.xyz/apiendpoints.php/api/electron-vending/log:1  Failed to load resource: the server responded with a status of 400 ()
+vendinghanger.eeelab.xyz/apiendpoints.php/players:1  Failed to load resource: the server responded with a status of 500 ()
+vendinghanger.eeelab.xyz/apiendpoints.php/players:1  Failed to load resource: the server responded with a status of 500 ()
+vendinghanger.eeelab.xyz/apiendpoints.php/players:1  Failed to load resource: the server responded with a status of 500 ()
+vendinghanger.eeelab.xyz/apiendpoints.php/players:1  Failed to load resource: the server responded with a status of 500 ()
+vendinghanger.eeelab.xyz/apiendpoints.php/players:1  Failed to load resource: the server responded with a status of 500 ()
+vendinghanger.eeelab.xyz/apiendpoints.php/players:1  Failed to load resource: the server responded with a status of 500 ()
+ [Arduino Sensor] Received data via dedicated Arduino channel (1947): 1
+ [Arduino Sensor] Received data via shared channel (1948): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1949): 1
+ [Arduino Sensor] Received data via shared channel (1950): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1951): 1
+ [Arduino Sensor] Received data via shared channel (1952): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1953): 1
+ [Arduino Sensor] Received data via shared channel (1954): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1955): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (1956): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1957): 1
+ [Arduino Sensor] Received data via shared channel (1958): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1959): 1
+ [Arduino Sensor] Received data via shared channel (1960): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1961): 1
+ [Arduino Sensor] Received data via shared channel (1962): 1
+ [Arduino Sensor] Auto-retry attempt 6 - ensuring channel is active...
+ [Arduino Sensor] Received data via dedicated Arduino channel (1963): 1
+ [Arduino Sensor] Received data via shared channel (1964): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1965): 1
+ [Arduino Sensor] Received data via shared channel (1966): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1967): 1
+ [Arduino Sensor] Received data via shared channel (1968): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1969): 1
+ [Arduino Sensor] Received data via shared channel (1970): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1971): 1
+ [Arduino Sensor] Received data via shared channel (1972): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1973): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (1974): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1975): 1
+ [Arduino Sensor] Received data via shared channel (1976): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1977): 1
+ [Arduino Sensor] Received data via shared channel (1978): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1979): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (1980): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1981): 1
+ [Arduino Sensor] Received data via shared channel (1982): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1983): 1
+ [Arduino Sensor] Received data via shared channel (1984): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1985): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (1986): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1987): 1
+ [Arduino Sensor] Received data via shared channel (1988): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1989): 1
+ [Arduino Sensor] Received data via shared channel (1990): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1991): 1
+ [Arduino Sensor] Received data via shared channel (1992): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1993): 1
+ [Arduino Sensor] Received data via shared channel (1994): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1995): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (1996): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1997): 1
+ [Arduino Sensor] Received data via shared channel (1998): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (1999): 1
+ [Arduino Sensor] Received data via shared channel (2000): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2001): 1
+ [Arduino Sensor] Received data via shared channel (2002): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2003): 1
+ [Arduino Sensor] Received data via shared channel (2004): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2005): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2006): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2007): 1
+ [Arduino Sensor] Received data via shared channel (2008): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2009): 1
+ [Arduino Sensor] Received data via shared channel (2010): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2011): 1
+ [Arduino Sensor] Received data via shared channel (2012): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2013): 1
+ [Arduino Sensor] Received data via shared channel (2014): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2015): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2016): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2017): 1
+ [Arduino Sensor] Received data via shared channel (2018): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2019): 1
+ [Arduino Sensor] Received data via shared channel (2020): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2021): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2022): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2023): 1
+ [Arduino Sensor] Received data via shared channel (2024): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2025): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2026): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2027): 1
+ [Arduino Sensor] Received data via shared channel (2028): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2029): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2030): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2031): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2032): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2033): 1
+ [Arduino Sensor] Received data via shared channel (2034): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2035): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2036): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2037): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2038): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2039): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2040): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2041): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2042): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2043): 1
+ [Arduino Sensor] Received data via shared channel (2044): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2045): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2046): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2047): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2048): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2049): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2050): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2051): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2052): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2053): 1
+ [Arduino Sensor] Received data via shared channel (2054): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2055): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2056): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2057): 1
+ [Arduino Sensor] Received data via shared channel (2058): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2059): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2060): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2061): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2062): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2063): 1
+ [Arduino Sensor] Received data via shared channel (2064): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2065): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2066): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2067): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2068): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2069): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2070): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2071): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2072): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2073): 1
+ [Arduino Sensor] Received data via shared channel (2074): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2075): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2076): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2077): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2078): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2079): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2080): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2081): 1
+ [Arduino Sensor] Received data via shared channel (2082): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2083): 1
+ [Arduino Sensor] Received data via shared channel (2084): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2085): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2086): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2087): 1
+ [Arduino Sensor] Received data via shared channel (2088): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2089): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2090): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2091): 1
+ [Arduino Sensor] Received data via shared channel (2092): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2093): 1
+ [Arduino Sensor] Received data via shared channel (2094): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2095): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2096): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2097): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2098): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2099): 1
+ [Arduino Sensor] Received data via shared channel (2100): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2101): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2102): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2103): 1
+ [Arduino Sensor] Received data via shared channel (2104): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2105): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2106): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2107): 1
+ [Arduino Sensor] Received data via shared channel (2108): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2109): 1
+ [Arduino Sensor] Received data via shared channel (2110): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2111): 1
+ [Arduino Sensor] Received data via shared channel (2112): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2113): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2114): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2115): 1
+ [Arduino Sensor] Received data via shared channel (2116): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2117): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2118): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2119): 1
+ [Arduino Sensor] Received data via shared channel (2120): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2121): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2122): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2123): 1
+ [Arduino Sensor] Received data via shared channel (2124): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2125): 1
+ [Arduino Sensor] Received data via shared channel (2126): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2127): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2128): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2129): 1
+ [Arduino Sensor] Received data via shared channel (2130): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2131): 1
+ [Arduino Sensor] Received data via shared channel (2132): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2133): 1
+ [Arduino Sensor] Received data via shared channel (2134): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2135): 1
+ [Arduino Sensor] Received data via shared channel (2136): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2137): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2138): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2139): 1
+ [Arduino Sensor] Received data via shared channel (2140): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2141): 1
+ [Arduino Sensor] Received data via shared channel (2142): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2143): 1
+ [Arduino Sensor] Received data via shared channel (2144): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2145): 1
+ [Arduino Sensor] Received data via shared channel (2146): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2147): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2148): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2149): 1
+ [Arduino Sensor] Received data via shared channel (2150): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2151): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2152): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2153): 1
+ [Arduino Sensor] Received data via shared channel (2154): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2155): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2156): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2157): 1
+ [Arduino Sensor] Received data via shared channel (2158): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2159): 1
+ [Arduino Sensor] Received data via shared channel (2160): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2161): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2162): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2163): 1
+ [Arduino Sensor] Received data via shared channel (2164): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2165): 1
+ [Arduino Sensor] Received data via shared channel (2166): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2167): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2168): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2169): 1
+ [Arduino Sensor] Received data via shared channel (2170): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2171): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2172): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2173): 1
+ [Arduino Sensor] Received data via shared channel (2174): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2175): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2176): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2177): 1
+ [Arduino Sensor] Received data via shared channel (2178): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2179): 1
+ [Arduino Sensor] Received data via shared channel (2180): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2181): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2182): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2183): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2184): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2185): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2186): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2187): 1
+ [Arduino Sensor] Received data via shared channel (2188): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2189): 1
+ [Arduino Sensor] Received data via shared channel (2190): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2191): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2192): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2193): 1
+ [Arduino Sensor] Received data via shared channel (2194): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2195): 1
+ [Arduino Sensor] Received data via shared channel (2196): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2197): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2198): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2199): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2200): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2201): 1
+ [Arduino Sensor] Received data via shared channel (2202): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2203): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2204): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2205): 1
+ [Arduino Sensor] Received data via shared channel (2206): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2207): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2208): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2209): 1
+ [Arduino Sensor] Received data via shared channel (2210): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2211): 1
+ [Arduino Sensor] Received data via shared channel (2212): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2213): 1
+ [Arduino Sensor] Received data via shared channel (2214): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2215): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2216): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2217): 1
+ [Arduino Sensor] Received data via shared channel (2218): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2219): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2220): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2221): 1
+ [Arduino Sensor] Received data via shared channel (2222): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2223): 1
+ [Arduino Sensor] Received data via shared channel (2224): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2225): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2226): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2227): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2228): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2229): 
+ Invalid sensor value received: 
+handleSerialData @ index.js:49
+ [Arduino Sensor] Received data via shared channel (2230): 
+ Invalid sensor value received: 
+handleSerialData @ index.js:49
+ [Arduino Sensor] Received data via dedicated Arduino channel (2231): 1
+ [Arduino Sensor] Received data via shared channel (2232): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2233): 1
+ [Arduino Sensor] Received data via shared channel (2234): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2235): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2236): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2237): 1
+ [Arduino Sensor] Received data via shared channel (2238): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2239): 1
+ [Arduino Sensor] Received data via shared channel (2240): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2241): 1
+ [Arduino Sensor] Received data via shared channel (2242): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2243): 1
+ [Arduino Sensor] Received data via shared channel (2244): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2245): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2246): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2247): 1
+ [Arduino Sensor] Received data via shared channel (2248): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2249): 1
+ [Arduino Sensor] Received data via shared channel (2250): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2251): 1
+ [Arduino Sensor] Received data via shared channel (2252): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2253): 1
+ [Arduino Sensor] Received data via shared channel (2254): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2255): 1
+ [Arduino Sensor] Received data via shared channel (2256): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2257): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2258): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2259): 1
+ [Arduino Sensor] Received data via shared channel (2260): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2261): 1
+ [Arduino Sensor] Received data via shared channel (2262): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2263): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2264): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2265): 1
+ [Arduino Sensor] Received data via shared channel (2266): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2267): 1
+ [Arduino Sensor] Received data via shared channel (2268): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2269): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2270): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2271): 1
+ [Arduino Sensor] Received data via shared channel (2272): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2273): 1
+ [Arduino Sensor] Received data via shared channel (2274): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2275): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2276): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2277): 1
+ [Arduino Sensor] Received data via shared channel (2278): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2279): 1
+ [Arduino Sensor] Received data via shared channel (2280): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2281): 1
+ [Arduino Sensor] Received data via shared channel (2282): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2283): 1
+ [Arduino Sensor] Received data via shared channel (2284): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2285): 
+ Invalid sensor value received: 
+handleSerialData @ index.js:49
+ [Arduino Sensor] Received data via shared channel (2286): 
+ Invalid sensor value received: 
+handleSerialData @ index.js:49
+ [Arduino Sensor] Received data via dedicated Arduino channel (2287): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2288): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2289): 1
+ [Arduino Sensor] Received data via shared channel (2290): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2291): 1
+ [Arduino Sensor] Received data via shared channel (2292): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2293): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2294): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2295): 1
+ [Arduino Sensor] Received data via shared channel (2296): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2297): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2298): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2299): 1
+ [Arduino Sensor] Received data via shared channel (2300): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2301): 1
+ [Arduino Sensor] Received data via shared channel (2302): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2303): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2304): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2305): 1
+ [Arduino Sensor] Received data via shared channel (2306): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2307): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2308): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2309): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2310): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2311): 1
+ [Arduino Sensor] Received data via shared channel (2312): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2313): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2314): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2315): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2316): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2317): 1
+ [Arduino Sensor] Received data via shared channel (2318): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2319): 1
+ [Arduino Sensor] Received data via shared channel (2320): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2321): 1
+ [Arduino Sensor] Received data via shared channel (2322): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2323): 1
+ [Arduino Sensor] Received data via shared channel (2324): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2325): 1
+ [Arduino Sensor] Received data via shared channel (2326): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2327): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2328): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2329): 1
+ [Arduino Sensor] Received data via shared channel (2330): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2331): 1
+ [Arduino Sensor] Received data via shared channel (2332): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2333): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2334): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2335): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2336): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2337): 1
+ [Arduino Sensor] Received data via shared channel (2338): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2339): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2340): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2341): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2342): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2343): 1
+ [Arduino Sensor] Received data via shared channel (2344): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2345): 1
+ [Arduino Sensor] Received data via shared channel (2346): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2347): 1
+ [Arduino Sensor] Received data via shared channel (2348): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2349): 1
+ [Arduino Sensor] Received data via shared channel (2350): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2351): 1
+ [Arduino Sensor] Received data via shared channel (2352): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2353): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2354): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2355): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2356): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2357): 1
+ [Arduino Sensor] Received data via shared channel (2358): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2359): 1
+ [Arduino Sensor] Received data via shared channel (2360): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2361): 1
+ [Arduino Sensor] Received data via shared channel (2362): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2363): 1
+ [Arduino Sensor] Received data via shared channel (2364): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2365): 1
+ [Arduino Sensor] Received data via shared channel (2366): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2367): 1
+ [Arduino Sensor] Received data via shared channel (2368): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2369): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2370): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2371): 1
+ [Arduino Sensor] Received data via shared channel (2372): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2373): 1
+ [Arduino Sensor] Received data via shared channel (2374): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2375): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2376): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2377): 1
+ [Arduino Sensor] Received data via shared channel (2378): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2379): 1
+ [Arduino Sensor] Received data via shared channel (2380): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2381): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2382): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2383): 1
+ [Arduino Sensor] Received data via shared channel (2384): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2385): 1
+ [Arduino Sensor] Received data via shared channel (2386): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2387): 1
+ [Arduino Sensor] Received data via shared channel (2388): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2389): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2390): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2391): 1
+ [Arduino Sensor] Received data via shared channel (2392): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2393): 1
+ [Arduino Sensor] Received data via shared channel (2394): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2395): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2396): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2397): 1
+ [Arduino Sensor] Received data via shared channel (2398): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2399): 1
+ [Arduino Sensor] Received data via shared channel (2400): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2401): 1
+ [Arduino Sensor] Received data via shared channel (2402): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2403): 1
+ [Arduino Sensor] Received data via shared channel (2404): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2405): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2406): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2407): 1
+ [Arduino Sensor] Received data via shared channel (2408): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2409): 1
+ [Arduino Sensor] Received data via shared channel (2410): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2411): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2412): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2413): 1
+ [Arduino Sensor] Received data via shared channel (2414): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2415): 1
+ [Arduino Sensor] Received data via shared channel (2416): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2417): 1
+ [Arduino Sensor] Received data via shared channel (2418): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2419): 1
+ [Arduino Sensor] Received data via shared channel (2420): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2421): 1
+ [Arduino Sensor] Received data via shared channel (2422): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2423): 1
+ [Arduino Sensor] Received data via shared channel (2424): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2425): 1
+ [Arduino Sensor] Received data via shared channel (2426): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2427): 1
+ [Arduino Sensor] Received data via shared channel (2428): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2429): 1
+ [Arduino Sensor] Received data via shared channel (2430): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2431): 1
+ [Arduino Sensor] Received data via shared channel (2432): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2433): 1
+ [Arduino Sensor] Received data via shared channel (2434): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2435): 1
+ [Arduino Sensor] Received data via shared channel (2436): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2437): 1
+ [Arduino Sensor] Received data via shared channel (2438): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2439): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2440): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2441): 1
+ [Arduino Sensor] Received data via shared channel (2442): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2443): 1
+ [Arduino Sensor] Received data via shared channel (2444): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2445): 1
+ [Arduino Sensor] Received data via shared channel (2446): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2447): 
+ Invalid sensor value received: 
+handleSerialData @ index.js:49
+ [Arduino Sensor] Received data via shared channel (2448): 
+ Invalid sensor value received: 
+handleSerialData @ index.js:49
+ [Arduino Sensor] Received data via dedicated Arduino channel (2449): 1
+ [Arduino Sensor] Received data via shared channel (2450): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2451): 1
+ [Arduino Sensor] Received data via shared channel (2452): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2453): 1
+ [Arduino Sensor] Received data via shared channel (2454): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2455): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2456): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2457): 1
+ [Arduino Sensor] Received data via shared channel (2458): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2459): 1
+ [Arduino Sensor] Received data via shared channel (2460): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2461): 1
+ [Arduino Sensor] Received data via shared channel (2462): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2463): 1
+ [Arduino Sensor] Received data via shared channel (2464): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2465): 1
+ [Arduino Sensor] Received data via shared channel (2466): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2467): 1
+ [Arduino Sensor] Received data via shared channel (2468): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2469): 1
+ [Arduino Sensor] Received data via shared channel (2470): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2471): 1
+ [Arduino Sensor] Received data via shared channel (2472): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2473): 1
+ [Arduino Sensor] Received data via shared channel (2474): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2475): 1
+ [Arduino Sensor] Received data via shared channel (2476): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2477): 1
+ [Arduino Sensor] Received data via shared channel (2478): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2479): 1
+ [Arduino Sensor] Received data via shared channel (2480): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2481): 1
+ [Arduino Sensor] Received data via shared channel (2482): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2483): 1
+ [Arduino Sensor] Received data via shared channel (2484): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2485): 1
+ [Arduino Sensor] Received data via shared channel (2486): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2487): 1
+ [Arduino Sensor] Received data via shared channel (2488): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2489): 1
+ [Arduino Sensor] Received data via shared channel (2490): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2491): 1
+ [Arduino Sensor] Received data via shared channel (2492): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2493): 1
+ [Arduino Sensor] Received data via shared channel (2494): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2495): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2496): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2497): 1
+ [Arduino Sensor] Received data via shared channel (2498): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2499): 1
+ [Arduino Sensor] Received data via shared channel (2500): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2501): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2502): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2503): 
+ Invalid sensor value received: 
+handleSerialData @ index.js:49
+ [Arduino Sensor] Received data via shared channel (2504): 
+ Invalid sensor value received: 
+handleSerialData @ index.js:49
+ [Arduino Sensor] Received data via dedicated Arduino channel (2505): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2506): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2507): 1
+ [Arduino Sensor] Received data via shared channel (2508): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2509): 1
+ [Arduino Sensor] Received data via shared channel (2510): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2511): 1
+ [Arduino Sensor] Received data via shared channel (2512): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2513): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2514): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2515): 1
+ [Arduino Sensor] Received data via shared channel (2516): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2517): 1
+ [Arduino Sensor] Received data via shared channel (2518): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2519): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2520): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2521): 1
+ [Arduino Sensor] Received data via shared channel (2522): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2523): 1
+ [Arduino Sensor] Received data via shared channel (2524): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2525): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2526): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2527): 1
+ [Arduino Sensor] Received data via shared channel (2528): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2529): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2530): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2531): 1
+ [Arduino Sensor] Received data via shared channel (2532): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2533): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2534): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2535): 1
+ [Arduino Sensor] Received data via shared channel (2536): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2537): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2538): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2539): 1
+ [Arduino Sensor] Received data via shared channel (2540): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2541): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2542): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2543): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2544): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2545): 1
+ [Arduino Sensor] Received data via shared channel (2546): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2547): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2548): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2549): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2550): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2551): 1
+ [Arduino Sensor] Received data via shared channel (2552): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2553): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2554): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2555): 1
+ [Arduino Sensor] Received data via shared channel (2556): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2557): 1
+ [Arduino Sensor] Received data via shared channel (2558): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2559): 
+ Invalid sensor value received: 
+handleSerialData @ index.js:49
+ [Arduino Sensor] Received data via shared channel (2560): 
+ Invalid sensor value received: 
+handleSerialData @ index.js:49
+ [Arduino Sensor] Received data via dedicated Arduino channel (2561): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2562): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2563): 1
+ [Arduino Sensor] Received data via shared channel (2564): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2565): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2566): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2567): 1
+ [Arduino Sensor] Received data via shared channel (2568): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2569): 1
+ [Arduino Sensor] Received data via shared channel (2570): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2571): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2572): 1
+ [Arduino Sensor] Auto-retry attempt 12 - ensuring channel is active...
+ [Arduino Sensor] Channel status: Connected=true, Enabled=true, Ports=2
+ [Arduino Sensor] Received data via dedicated Arduino channel (2573): 1
+ [Arduino Sensor] Received data via shared channel (2574): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2575): 1
+ [Arduino Sensor] Received data via shared channel (2576): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2577): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2578): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2579): 1
+ [Arduino Sensor] Received data via shared channel (2580): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2581): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2582): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2583): 1
+ [Arduino Sensor] Received data via shared channel (2584): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2585): 1
+ [Arduino Sensor] Received data via shared channel (2586): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2587): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2588): 1
+ [Arduino Sensor] Received data via dedicated Arduino channel (2589): 1
+ [Arduino Sensor] Received data via shared channel (2590): 1
+ [HOLD TIMER] end called: Object
+ [HOLD TIMER] Final duration: 60045
+ [APP] Game completed with duration: 60045ms - using new Electron Vending Service trigger chain
+ [PRIZE SERVICE] Using Electron Vending Service as primary trigger for time: 60045ms
+ [ELECTRON VENDING] Handling prize dispensing for game time: 60045ms, scoreId: score_1768797756365
+ [ELECTRON VENDING] Game time 60045ms qualifies for silver prize
+ [GAME SCREEN] Game ended with time: 60045ms
+ [Arduino Sensor] Received data via dedicated Arduino channel (2591): 1
+ [Arduino Sensor] State change: 0 -> 1 (filtered)
+ [Arduino Sensor] Received data via shared channel (2592): 1
+ [ELECTRON VENDING] Slot selection debug for silver tier:
+ [ELECTRON VENDING] - Tier slots: [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38, 45, 46, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58]
+index.js:55 [ELECTRON VENDING] - Available slots: [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38, 45, 46, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58]
+index.js:55 [ELECTRON VENDING] - Slot inventory:
+index.js:55 [ELECTRON VENDING]   * Slot 1: count=1, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 2: count=1, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 3: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 4: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 5: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 6: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 7: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 8: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 11: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 12: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 13: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 14: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 15: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 16: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 17: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 18: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 21: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 22: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 23: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 26: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 27: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 28: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 31: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 32: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 33: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 34: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 35: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 36: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 37: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 38: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 45: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 46: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 47: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 48: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 51: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 52: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 53: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 54: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 55: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 56: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 57: count=0, max=5
+index.js:55 [ELECTRON VENDING]   * Slot 58: count=0, max=5
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 2 vs slot 1 (both count=1) - selecting 1
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 4 vs slot 3 (both count=0) - selecting 3
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 5 vs slot 4 (both count=0) - selecting 4
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 6 vs slot 5 (both count=0) - selecting 5
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 7 vs slot 6 (both count=0) - selecting 6
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 8 vs slot 6 (both count=0) - selecting 6
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 8 vs slot 7 (both count=0) - selecting 7
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 11 vs slot 7 (both count=0) - selecting 7
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 11 vs slot 8 (both count=0) - selecting 8
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 12 vs slot 7 (both count=0) - selecting 7
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 12 vs slot 11 (both count=0) - selecting 11
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 13 vs slot 8 (both count=0) - selecting 8
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 13 vs slot 12 (both count=0) - selecting 12
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 14 vs slot 8 (both count=0) - selecting 8
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 14 vs slot 13 (both count=0) - selecting 13
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 15 vs slot 11 (both count=0) - selecting 11
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 15 vs slot 14 (both count=0) - selecting 14
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 16 vs slot 11 (both count=0) - selecting 11
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 16 vs slot 15 (both count=0) - selecting 15
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 17 vs slot 12 (both count=0) - selecting 12
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 17 vs slot 16 (both count=0) - selecting 16
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 18 vs slot 12 (both count=0) - selecting 12
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 18 vs slot 16 (both count=0) - selecting 16
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 18 vs slot 17 (both count=0) - selecting 17
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 21 vs slot 13 (both count=0) - selecting 13
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 21 vs slot 17 (both count=0) - selecting 17
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 21 vs slot 18 (both count=0) - selecting 18
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 22 vs slot 13 (both count=0) - selecting 13
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 22 vs slot 18 (both count=0) - selecting 18
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 22 vs slot 21 (both count=0) - selecting 21
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 23 vs slot 14 (both count=0) - selecting 14
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 23 vs slot 21 (both count=0) - selecting 21
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 23 vs slot 22 (both count=0) - selecting 22
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 26 vs slot 14 (both count=0) - selecting 14
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 26 vs slot 21 (both count=0) - selecting 21
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 26 vs slot 23 (both count=0) - selecting 23
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 27 vs slot 15 (both count=0) - selecting 15
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 27 vs slot 22 (both count=0) - selecting 22
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 27 vs slot 26 (both count=0) - selecting 26
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 28 vs slot 15 (both count=0) - selecting 15
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 28 vs slot 23 (both count=0) - selecting 23
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 28 vs slot 27 (both count=0) - selecting 27
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 31 vs slot 16 (both count=0) - selecting 16
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 31 vs slot 26 (both count=0) - selecting 26
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 31 vs slot 28 (both count=0) - selecting 28
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 32 vs slot 16 (both count=0) - selecting 16
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 32 vs slot 26 (both count=0) - selecting 26
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 32 vs slot 31 (both count=0) - selecting 31
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 33 vs slot 17 (both count=0) - selecting 17
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 33 vs slot 27 (both count=0) - selecting 27
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 33 vs slot 32 (both count=0) - selecting 32
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 34 vs slot 17 (both count=0) - selecting 17
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 34 vs slot 28 (both count=0) - selecting 28
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 34 vs slot 33 (both count=0) - selecting 33
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 35 vs slot 18 (both count=0) - selecting 18
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 35 vs slot 31 (both count=0) - selecting 31
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 35 vs slot 34 (both count=0) - selecting 34
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 36 vs slot 18 (both count=0) - selecting 18
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 36 vs slot 31 (both count=0) - selecting 31
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 36 vs slot 35 (both count=0) - selecting 35
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 37 vs slot 21 (both count=0) - selecting 21
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 37 vs slot 32 (both count=0) - selecting 32
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 37 vs slot 36 (both count=0) - selecting 36
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 38 vs slot 21 (both count=0) - selecting 21
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 38 vs slot 33 (both count=0) - selecting 33
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 38 vs slot 37 (both count=0) - selecting 37
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 45 vs slot 22 (both count=0) - selecting 22
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 45 vs slot 34 (both count=0) - selecting 34
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 45 vs slot 38 (both count=0) - selecting 38
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 46 vs slot 22 (both count=0) - selecting 22
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 46 vs slot 34 (both count=0) - selecting 34
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 46 vs slot 38 (both count=0) - selecting 38
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 46 vs slot 45 (both count=0) - selecting 45
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 47 vs slot 23 (both count=0) - selecting 23
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 47 vs slot 35 (both count=0) - selecting 35
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 47 vs slot 45 (both count=0) - selecting 45
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 47 vs slot 46 (both count=0) - selecting 46
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 48 vs slot 23 (both count=0) - selecting 23
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 48 vs slot 36 (both count=0) - selecting 36
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 48 vs slot 46 (both count=0) - selecting 46
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 48 vs slot 47 (both count=0) - selecting 47
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 51 vs slot 26 (both count=0) - selecting 26
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 51 vs slot 37 (both count=0) - selecting 37
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 51 vs slot 47 (both count=0) - selecting 47
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 51 vs slot 48 (both count=0) - selecting 48
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 52 vs slot 26 (both count=0) - selecting 26
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 52 vs slot 37 (both count=0) - selecting 37
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 52 vs slot 48 (both count=0) - selecting 48
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 52 vs slot 51 (both count=0) - selecting 51
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 53 vs slot 27 (both count=0) - selecting 27
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 53 vs slot 38 (both count=0) - selecting 38
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 53 vs slot 51 (both count=0) - selecting 51
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 53 vs slot 52 (both count=0) - selecting 52
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 54 vs slot 27 (both count=0) - selecting 27
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 54 vs slot 45 (both count=0) - selecting 45
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 54 vs slot 52 (both count=0) - selecting 52
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 54 vs slot 53 (both count=0) - selecting 53
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 55 vs slot 28 (both count=0) - selecting 28
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 55 vs slot 46 (both count=0) - selecting 46
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 55 vs slot 53 (both count=0) - selecting 53
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 55 vs slot 54 (both count=0) - selecting 54
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 56 vs slot 28 (both count=0) - selecting 28
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 56 vs slot 46 (both count=0) - selecting 46
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 56 vs slot 53 (both count=0) - selecting 53
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 56 vs slot 55 (both count=0) - selecting 55
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 57 vs slot 31 (both count=0) - selecting 31
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 57 vs slot 47 (both count=0) - selecting 47
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 57 vs slot 54 (both count=0) - selecting 54
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 57 vs slot 56 (both count=0) - selecting 56
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 58 vs slot 31 (both count=0) - selecting 31
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 58 vs slot 48 (both count=0) - selecting 48
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 58 vs slot 55 (both count=0) - selecting 55
+index.js:55 [ELECTRON VENDING] Tie-breaker: slot 58 vs slot 57 (both count=0) - selecting 57
+index.js:55 [ELECTRON VENDING] Selected slot 3 for silver tier (stable sort, count: 0)
+index.js:55 [ELECTRON VENDING] Slot selection summary: [3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38, 45, 46, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58, 1, 2] -> selected: 3
+index.js:55 [ELECTRON VENDING] Selected slot 3 for silver prize
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2593): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (2594): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2595): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (2596): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2597): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (2598): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2599): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (2600): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2601): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (2602): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2603): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (2604): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2605): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (2606): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2607): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (2608): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2609): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (2610): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2611): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (2612): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2613): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (2614): 1
+index.js:55 [ELECTRON VENDING] Prize dispensing logged to API with scoreId: 1768797756365
+index.js:55 [ELECTRON VENDING] Using Legacy Serial for silver prize dispensing
+index.js:55 [ELECTRON VENDING] Command (HEX): 00 FF 03 FC AA 55
+index.js:55 [ELECTRON VENDING] Direct Legacy Serial (Version 1.0.3): 00 FF 03 FC AA 55
+index.js:55 [ELECTRON VENDING] Direct Legacy Serial (Version 1.0.3): 00 FF 03 FC AA 55
+index.js:55 [ELECTRON VENDING] Direct Legacy Serial command sent successfully
+index.js:55 [ELECTRON VENDING] Waiting for hardware response confirmation...
+index.js:55 [ELECTRON VENDING] ⚠ Could not extract slot number from command: 00 FF 03 FC AA 55
+sendDirectSerialCommand @ index.js:55
+index.js:55 [ELECTRON VENDING] Direct Legacy Serial command sent successfully
+index.js:55 [ELECTRON VENDING] Command sent successfully to slot 3
+index.js:54 [INVENTORY STORAGE] Updated slot 3: 1/5
+index.js:55 [ELECTRON VENDING] Slot 3 count incremented for silver tier
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2615): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (2616): 1
+index.js:54 [INVENTORY STORAGE] Dispensing log synced successfully
+index.js:55 [ELECTRON VENDING] Dispensing logged: slot=3, tier=silver, success=true
+index.js:55 [ELECTRON VENDING] ✓ Direct Legacy Serial (Version 1.0.3 Compatible) successful for silver prize
+index.js:55 [ELECTRON VENDING] ✓ Legacy Serial successful for silver prize
+index.js:55 [PRIZE SERVICE] Electron Vending Service successfully dispensed Silver Prize from slot 3.
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2617): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (2618): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2619): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:49 [Arduino Sensor] Received data via shared channel (2620): 1
+index.js:54 Submitting score to API: Object
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2621): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (2622): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2623): 1
+index.js:49 [Arduino Sensor] Received data via shared channel (2624): 1
+index.js:49 [Arduino Sensor] Received data via dedicated Arduino channel (2625): 1
+index.js:49 [Arduino Sensor] State change: 0 -> 1 (filtered)
+index.js:54 [GameScreen] Cleaning up Arduino sensor service...
+index.js:49 Arduino sensor DISABLED
+index.js:49 [Arduino Sensor] Already DISABLED - skipping
+index.js:49 [Arduino Sensor] Already DISABLED - skipping
