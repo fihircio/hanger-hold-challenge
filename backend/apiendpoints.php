@@ -86,6 +86,16 @@ function getTimeTier(int $timeMs): string {
 }
 
 /**
+ * Format time in milliseconds to MM:SS:ms string (3-part format)
+ */
+function getFormattedTime(int $timeMs): string {
+    $minutes = floor($timeMs / 60000);
+    $seconds = floor(($timeMs % 60000) / 1000);
+    $milliseconds = floor(($timeMs % 1000) / 10);
+    return sprintf("%02d:%02d:%02d", $minutes, $seconds, $milliseconds);
+}
+
+/**
  * Get request body as associative array
  */
 function getRequestBody() {
@@ -182,6 +192,7 @@ function handleGetRequest($conn, $path) {
             $result = $stmt->get_result();
             $scores = [];
             while ($row = $result->fetch_assoc()) {
+                $row['formatted_time'] = getFormattedTime((int)$row['time']);
                 $scores[] = $row;
             }
             echo json_encode(['scores' => $scores]);
@@ -190,6 +201,7 @@ function handleGetRequest($conn, $path) {
             $result = $conn->query("SELECT s.id, s.time, s.prize_id, s.dispensed, s.created_at, p.name as player_name FROM scores s JOIN players p ON s.player_id = p.id ORDER BY s.time DESC LIMIT 50");
             $scores = [];
             while ($row = $result->fetch_assoc()) {
+                $row['formatted_time'] = getFormattedTime((int)$row['time']);
                 $scores[] = $row;
             }
             echo json_encode(['scores' => $scores]);
@@ -239,6 +251,9 @@ function handleGetRequest($conn, $path) {
         $scores = [];
         $rank = 1;
         while ($row = $result->fetch_assoc()) {
+            // Add formatted time to the response
+            $row['formatted_time'] = getFormattedTime((int)$row['time']);
+            
             // Add rank to each score
             $row['rank'] = $rank;
             
