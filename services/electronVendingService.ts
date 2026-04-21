@@ -576,338 +576,371 @@ class ElectronVendingService {
 
       console.log(`[ELECTRON VENDING] Game time ${time}ms qualifies for ${tier} prize`);
 
-      // Get next available slot for this tier with enhanced load balancing
-      // Try stable sorting first, fallback to round-robin if needed
-      let selectedSlot = await this.getNextAvailableSlot(tier);
+      // Implement a retry loop to automatically bypass broken slots
+      let attempts = 0;
+      const MAX_ATTEMPTS = 3;
 
-      // Fallback to round-robin if stable sorting fails or returns null
-      if (!selectedSlot) {
-        console.log(`[ELECTRON VENDING] Stable sorting failed, trying round-robin for ${tier} tier`);
-        selectedSlot = await this.getNextAvailableSlotRoundRobin(tier);
-      }
+      while (attempts < MAX_ATTEMPTS) {
+        attempts++;
 
-      if (!selectedSlot) {
-        console.warn(`[ELECTRON VENDING] No available slots for ${tier} tier - machine may be empty`);
+        // Get next available slot for this tier with enhanced load balancing
+        let selectedSlot = await this.getNextAvailableSlot(tier);
 
-        // Log out of stock situation
-        await this.logOutOfStockToServer(tier);
-
-        // Log out of stock to Electron Vending Service table
-        await this.logDispensingToServer(
-          0,
-          tier,
-          false,
-          undefined,
-          undefined,
-          `No available slots for ${tier} tier`,
-          time,
-          undefined,
-          'out_of_stock',
-          undefined,
-          undefined,
-          Date.now() - startTime
-        );
-
-        return {
-          success: false,
-          tier,
-          channel: null,
-          slot: null,
-          error: `No available slots for ${tier} tier`
-        };
-      }
-
-      console.log(`[ELECTRON VENDING] Selected slot ${selectedSlot} for ${tier} prize`);
-
-      // Get inventory count before operation
-      try {
-        const slotData = await inventoryStorageService.getSlotInventory(selectedSlot);
-        inventoryBefore = slotData?.dispenseCount;
-      } catch (err) {
-        console.warn('[ELECTRON VENDING] Failed to get inventory before count:', err);
-      }
-
-      // Convert scoreId to number if provided
-      let scoreIdNum: number | undefined;
-
-      if (scoreId) {
-        // Extract numeric part from scoreId if it's in format "score_timestamp"
-        if (typeof scoreId === 'string' && scoreId.startsWith('score_')) {
-          scoreIdNum = parseInt(scoreId.replace('score_', ''));
-        } else {
-          scoreIdNum = parseInt(scoreId.toString());
+        // Fallback to round-robin if stable sorting fails or returns null
+        if (!selectedSlot) {
+          console.log(`[ELECTRON VENDING] Stable sorting failed, trying round-robin for ${tier} tier`);
+          selectedSlot = await this.getNextAvailableSlotRoundRobin(tier);
         }
 
-        // Validate scoreId conversion
-        if (isNaN(scoreIdNum)) {
-          console.error('[ELECTRON VENDING] Invalid scoreId provided:', scoreId);
-          scoreIdNum = undefined; // Reset to undefined to prevent API errors
+        if (!selectedSlot) {
+          console.warn(`[ELECTRON VENDING] No available slots for ${tier} tier - machine may be empty`);
+
+          // Log out of stock situation
+          await this.logOutOfStockToServer(tier);
+
+          // Log out of stock to Electron Vending Service table
+          await this.logDispensingToServer(
+            0,
+            tier,
+            false,
+            undefined,
+            undefined,
+            `No available slots for ${tier} tier`,
+            time,
+            undefined,
+            'out_of_stock',
+            undefined,
+            undefined,
+            Date.now() - startTime
+          );
+
+          return {
+            success: false,
+            tier,
+            channel: null,
+            slot: null,
+            error: `No available slots for ${tier} tier`
+          };
         }
-      }
 
-      // Get prize ID from API based on tier for logging (move outside if block)
-      let prizeIdForApi: number | undefined;
-      try {
-        const apiService = await import('./apiService');
-        const prizesResponse = await apiService.apiService.getAllPrizes();
-        // Map tier to correct prize ID based on database schema
-        if (tier === 'gold') {
-          prizeIdForApi = 2; // Gold Prize has ID 2 in database
-        } else if (tier === 'silver') {
-          prizeIdForApi = 1; // Silver Prize has ID 1 in database
-        }
+        console.log(`[ELECTRON VENDING] Attempt ${attempts}/${MAX_ATTEMPTS}: Selected slot ${selectedSlot} for ${tier} prize`);
 
-        // Skip API call if we don't have a valid score ID to prevent foreign key constraint errors
-        if (scoreIdNum && !isNaN(scoreIdNum)) {
-          try {
-            await apiService.apiService.dispensePrize(prizeIdForApi || (tier === 'gold' ? 2 : 1), scoreIdNum);
-            console.log('[ELECTRON VENDING] Prize dispensing logged to API with scoreId:', scoreIdNum);
-          } catch (apiError) {
-            console.warn('[ELECTRON VENDING] API logging failed (will continue with dispensing):', apiError);
-            // Don't throw - continue with dispensing even if API fails
-          }
-        } else {
-          console.warn('[ELECTRON VENDING] Skipping API logging - no valid scoreId available');
-          // Don't make API calls that will fail with foreign key constraints
-        }
-      } catch (apiError) {
-        console.error('[ELECTRON VENDING] Failed to log to API:', apiError);
-        // Don't throw - continue with dispensing even if API fails
-      }
-
-      // VERSION 1.0.3 COMPATIBLE FALLBACK LOGIC - Enhanced to match 135new2.md pattern
-      // Use Direct Legacy Serial (bypasses TCN Serial Service and Mock Mode)
-      const dispensingMethods = [
-        {
-          name: 'Legacy Serial',
-          try: async () => {
-            console.log(`[ELECTRON VENDING] Using Legacy Serial for ${tier} prize dispensing`);
-
-            // Check if Electron API is available
-            if (!this.isElectron()) {
-              throw new Error('Electron API not available - not running in Electron environment');
-            }
-            const command = this.constructVendCommand(selectedSlot);
-            console.log(`[ELECTRON VENDING] Command (HEX): ${command}`);
-            console.log(`[ELECTRON VENDING] Direct Legacy Serial (Version 1.0.3): ${command}`);
-
-            try {
-              // VERSION 1.0.3 METHOD: Direct serial communication bypassing TCN Serial Service
-              const result = await this.sendDirectSerialCommand(command);
-
-              if (result.success) {
-                console.log(`[ELECTRON VENDING] Direct Legacy Serial command sent successfully`);
-                console.log(`[ELECTRON VENDING] Command sent successfully to slot ${selectedSlot}`);
-                await this.incrementSlotCount(selectedSlot, tier);
-                const slotData = await inventoryStorageService.getSlotInventory(selectedSlot);
-                inventoryAfter = slotData?.dispenseCount;
-
-                await this.logDispensingToServer(
-                  selectedSlot, tier, true, prizeIdForApi, scoreIdNum,
-                  undefined, time, selectedSlot, 'direct_legacy_serial', inventoryBefore, inventoryAfter,
-                  Date.now() - startTime
-                );
-
-                console.log(`[ELECTRON VENDING] ✓ Direct Legacy Serial (Version 1.0.3 Compatible) successful for ${tier} prize`);
-
-                return {
-                  success: true, tier, channel: selectedSlot, slot: selectedSlot,
-                  prizeId: prizeIdForApi, scoreId: scoreIdNum
-                };
-              } else {
-                const errorMessage = result.error || 'Failed to send serial command';
-                await this.logDispensingToServer(
-                  selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
-                  errorMessage, time, selectedSlot, 'direct_legacy_serial', inventoryBefore, inventoryAfter,
-                  Date.now() - startTime
-                );
-
-                return {
-                  success: false, tier, channel: selectedSlot, slot: selectedSlot,
-                  error: errorMessage, prizeId: prizeIdForApi, scoreId: scoreIdNum
-                };
-              }
-            } catch (serialError) {
-              console.error(`[ELECTRON VENDING] Direct Legacy Serial error:`, serialError);
-              const errorMessage = (serialError as Error).message || 'Serial communication error';
-
-              await this.logDispensingToServer(
-                selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
-                errorMessage, time, selectedSlot, 'direct_legacy_serial_error', inventoryBefore, inventoryAfter,
-                Date.now() - startTime
-              );
-
-              return {
-                success: false, tier, channel: selectedSlot, slot: selectedSlot,
-                error: errorMessage, prizeId: prizeIdForApi, scoreId: scoreIdNum
-              };
-            }
-          }
-        },
-        {
-          name: 'On-Demand Serial (Fallback)',
-          try: async () => {
-            console.log(`[ELECTRON VENDING] Using On-Demand Serial (Fallback) for ${tier} prize dispensing`);
-
-            // Check if Electron API is available
-            if (!this.isElectron()) {
-              throw new Error('Electron API not available - not running in Electron environment');
-            }
-
-            const command = this.constructVendCommand(selectedSlot);
-            console.log(`[ELECTRON VENDING] Constructed HEX command: ${command}`);
-
-            try {
-              const result = await window.electronAPI.sendSerialCommand(command);
-
-              if (result.success) {
-                await this.incrementSlotCount(selectedSlot, tier);
-                const slotData = await inventoryStorageService.getSlotInventory(selectedSlot);
-                inventoryAfter = slotData?.dispenseCount;
-
-                await this.logDispensingToServer(
-                  selectedSlot, tier, true, prizeIdForApi, scoreIdNum,
-                  undefined, time, selectedSlot, 'legacy', inventoryBefore, inventoryAfter,
-                  Date.now() - startTime
-                );
-
-                return {
-                  success: true, tier, channel: selectedSlot, slot: selectedSlot,
-                  prizeId: prizeIdForApi, scoreId: scoreIdNum
-                };
-              } else {
-                const errorMessage = (result as any).error || 'Failed to send serial command';
-                await this.logDispensingToServer(
-                  selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
-                  errorMessage, time, selectedSlot, 'legacy', inventoryBefore, inventoryAfter,
-                  Date.now() - startTime
-                );
-
-                return {
-                  success: false, tier, channel: selectedSlot, slot: selectedSlot,
-                  error: errorMessage, prizeId: prizeIdForApi, scoreId: scoreIdNum
-                };
-              }
-            } catch (serialError) {
-              console.error(`[ELECTRON VENDING] Legacy Serial error:`, serialError);
-              const errorMessage = serialError.message || 'Serial communication error';
-
-              await this.logDispensingToServer(
-                selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
-                errorMessage, time, selectedSlot, 'legacy_error', inventoryBefore, inventoryAfter,
-                Date.now() - startTime
-              );
-
-              return {
-                success: false, tier, channel: selectedSlot, slot: selectedSlot,
-                error: errorMessage, prizeId: prizeIdForApi, scoreId: scoreIdNum
-              };
-            }
-          }
-        },
-        {
-          name: 'Spring SDK',
-          try: async () => {
-            if (!this.isInitialized) {
-              throw new Error('Spring SDK not initialized');
-            }
-            console.log(`[ELECTRON VENDING] Trying Spring SDK for ${tier} prize dispensing`);
-            const result = await this.springService.dispensePrizeByTier(tier);
-
-            if (result.success) {
-              await this.incrementSlotCount(selectedSlot, tier);
-              const slotData = await inventoryStorageService.getSlotInventory(selectedSlot);
-              inventoryAfter = slotData?.dispenseCount;
-
-              await this.logDispensingToServer(
-                selectedSlot, tier, true, prizeIdForApi, scoreIdNum,
-                undefined, time, result.channel, 'spring_sdk', inventoryBefore, inventoryAfter,
-                Date.now() - startTime
-              );
-
-              return {
-                success: true, tier, channel: result.channel, slot: selectedSlot,
-                prizeId: prizeIdForApi, scoreId: scoreIdNum
-              };
-            } else {
-              await this.logDispensingToServer(
-                selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
-                result.error, time, result.channel, 'spring_sdk', inventoryBefore, inventoryAfter,
-                Date.now() - startTime
-              );
-
-              return {
-                success: false, tier, channel: result.channel, slot: selectedSlot,
-                error: result.error, prizeId: prizeIdForApi, scoreId: scoreIdNum
-              };
-            }
-          }
-        },
-        {
-          name: 'Mock Mode',
-          try: async () => {
-            console.log(`[ELECTRON VENDING] Trying Mock Mode for ${tier} prize dispensing`);
-            // Simulate dispensing delay
-            await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
-
-            // 90% success rate in mock mode
-            const success = Math.random() < 0.9;
-
-            if (success) {
-              await this.incrementSlotCount(selectedSlot, tier);
-              const slotData = await inventoryStorageService.getSlotInventory(selectedSlot);
-              inventoryAfter = slotData?.dispenseCount;
-
-              await this.logDispensingToServer(
-                selectedSlot, tier, true, prizeIdForApi, scoreIdNum,
-                'Mock successful dispensing', time, selectedSlot, 'mock_mode', inventoryBefore, inventoryAfter,
-                Date.now() - startTime
-              );
-
-              return {
-                success: true, tier, channel: selectedSlot, slot: selectedSlot,
-                prizeId: prizeIdForApi, scoreId: scoreIdNum,
-                mockMessage: 'Simulated successful dispensing'
-              };
-            } else {
-              await this.logDispensingToServer(
-                selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
-                'Mock simulated failure', time, selectedSlot, 'mock_mode', inventoryBefore, inventoryAfter,
-                Date.now() - startTime
-              );
-
-              return {
-                success: false, tier, channel: selectedSlot, slot: selectedSlot,
-                error: 'Mock simulated failure', prizeId: prizeIdForApi, scoreId: scoreIdNum
-              };
-            }
-          }
-        }
-      ];
-
-      // Try each method in order until one succeeds
-      for (const method of dispensingMethods) {
+        // Get inventory count before operation
         try {
-          const result = await method.try();
-          if (result.success) {
-            console.log(`[ELECTRON VENDING] ✓ ${method.name} successful for ${tier} prize`);
-            return result;
-          } else {
-            console.warn(`[ELECTRON VENDING] ✗ ${method.name} failed for ${tier} prize: ${result.error}`);
-          }
-        } catch (error) {
-          console.error(`[ELECTRON VENDING] ✗ ${method.name} error for ${tier} prize:`, error);
+          const slotData = await inventoryStorageService.getSlotInventory(selectedSlot);
+          inventoryBefore = slotData?.dispenseCount;
+        } catch (err) {
+          console.warn('[ELECTRON VENDING] Failed to get inventory before count:', err);
         }
-      }
 
-      // All methods failed
-      console.error('[ELECTRON VENDING] All dispensing methods failed for ${tier} prize');
+        // Convert scoreId to number if provided
+        let scoreIdNum: number | undefined;
+
+        if (scoreId) {
+          // Extract numeric part from scoreId if it's in format "score_timestamp"
+          if (typeof scoreId === 'string' && scoreId.startsWith('score_')) {
+            scoreIdNum = parseInt(scoreId.replace('score_', ''));
+          } else {
+            scoreIdNum = parseInt(scoreId.toString());
+          }
+
+          // Validate scoreId conversion
+          if (isNaN(scoreIdNum)) {
+            console.error('[ELECTRON VENDING] Invalid scoreId provided:', scoreId);
+            scoreIdNum = undefined; // Reset to undefined to prevent API errors
+          }
+        }
+
+        // Get prize ID from API based on tier for logging (move outside if block)
+        let prizeIdForApi: number | undefined;
+        try {
+          const apiService = await import('./apiService');
+          const prizesResponse = await apiService.apiService.getAllPrizes();
+          // Map tier to correct prize ID based on database schema
+          if (tier === 'gold') {
+            prizeIdForApi = 2; // Gold Prize has ID 2 in database
+          } else if (tier === 'silver') {
+            prizeIdForApi = 1; // Silver Prize has ID 1 in database
+          }
+
+          // Skip API call if we don't have a valid score ID to prevent foreign key constraint errors
+          if (scoreIdNum && !isNaN(scoreIdNum)) {
+            try {
+              await apiService.apiService.dispensePrize(prizeIdForApi || (tier === 'gold' ? 2 : 1), scoreIdNum);
+              console.log('[ELECTRON VENDING] Prize dispensing logged to API with scoreId:', scoreIdNum);
+            } catch (apiError) {
+              console.warn('[ELECTRON VENDING] API logging failed (will continue with dispensing):', apiError);
+              // Don't throw - continue with dispensing even if API fails
+            }
+          } else {
+            console.warn('[ELECTRON VENDING] Skipping API logging - no valid scoreId available');
+            // Don't make API calls that will fail with foreign key constraints
+          }
+        } catch (apiError) {
+          console.error('[ELECTRON VENDING] Failed to log to API:', apiError);
+          // Don't throw - continue with dispensing even if API fails
+        }
+
+        // VERSION 1.0.3 COMPATIBLE FALLBACK LOGIC - Enhanced to match 135new2.md pattern
+        // Use Direct Legacy Serial (bypasses TCN Serial Service and Mock Mode)
+        const dispensingMethods = [
+          {
+            name: 'Legacy Serial',
+            try: async () => {
+              console.log(`[ELECTRON VENDING] Using Legacy Serial for ${tier} prize dispensing`);
+
+              // Check if Electron API is available
+              if (!this.isElectron()) {
+                throw new Error('Electron API not available - not running in Electron environment');
+              }
+              const command = this.constructVendCommand(selectedSlot);
+              console.log(`[ELECTRON VENDING] Command (HEX): ${command}`);
+              console.log(`[ELECTRON VENDING] Direct Legacy Serial (Version 1.0.3): ${command}`);
+
+              try {
+                // VERSION 1.0.3 METHOD: Direct serial communication bypassing TCN Serial Service
+                const result = await this.sendDirectSerialCommand(command);
+
+                if (result.success) {
+                  console.log(`[ELECTRON VENDING] Direct Legacy Serial command sent successfully`);
+                  console.log(`[ELECTRON VENDING] Command sent successfully to slot ${selectedSlot}`);
+                  await this.incrementSlotCount(selectedSlot, tier);
+                  const slotData = await inventoryStorageService.getSlotInventory(selectedSlot);
+                  inventoryAfter = slotData?.dispenseCount;
+
+                  await this.logDispensingToServer(
+                    selectedSlot, tier, true, prizeIdForApi, scoreIdNum,
+                    undefined, time, selectedSlot, 'direct_legacy_serial', inventoryBefore, inventoryAfter,
+                    Date.now() - startTime
+                  );
+
+                  console.log(`[ELECTRON VENDING] ✓ Direct Legacy Serial (Version 1.0.3 Compatible) successful for ${tier} prize`);
+
+                  return {
+                    success: true, tier, channel: selectedSlot, slot: selectedSlot,
+                    prizeId: prizeIdForApi, scoreId: scoreIdNum
+                  };
+                } else {
+                  const errorMessage = result.error || 'Failed to send serial command';
+                  await this.logDispensingToServer(
+                    selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
+                    errorMessage, time, selectedSlot, 'direct_legacy_serial', inventoryBefore, inventoryAfter,
+                    Date.now() - startTime
+                  );
+
+                  return {
+                    success: false, tier, channel: selectedSlot, slot: selectedSlot,
+                    error: errorMessage, prizeId: prizeIdForApi, scoreId: scoreIdNum
+                  };
+                }
+              } catch (serialError) {
+                console.error(`[ELECTRON VENDING] Direct Legacy Serial error:`, serialError);
+                const errorMessage = (serialError as Error).message || 'Serial communication error';
+
+                await this.logDispensingToServer(
+                  selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
+                  errorMessage, time, selectedSlot, 'direct_legacy_serial_error', inventoryBefore, inventoryAfter,
+                  Date.now() - startTime
+                );
+
+                return {
+                  success: false, tier, channel: selectedSlot, slot: selectedSlot,
+                  error: errorMessage, prizeId: prizeIdForApi, scoreId: scoreIdNum
+                };
+              }
+            }
+          },
+          {
+            name: 'On-Demand Serial (Fallback)',
+            try: async () => {
+              console.log(`[ELECTRON VENDING] Using On-Demand Serial (Fallback) for ${tier} prize dispensing`);
+
+              // Check if Electron API is available
+              if (!this.isElectron()) {
+                throw new Error('Electron API not available - not running in Electron environment');
+              }
+
+              const command = this.constructVendCommand(selectedSlot);
+              console.log(`[ELECTRON VENDING] Constructed HEX command: ${command}`);
+
+              try {
+                // Wrap in a Promise.race to enforce a timeout (preventing UI freeze if hardware hangs)
+                const timeoutPromise = new Promise<any>((_, reject) => {
+                  setTimeout(() => reject(new Error('Legacy serial command timed out after 5 seconds')), 5000);
+                });
+
+                const result = await Promise.race([
+                  window.electronAPI.sendSerialCommand(command),
+                  timeoutPromise
+                ]);
+
+                if (result.success) {
+                  await this.incrementSlotCount(selectedSlot, tier);
+                  const slotData = await inventoryStorageService.getSlotInventory(selectedSlot);
+                  inventoryAfter = slotData?.dispenseCount;
+
+                  await this.logDispensingToServer(
+                    selectedSlot, tier, true, prizeIdForApi, scoreIdNum,
+                    undefined, time, selectedSlot, 'legacy', inventoryBefore, inventoryAfter,
+                    Date.now() - startTime
+                  );
+
+                  return {
+                    success: true, tier, channel: selectedSlot, slot: selectedSlot,
+                    prizeId: prizeIdForApi, scoreId: scoreIdNum
+                  };
+                } else {
+                  const errorMessage = (result as any).error || 'Failed to send serial command';
+                  await this.logDispensingToServer(
+                    selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
+                    errorMessage, time, selectedSlot, 'legacy', inventoryBefore, inventoryAfter,
+                    Date.now() - startTime
+                  );
+
+                  return {
+                    success: false, tier, channel: selectedSlot, slot: selectedSlot,
+                    error: errorMessage, prizeId: prizeIdForApi, scoreId: scoreIdNum
+                  };
+                }
+              } catch (serialError) {
+                console.error(`[ELECTRON VENDING] Legacy Serial error:`, serialError);
+                const errorMessage = serialError.message || 'Serial communication error';
+
+                await this.logDispensingToServer(
+                  selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
+                  errorMessage, time, selectedSlot, 'legacy_error', inventoryBefore, inventoryAfter,
+                  Date.now() - startTime
+                );
+
+                return {
+                  success: false, tier, channel: selectedSlot, slot: selectedSlot,
+                  error: errorMessage, prizeId: prizeIdForApi, scoreId: scoreIdNum
+                };
+              }
+            }
+          },
+          {
+            name: 'Spring SDK',
+            try: async () => {
+              if (!this.isInitialized) {
+                throw new Error('Spring SDK not initialized');
+              }
+              console.log(`[ELECTRON VENDING] Trying Spring SDK for ${tier} prize dispensing`);
+              const result = await this.springService.dispensePrizeByTier(tier);
+
+              if (result.success) {
+                await this.incrementSlotCount(selectedSlot, tier);
+                const slotData = await inventoryStorageService.getSlotInventory(selectedSlot);
+                inventoryAfter = slotData?.dispenseCount;
+
+                await this.logDispensingToServer(
+                  selectedSlot, tier, true, prizeIdForApi, scoreIdNum,
+                  undefined, time, result.channel, 'spring_sdk', inventoryBefore, inventoryAfter,
+                  Date.now() - startTime
+                );
+
+                return {
+                  success: true, tier, channel: result.channel, slot: selectedSlot,
+                  prizeId: prizeIdForApi, scoreId: scoreIdNum
+                };
+              } else {
+                await this.logDispensingToServer(
+                  selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
+                  result.error, time, result.channel, 'spring_sdk', inventoryBefore, inventoryAfter,
+                  Date.now() - startTime
+                );
+
+                return {
+                  success: false, tier, channel: result.channel, slot: selectedSlot,
+                  error: result.error, prizeId: prizeIdForApi, scoreId: scoreIdNum
+                };
+              }
+            }
+          },
+          {
+            name: 'Mock Mode',
+            try: async () => {
+              console.log(`[ELECTRON VENDING] Trying Mock Mode for ${tier} prize dispensing`);
+              // Simulate dispensing delay
+              await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
+
+              // 90% success rate in mock mode
+              const success = Math.random() < 0.9;
+
+              if (success) {
+                await this.incrementSlotCount(selectedSlot, tier);
+                const slotData = await inventoryStorageService.getSlotInventory(selectedSlot);
+                inventoryAfter = slotData?.dispenseCount;
+
+                await this.logDispensingToServer(
+                  selectedSlot, tier, true, prizeIdForApi, scoreIdNum,
+                  'Mock successful dispensing', time, selectedSlot, 'mock_mode', inventoryBefore, inventoryAfter,
+                  Date.now() - startTime
+                );
+
+                return {
+                  success: true, tier, channel: selectedSlot, slot: selectedSlot,
+                  prizeId: prizeIdForApi, scoreId: scoreIdNum,
+                  mockMessage: 'Simulated successful dispensing'
+                };
+              } else {
+                await this.logDispensingToServer(
+                  selectedSlot, tier, false, prizeIdForApi, scoreIdNum,
+                  'Mock simulated failure', time, selectedSlot, 'mock_mode', inventoryBefore, inventoryAfter,
+                  Date.now() - startTime
+                );
+
+                return {
+                  success: false, tier, channel: selectedSlot, slot: selectedSlot,
+                  error: 'Mock simulated failure', prizeId: prizeIdForApi, scoreId: scoreIdNum
+                };
+              }
+            }
+          }
+        ];
+
+        // Try each method in order until one succeeds
+        for (const method of dispensingMethods) {
+          try {
+            const result = await method.try();
+            if (result.success) {
+              console.log(`[ELECTRON VENDING] ✓ ${method.name} successful for ${tier} prize`);
+              return result;
+            } else {
+              console.warn(`[ELECTRON VENDING] ✗ ${method.name} failed for ${tier} prize: ${result.error}`);
+            }
+          } catch (error) {
+            console.error(`[ELECTRON VENDING] ✗ ${method.name} error for ${tier} prize:`, error);
+          }
+        }
+
+        // All methods failed for this specific slot in this attempt
+        console.warn(`[ELECTRON VENDING] Attempt ${attempts}/${MAX_ATTEMPTS}: All dispensing methods failed for slot ${selectedSlot} (${tier} tier)`);
+
+        // Bypassing logic: Mark this broken slot's inventory to its maximum so it evaluates as "full" and is skipped
+        console.warn(`[ELECTRON VENDING] Marking slot ${selectedSlot} as broken/full to bypass.`);
+        try {
+          const brokenSlotData = await inventoryStorageService.getSlotInventory(selectedSlot);
+          if (brokenSlotData) {
+            await inventoryStorageService.updateSlotInventory({
+              ...brokenSlotData,
+              dispenseCount: brokenSlotData.maxDispenses,
+              updatedAt: new Date().toISOString()
+            });
+          }
+        } catch (markErr) {
+          console.error(`[ELECTRON VENDING] Failed to mark broken slot:`, markErr);
+        }
+      } // End of retry while loop
+
+      // If we fall out of the loop, all attempts failed entirely
+      console.error(`[ELECTRON VENDING] Completely failed to dispense after ${MAX_ATTEMPTS} attempts.`);
       return {
         success: false,
         tier,
         channel: null,
-        slot: selectedSlot,
-        error: 'All dispensing methods failed',
+        slot: null, // Returning null since we tried multiple slots
+        error: `All dispensing methods failed after ${MAX_ATTEMPTS} attempts`,
         prizeId: prizeIdForApi,
         scoreId: scoreIdNum
       };

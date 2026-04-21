@@ -59,8 +59,19 @@ export class TCNIntegrationService {
           // TCN hardware connection can proceed.
           console.warn('[TCN INTEGRATION] Failed to initialize storage service - continuing with in-memory fallback');
         } else {
-          // Clear and reinitialize slot data with updated configuration
-          await inventoryStorageService.clearAndReinitialize();
+          // Only clear if configuration actually changed or is missing slots
+          const existingSlots = await inventoryStorageService.getAllSlotInventory();
+          const currentConfigSlots = [...this.prizeChannels.gold, ...this.prizeChannels.silver];
+          
+          const needsReinit = existingSlots.length === 0 || 
+            !currentConfigSlots.every(slot => existingSlots.some(existing => existing.slot === slot));
+
+          if (needsReinit) {
+            console.log('[TCN INTEGRATION] Slot configuration changed or first run - clearing and reinitializing...');
+            await inventoryStorageService.clearAndReinitialize();
+          } else {
+            console.log('[TCN INTEGRATION] Existing slot configuration found - preserving counts');
+          }
         }
       
       // Load existing slot data

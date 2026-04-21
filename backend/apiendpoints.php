@@ -218,12 +218,12 @@ function handleGetRequest($conn, $path) {
         if ($date) {
             // Get top 3 scores for specific date
             if ($include_contact) {
-                // Include contact information for profile teams
+                // Include contact information for profile teams (Limited to Top 3)
                 $stmt = $conn->prepare("SELECT s.id, s.time, s.created_at, s.player_id, p.name as player_name, p.email, p.phone FROM scores s JOIN players p ON s.player_id = p.id WHERE DATE(s.created_at) = ? ORDER BY s.time DESC LIMIT 3");
                 $stmt->bind_param("s", $date);
             } else {
-                // Standard leaderboard without contact info
-                $stmt = $conn->prepare("SELECT s.id, s.time, s.created_at, p.name as player_name FROM scores s JOIN players p ON s.player_id = p.id WHERE DATE(s.created_at) = ? ORDER BY s.time DESC LIMIT 3");
+                // Standard leaderboard without contact info (All scores for the date)
+                $stmt = $conn->prepare("SELECT s.id, s.time, s.created_at, p.name as player_name FROM scores s JOIN players p ON s.player_id = p.id WHERE DATE(s.created_at) = ? ORDER BY s.time DESC");
                 $stmt->bind_param("s", $date);
             }
             $stmt->execute();
